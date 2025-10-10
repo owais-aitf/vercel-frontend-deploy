@@ -17,4 +17,9 @@ export const ROUTES = {
     PROJECTS: '/sales/projects',
     REPORTS: '/sales/reports',
   },
+
+  // Admin Routes
+  ADMIN: {
+    DASHBOARD: '/admin/dashboard',
+  },
 } as const;
