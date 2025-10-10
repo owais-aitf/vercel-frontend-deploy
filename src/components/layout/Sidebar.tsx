@@ -2,26 +2,35 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
-import {
-  Box,
-  Text,
-  VStack,
-  HStack,
-} from '@chakra-ui/react';
+import { Box, Text, VStack, HStack, Button } from '@chakra-ui/react';
 import { NavigationConfig } from '@/shared/config/navigation';
 
 interface SidebarProps {
   navigation: NavigationConfig;
   userName: string;
   userInitials: string;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const Sidebar = ({ navigation, userName, userInitials }: SidebarProps) => {
+export const Sidebar = ({
+  navigation,
+  userName,
+  userInitials,
+  isOpen,
+  onClose,
+}: SidebarProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
   const handleNavigation = (path: string) => {
     router.push(path);
+    onClose();
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    router.push('/login');
   };
 
   return (
@@ -31,11 +40,12 @@ export const Sidebar = ({ navigation, userName, userInitials }: SidebarProps) =>
       borderRight="1px solid"
       borderColor="gray.200"
       position="fixed"
-      left={0}
+      left={{ base: isOpen ? 0 : '-240px', lg: 0 }}
       top={0}
       bottom={0}
       overflowY="auto"
       zIndex={10}
+      transition="left 0.3s"
     >
       {/* Logo Section */}
       <Box p={6} borderBottom="1px solid" borderColor="gray.200">
@@ -83,7 +93,10 @@ export const Sidebar = ({ navigation, userName, userInitials }: SidebarProps) =>
             >
               <HStack gap={3}>
                 <Text fontSize="20px">{item.icon}</Text>
-                <Text fontWeight={isActive ? 'semibold' : 'normal'} fontSize="sm">
+                <Text
+                  fontWeight={isActive ? 'semibold' : 'normal'}
+                  fontSize="sm"
+                >
                   {item.label}
                 </Text>
               </HStack>
@@ -92,7 +105,7 @@ export const Sidebar = ({ navigation, userName, userInitials }: SidebarProps) =>
         })}
       </VStack>
 
-      {/* Profile Section at Bottom - FIXED */}
+      {/* Profile & Logout Section at Bottom */}
       <Box
         position="absolute"
         bottom={0}
@@ -103,26 +116,42 @@ export const Sidebar = ({ navigation, userName, userInitials }: SidebarProps) =>
         borderColor="gray.200"
         bg="white"
       >
-        <HStack gap={3}>
-          {/* Simple Circle Avatar */}
-          <Box
-            w="32px"
-            h="32px"
-            borderRadius="full"
-            bg="blue.500"
-            color="white"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="sm"
-            fontWeight="bold"
+        <VStack gap={3} align="stretch">
+          <HStack gap={3}>
+            <Box
+              w="32px"
+              h="32px"
+              borderRadius="full"
+              bg="blue.500"
+              color="white"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              fontSize="sm"
+              fontWeight="bold"
+            >
+              {userInitials}
+            </Box>
+            <Box flex={1} overflow="hidden">
+              <Text fontSize="sm" fontWeight="medium" truncate>
+                {userName}
+              </Text>
+            </Box>
+          </HStack>
+
+          <Button
+            onClick={handleLogout}
+            size="sm"
+            colorScheme="red"
+            variant="outline"
+            w="full"
           >
-            {userInitials}
-          </Box>
-          <Text fontSize="sm" fontWeight="medium">
-            {userName}
-          </Text>
-        </HStack>
+            <HStack gap={2}>
+              <Text fontSize="16px">🚪</Text>
+              <Text>Logout</Text>
+            </HStack>
+          </Button>
+        </VStack>
       </Box>
     </Box>
   );

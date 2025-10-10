@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
@@ -25,6 +25,8 @@ export const DashboardLayout = ({
   userInitials,
   notificationCount = 0,
 }: DashboardLayoutProps) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <Flex h="100vh" overflow="hidden">
       {/* Fixed Sidebar */}
@@ -32,10 +34,30 @@ export const DashboardLayout = ({
         navigation={navigation}
         userName={userName}
         userInitials={userInitials}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
+      {/* Overlay for Mobile Sidebar */}
+      {isSidebarOpen && (
+        <Box
+          position="fixed"
+          inset={0}
+          bg="blackAlpha.600"
+          zIndex={9}
+          display={{ base: 'block', lg: 'none' }}
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Content Area */}
-      <Box ml="240px" flex={1} display="flex" flexDirection="column">
+      <Box
+        ml={{ base: 0, lg: '240px' }}
+        flex={1}
+        display="flex"
+        flexDirection="column"
+        w="full"
+      >
         {/* Fixed Navbar */}
         <Navbar
           title={pageTitle}
@@ -43,10 +65,17 @@ export const DashboardLayout = ({
           userName={userName}
           userInitials={userInitials}
           notificationCount={notificationCount}
+          onMenuClick={() => setIsSidebarOpen(true)}
         />
 
         {/* Scrollable Content */}
-        <Box mt="70px" flex={1} overflowY="auto" bg="gray.50" p={6}>
+        <Box
+          mt="70px"
+          flex={1}
+          overflowY="auto"
+          bg="gray.50"
+          p={{ base: 4, md: 6 }}
+        >
           {children}
         </Box>
       </Box>

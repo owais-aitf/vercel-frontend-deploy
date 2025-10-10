@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -8,6 +7,7 @@ import {
   VStack,
   HStack,
   Badge,
+  Button,
 } from '@chakra-ui/react';
 
 interface NavbarProps {
@@ -16,6 +16,7 @@ interface NavbarProps {
   userName: string;
   userInitials: string;
   notificationCount?: number;
+  onMenuClick: () => void;
 }
 
 export const Navbar = ({
@@ -24,9 +25,9 @@ export const Navbar = ({
   userName,
   userInitials,
   notificationCount = 0,
+  onMenuClick,
 }: NavbarProps) => {
   const router = useRouter();
-  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -38,29 +39,51 @@ export const Navbar = ({
       position="fixed"
       top={0}
       right={0}
-      left="240px"
+      left={{ base: 0, lg: '240px' }}
       h="70px"
       bg="white"
       borderBottom="1px solid"
       borderColor="gray.200"
       zIndex={9}
-      px={6}
+      px={{ base: 4, md: 6 }}
       display="flex"
       alignItems="center"
       justifyContent="space-between"
     >
-      {/* Left Side - Title */}
-      <VStack align="start" gap={0}>
-        <Text fontSize="xl" fontWeight="bold" color="gray.800">
-          {title}
-        </Text>
-        <Text fontSize="sm" color="gray.500">
-          {subtitle}
-        </Text>
-      </VStack>
+      {/* Left Side - Menu Button (Mobile) + Title */}
+      <HStack gap={4}>
+        {/* Hamburger Menu - Mobile Only */}
+        <Box
+          as="button"
+          display={{ base: 'block', lg: 'none' }}
+          onClick={onMenuClick}
+          p={2}
+          border="none"
+          bg="transparent"
+          cursor="pointer"
+          _hover={{ bg: 'gray.100' }}
+          borderRadius="md"
+        >
+          <VStack gap={1}>
+            <Box w="24px" h="3px" bg="gray.700" borderRadius="full" />
+            <Box w="24px" h="3px" bg="gray.700" borderRadius="full" />
+            <Box w="24px" h="3px" bg="gray.700" borderRadius="full" />
+          </VStack>
+        </Box>
+
+        {/* Title */}
+        <VStack align="start" gap={0}>
+          <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="bold" color="gray.800">
+            {title}
+          </Text>
+          <Text fontSize="sm" color="gray.500" display={{ base: 'none', md: 'block' }}>
+            {subtitle}
+          </Text>
+        </VStack>
+      </HStack>
 
       {/* Right Side - Actions */}
-      <HStack gap={4}>
+      <HStack gap={{ base: 2, md: 4 }}>
         {/* Notification Icon */}
         <Box
           position="relative"
@@ -68,7 +91,7 @@ export const Navbar = ({
           _hover={{ transform: 'scale(1.1)' }}
           transition="all 0.2s"
         >
-          <Text fontSize="24px">🔔</Text>
+          <Text fontSize={{ base: '20px', md: '24px' }}>🔔</Text>
           {notificationCount > 0 && (
             <Badge
               position="absolute"
@@ -89,134 +112,37 @@ export const Navbar = ({
           )}
         </Box>
 
-        {/* User Profile with Dropdown */}
-        <Box position="relative">
-          <HStack
-            gap={2}
-            cursor="pointer"
-            onClick={() => setShowDropdown(!showDropdown)}
-            p={2}
-            borderRadius="md"
-            _hover={{ bg: 'gray.100' }}
-            transition="all 0.2s"
+        {/* User Profile - Hidden on Mobile */}
+        <HStack gap={2} display={{ base: 'none', sm: 'flex' }}>
+          <Text fontSize="sm" fontWeight="medium">
+            {userInitials}
+          </Text>
+          <Box
+            w="32px"
+            h="32px"
+            borderRadius="full"
+            bg="blue.500"
+            color="white"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            fontSize="sm"
+            fontWeight="bold"
           >
-            <Text fontSize="sm" fontWeight="medium">
-              {userInitials}
-            </Text>
-            <Box
-              w="32px"
-              h="32px"
-              borderRadius="full"
-              bg="blue.500"
-              color="white"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              fontSize="sm"
-              fontWeight="bold"
-            >
-              {userInitials}
-            </Box>
-            <Text fontSize="12px">{showDropdown ? '▲' : '▼'}</Text>
-          </HStack>
+            {userInitials}
+          </Box>
+        </HStack>
 
-          {/* Dropdown Menu */}
-          {showDropdown && (
-            <Box
-              position="absolute"
-              top="100%"
-              right={0}
-              mt={2}
-              bg="white"
-              border="1px solid"
-              borderColor="gray.200"
-              borderRadius="md"
-              shadow="lg"
-              minW="180px"
-              zIndex={100}
-            >
-              <VStack align="stretch" gap={0}>
-                {/* Profile Info */}
-                <Box p={4} borderBottom="1px solid" borderColor="gray.200">
-                  <Text fontSize="sm" fontWeight="bold">
-                    {userName}
-                  </Text>
-                  <Text fontSize="xs" color="gray.500">
-                    Engineer
-                  </Text>
-                </Box>
-
-                {/* Menu Items */}
-                <Box
-                  as="button"
-                  p={3}
-                  textAlign="left"
-                  _hover={{ bg: 'gray.50' }}
-                  transition="all 0.2s"
-                  borderBottom="1px solid"
-                  borderColor="gray.200"
-                  onClick={() => {
-                    router.push('/engineer/profile');
-                    setShowDropdown(false);
-                  }}
-                  border="none"
-                  bg="transparent"
-                  w="full"
-                  cursor="pointer"
-                >
-                  <HStack gap={2}>
-                    <Text fontSize="16px">👤</Text>
-                    <Text fontSize="sm">Profile</Text>
-                  </HStack>
-                </Box>
-
-                <Box
-                  as="button"
-                  p={3}
-                  textAlign="left"
-                  _hover={{ bg: 'gray.50' }}
-                  transition="all 0.2s"
-                  borderBottom="1px solid"
-                  borderColor="gray.200"
-                  onClick={() => {
-                    router.push('/engineer/settings');
-                    setShowDropdown(false);
-                  }}
-                  border="none"
-                  bg="transparent"
-                  w="full"
-                  cursor="pointer"
-                >
-                  <HStack gap={2}>
-                    <Text fontSize="16px">⚙️</Text>
-                    <Text fontSize="sm">Settings</Text>
-                  </HStack>
-                </Box>
-
-                <Box
-                  as="button"
-                  p={3}
-                  textAlign="left"
-                  _hover={{ bg: 'red.50' }}
-                  transition="all 0.2s"
-                  onClick={handleLogout}
-                  border="none"
-                  bg="transparent"
-                  w="full"
-                  cursor="pointer"
-                  color="red.600"
-                >
-                  <HStack gap={2}>
-                    <Text fontSize="16px">🚪</Text>
-                    <Text fontSize="sm" fontWeight="medium">
-                      Logout
-                    </Text>
-                  </HStack>
-                </Box>
-              </VStack>
-            </Box>
-          )}
-        </Box>
+        {/* Logout Button - Mobile Only (since sidebar is hidden on mobile) */}
+        <Button
+          onClick={handleLogout}
+          size="sm"
+          colorScheme="red"
+          variant="ghost"
+          display={{ base: 'flex', lg: 'none' }}
+        >
+          Logout
+        </Button>
       </HStack>
     </Box>
   );
