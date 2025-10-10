@@ -1,163 +1,230 @@
 'use client';
 
-import React, { useContext, useEffect, useState } from 'react';
-import {
-  Box,
-  SimpleGrid,
-  Heading,
-  VStack,
-  Text,
-  Button,
-} from '@chakra-ui/react';
-import api from '@/shared/lib/api-client';
-import { AuthContext } from '@/context/AuthContext';
-import { format } from 'date-fns';
-import { ProtectedRoute, RoleGuard } from '@/shared/lib/auth-guard';
-import { useRouter } from 'next/navigation';
+import { Box, Grid, Text, VStack, HStack, Card, Progress } from '@chakra-ui/react';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { engineerNavigation } from '@/shared/config/navigation';
 
-type Assignment = {
-  id: string;
-  project?: { projectName?: string };
-};
-
-type AttendanceRecord = {
-  id: string;
-  workDate: string;
-  attendanceType: string;
-  startTime?: string | null;
-  endTime?: string | null;
-  breakHours?: number | string;
-  projectAssignment?: { project?: { projectName?: string } };
-};
-
-export default function EngineerDashboardPage() {
-  const router = useRouter();
-  const { user, token, logout } = useContext(AuthContext);
-  const [projectsCount, setProjectsCount] = useState<number>(0);
-  const [hoursThisMonth, setHoursThisMonth] = useState<number>(0);
-  const [attendanceRecords, setAttendanceRecords] = useState<
-    AttendanceRecord[]
-  >([]);
-
-  useEffect(() => {
-    if (!token) return;
-    fetchData();
-  }, [token]);
-
-  const fetchData = async () => {
-    try {
-      const today = new Date();
-      const month = format(today, 'yyyy-MM');
-
-      const [projectsRes, attendanceRes] = await Promise.all([
-        api.get('/attendance/projects'),
-        api.get(`/attendance?month=${month}`),
-      ]);
-
-      const projects: Assignment[] = projectsRes.data?.data || [];
-      const attendance: AttendanceRecord[] = attendanceRes.data?.data || [];
-
-      setProjectsCount(projects.length);
-      setAttendanceRecords(attendance);
-
-      // calculate hours this month
-      let total = 0;
-      for (const r of attendance) {
-        const start = r.startTime ? new Date(r.startTime) : null;
-        const end = r.endTime ? new Date(r.endTime) : null;
-        let hours = 0;
-        if (start && end) {
-          const mins = (end.getTime() - start.getTime()) / (1000 * 60);
-          hours = mins / 60 - (Number(r.breakHours) || 0);
-        }
-        total += hours;
-      }
-      setHoursThisMonth(Math.round(total * 100) / 100);
-    } catch (err) {
-      console.error('Dashboard fetch error', err);
-    }
-  };
-
+export default function EngineerDashboard() {
   return (
-    <ProtectedRoute>
-      <RoleGuard allowed={['ENGINEER']}>
-        <Box p={8}>
-          <VStack align="start" gap={6} mb={6}>
-            <Heading size="lg">Engineer Dashboard</Heading>
-            <Text>Welcome back, {user?.fullName || user?.email}</Text>
-            <Button
-              size="sm"
-              colorScheme="red"
-              onClick={() => {
-                logout();
-                router.push('/login');
-              }}
-            >
-              Logout
-            </Button>
+    <DashboardLayout
+      navigation={engineerNavigation}
+      pageTitle="Dashboard"
+      pageSubtitle="Welcome back, John"
+      userName="John Doe"
+      userInitials="JD"
+      notificationCount={3}
+    >
+      {/* Stats Cards */}
+      <Grid templateColumns="repeat(3, 1fr)" gap={6} mb={6}>
+        {/* Hours This Month */}
+        <Card.Root p={6}>
+          <VStack align="start" gap={4}>
+            <HStack justify="space-between" w="full">
+              <Text fontSize="sm" color="gray.600">
+                Hours This Month
+              </Text>
+              <Text fontSize="24px">🕐</Text>
+            </HStack>
+            <Text fontSize="2xl" fontWeight="bold">
+              152/160 hours
+            </Text>
+            {/* FIXED Progress Bar */}
+            <Box w="full" bg="gray.200" borderRadius="full" h="8px">
+              <Box
+                bg="blue.500"
+                h="8px"
+                borderRadius="full"
+                w="95%"
+                transition="width 0.3s"
+              />
+            </Box>
           </VStack>
+        </Card.Root>
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} gap={6} mb={6}>
-            <Box borderWidth="1px" borderRadius="md" p={4}>
-              <Text fontSize="sm">Hours This Month</Text>
-              <Text fontWeight="bold">{hoursThisMonth} hours</Text>
+        {/* Attendance Rate */}
+        <Card.Root p={6}>
+          <VStack align="start" gap={4}>
+            <HStack justify="space-between" w="full">
+              <Text fontSize="sm" color="gray.600">
+                Attendance Rate
+              </Text>
+              <Text fontSize="24px">📋</Text>
+            </HStack>
+            <HStack gap={2}>
+              <Text fontSize="2xl" fontWeight="bold">
+                98%
+              </Text>
+              <Text fontSize="sm" color="gray.500">
+                This month
+              </Text>
+            </HStack>
+            {/* FIXED Progress Bar */}
+            <Box w="full" bg="gray.200" borderRadius="full" h="8px">
+              <Box
+                bg="blue.500"
+                h="8px"
+                borderRadius="full"
+                w="98%"
+                transition="width 0.3s"
+              />
             </Box>
+          </VStack>
+        </Card.Root>
 
-            <Box borderWidth="1px" borderRadius="md" p={4}>
-              <Text fontSize="sm">Attendance Records</Text>
-              <Text fontWeight="bold">{attendanceRecords.length}</Text>
+        {/* Active Projects */}
+        <Card.Root p={6}>
+          <VStack align="start" gap={4}>
+            <HStack justify="space-between" w="full">
+              <Text fontSize="sm" color="gray.600">
+                Active Projects
+              </Text>
+              <Text fontSize="24px">💼</Text>
+            </HStack>
+            <Text fontSize="2xl" fontWeight="bold">
+              3 Projects
+            </Text>
+            {/* FIXED Progress Bar */}
+            <Box w="full" bg="gray.200" borderRadius="full" h="8px">
+              <Box
+                bg="blue.500"
+                h="8px"
+                borderRadius="full"
+                w="100%"
+                transition="width 0.3s"
+              />
             </Box>
+          </VStack>
+        </Card.Root>
+      </Grid>
 
-            <Box borderWidth="1px" borderRadius="md" p={4}>
-              <Text fontSize="sm">Active Projects</Text>
-              <Text fontWeight="bold">{projectsCount}</Text>
-            </Box>
-          </SimpleGrid>
-
-          <Box>
-            <Heading size="md" mb={4}>
+      {/* Recent Activities & Upcoming Tasks */}
+      <Grid templateColumns="1.5fr 1fr" gap={6}>
+        {/* Recent Activities */}
+        <Card.Root p={6}>
+          <VStack align="start" gap={4}>
+            <Text fontSize="lg" fontWeight="bold">
               Recent Activities
-            </Heading>
-            <VStack gap={4} alignItems="stretch">
-              {attendanceRecords.slice(0, 5).map((r) => (
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              Your latest attendance entries
+            </Text>
+
+            <VStack gap={3} w="full" mt={2}>
+              {[
+                {
+                  project: 'Web Portal Development',
+                  date: 'Oct 8, 2025',
+                  hours: '8h',
+                  location: 'Client Site',
+                  status: 'approved',
+                },
+                {
+                  project: 'Web Portal Development',
+                  date: 'Oct 7, 2025',
+                  hours: '8h',
+                  location: 'Remote',
+                  status: 'approved',
+                },
+                {
+                  project: 'Mobile App Project',
+                  date: 'Oct 6, 2025',
+                  hours: '6h',
+                  location: 'Client Site',
+                  status: 'pending',
+                },
+              ].map((activity, index) => (
                 <Box
-                  key={r.id}
-                  borderWidth="1px"
+                  key={index}
+                  w="full"
+                  p={4}
                   borderRadius="md"
-                  p={3}
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
+                  bg="gray.50"
+                  _hover={{ bg: 'gray.100' }}
+                  transition="all 0.2s"
                 >
-                  <Box>
-                    <Text fontWeight="semibold">
-                      {r.projectAssignment?.project?.projectName || 'Project'}
-                    </Text>
-                    <Text fontSize="sm" color="gray.600">
-                      {new Date(r.workDate).toLocaleDateString()}
-                    </Text>
-                  </Box>
-                  <Box textAlign="right">
-                    <Text>
-                      {(() => {
-                        try {
-                          const s = r.startTime ? new Date(r.startTime) : null;
-                          const e = r.endTime ? new Date(r.endTime) : null;
-                          if (s && e)
-                            return `${Math.round(((e.getTime() - s.getTime()) / 3600000 - Number(r.breakHours || 0)) * 100) / 100} h`;
-                          return '0 h';
-                        } catch {
-                          return '0 h';
-                        }
-                      })()}
-                    </Text>
-                  </Box>
+                  <HStack justify="space-between">
+                    <VStack align="start" gap={1}>
+                      <Text fontWeight="medium" fontSize="sm">
+                        {activity.project}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        {activity.date}
+                      </Text>
+                    </VStack>
+                    <VStack align="end" gap={1}>
+                      <Text fontSize="sm" fontWeight="medium">
+                        {activity.hours}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        {activity.location}
+                      </Text>
+                    </VStack>
+                    <Box
+                      px={3}
+                      py={1}
+                      borderRadius="full"
+                      bg={activity.status === 'approved' ? 'blue.500' : 'yellow.500'}
+                      color="white"
+                      fontSize="xs"
+                    >
+                      {activity.status}
+                    </Box>
+                  </HStack>
                 </Box>
               ))}
             </VStack>
-          </Box>
-        </Box>
-      </RoleGuard>
-    </ProtectedRoute>
+          </VStack>
+        </Card.Root>
+
+        {/* Upcoming Tasks */}
+        <Card.Root p={6}>
+          <VStack align="start" gap={4}>
+            <Text fontSize="lg" fontWeight="bold">
+              Upcoming Tasks
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              Important deadlines
+            </Text>
+
+            <VStack gap={3} w="full" mt={2}>
+              {[
+                {
+                  task: 'Submit weekly attendance report',
+                  due: 'Oct 11',
+                  color: 'red',
+                },
+                {
+                  task: 'Complete project status update',
+                  due: 'Oct 12',
+                  color: 'blue',
+                },
+                {
+                  task: 'Review code changes',
+                  due: 'Oct 31',
+                  color: 'purple',
+                },
+              ].map((task, index) => (
+                <HStack key={index} gap={3} w="full">
+                  <Box
+                    w="12px"
+                    h="12px"
+                    borderRadius="full"
+                    bg={`${task.color}.500`}
+                  />
+                  <VStack align="start" gap={0} flex={1}>
+                    <Text fontSize="sm" fontWeight="medium">
+                      {task.task}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      Due: {task.due}
+                    </Text>
+                  </VStack>
+                </HStack>
+              ))}
+            </VStack>
+          </VStack>
+        </Card.Root>
+      </Grid>
+    </DashboardLayout>
   );
 }

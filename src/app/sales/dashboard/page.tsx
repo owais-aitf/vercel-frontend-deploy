@@ -1,33 +1,27 @@
 'use client';
 
-import { Box, Heading, Text, Button } from '@chakra-ui/react';
-import { ProtectedRoute, RoleGuard } from '@/shared/lib/auth-guard';
-import { useContext } from 'react';
-import { AuthContext } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { Box, Text } from '@chakra-ui/react';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { salesNavigation } from '@/shared/config/navigation';
 
-export default function SalesDashboardPage() {
-  const { logout } = useContext(AuthContext);
-  const router = useRouter();
+export default function SalesDashboard() {
   return (
-    <ProtectedRoute>
-      <RoleGuard allowed={['SALES']}>
-        <Box p={8}>
-          <Heading size="lg">Sales Dashboard</Heading>
-          <Text mt={2}>Welcome to the Sales Dashboard</Text>
-          <Button
-            mt={4}
-            size="sm"
-            colorScheme="red"
-            onClick={() => {
-              logout();
-              router.push('/login');
-            }}
-          >
-            Logout
-          </Button>
-        </Box>
-      </RoleGuard>
-    </ProtectedRoute>
+    <DashboardLayout
+      navigation={salesNavigation}
+      pageTitle="Sales Dashboard"
+      pageSubtitle="Manage projects and clients"
+      userName="Sales User"
+      userInitials="SU"
+      notificationCount={5}
+    >
+      <Box>
+        <Text fontSize="2xl" fontWeight="bold">
+          Sales Dashboard
+        </Text>
+        <Text color="gray.600" mt={2}>
+          Sales content will go here...
+        </Text>
+      </Box>
+    </DashboardLayout>
   );
 }
