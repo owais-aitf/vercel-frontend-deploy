@@ -17,9 +17,9 @@ export default function EngineerDashboard() {
       {/* Stats Cards - Responsive Grid */}
       <Grid
         templateColumns={{
-          base: '1fr',              // Mobile: 1 column
-          md: 'repeat(2, 1fr)',     // Tablet: 2 columns
-          lg: 'repeat(3, 1fr)',     // Desktop: 3 columns
+          base: '1fr', // Mobile: 1 column
+          md: 'repeat(2, 1fr)', // Tablet: 2 columns
+          lg: 'repeat(3, 1fr)', // Desktop: 3 columns
         }}
         gap={{ base: 4, md: 6 }}
         mb={{ base: 4, md: 6 }}
@@ -105,8 +105,8 @@ export default function EngineerDashboard() {
       {/* Recent Activities & Upcoming Tasks - Responsive Grid */}
       <Grid
         templateColumns={{
-          base: '1fr',              // Mobile: Stacked
-          lg: '1.5fr 1fr',         // Desktop: Side by side
+          base: '1fr', // Mobile: Stacked
+          lg: '1.5fr 1fr', // Desktop: Side by side
         }}
         gap={{ base: 4, md: 6 }}
       >
@@ -168,7 +168,11 @@ export default function EngineerDashboard() {
                         px={3}
                         py={1}
                         borderRadius="full"
-                        bg={activity.status === 'approved' ? 'blue.500' : 'yellow.500'}
+                        bg={
+                          activity.status === 'approved'
+                            ? 'blue.500'
+                            : 'yellow.500'
+                        }
                         color="white"
                         fontSize="xs"
                       >
@@ -215,7 +219,11 @@ export default function EngineerDashboard() {
                       px={3}
                       py={1}
                       borderRadius="full"
-                      bg={activity.status === 'approved' ? 'blue.500' : 'yellow.500'}
+                      bg={
+                        activity.status === 'approved'
+                          ? 'blue.500'
+                          : 'yellow.500'
+                      }
                       color="white"
                       fontSize="xs"
                     >

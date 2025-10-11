@@ -1,7 +1,7 @@
 'use client';
 
 import { Toaster as ChakraToaster, createToaster } from '@chakra-ui/react';
-import { Box, HStack, Text } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 
 export const toaster = createToaster({
   placement: 'top-end',
@@ -28,25 +28,40 @@ export function Toaster() {
           boxShadow="xl"
           minW="300px"
           maxW="500px"
+          position="relative"
         >
-          <HStack gap={3} alignItems="flex-start">
-            <Box fontSize="2xl">
-              {toast.type === 'success' && '✅'}
-              {toast.type === 'error' && '❌'}
-              {toast.type === 'warning' && '⚠️'}
-              {toast.type === 'info' && 'ℹ️'}
-            </Box>
-            <Box flex="1">
-              <Text fontWeight="bold" fontSize="lg" mb={1}>
-                {toast.title}
+          <Box pr={8}>
+            <Text fontWeight="bold" fontSize="md">
+              {toast.title}
+            </Text>
+            {toast.description && (
+              <Text fontSize="sm" opacity={0.9} mt={1}>
+                {toast.description}
               </Text>
-              {toast.description && (
-                <Text fontSize="sm" opacity={0.9}>
-                  {toast.description}
-                </Text>
-              )}
-            </Box>
-          </HStack>
+            )}
+          </Box>
+
+          {/* Close Button */}
+          <Box
+            position="absolute"
+            top={3}
+            right={3}
+            as="button"
+            onClick={() => toaster.remove(toast.id)}
+            cursor="pointer"
+            fontSize="20px"
+            fontWeight="bold"
+            color="white"
+            opacity={0.8}
+            _hover={{ opacity: 1 }}
+            transition="opacity 0.2s"
+            bg="transparent"
+            border="none"
+            p={1}
+            lineHeight={1}
+          >
+            ✕
+          </Box>
         </Box>
       )}
     </ChakraToaster>

@@ -3,7 +3,6 @@
 import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import top_logo from 'image/logo.png';
 import {
   Box,
   Heading,
@@ -106,7 +105,11 @@ export default function LoginPage() {
 
       if (err && typeof err === 'object') {
         if ('response' in err) {
-          const response = (err as any).response;
+          const response = (
+            err as {
+              response?: { data?: { error?: string; message?: string } };
+            }
+          ).response;
           if (response?.data?.error) {
             errorMessage = response.data.error;
           } else if (response?.data?.message) {

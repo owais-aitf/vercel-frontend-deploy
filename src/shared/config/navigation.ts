@@ -16,7 +16,11 @@ export const engineerNavigation: NavigationConfig = {
     { label: 'Dashboard', icon: '📊', path: '/engineer/dashboard' },
     { label: 'Attendance', icon: '📅', path: '/engineer/attendance' },
     { label: 'View Daily Report', icon: '📄', path: '/engineer/reports/view' },
-    { label: 'Update Daily Report', icon: '✏️', path: '/engineer/reports/update' },
+    {
+      label: 'Update Daily Report',
+      icon: '✏️',
+      path: '/engineer/reports/update',
+    },
   ],
 };
 

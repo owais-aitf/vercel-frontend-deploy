@@ -20,7 +20,9 @@ import {
 
 export default function ViewAttendance() {
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
-  const [filteredAttendance, setFilteredAttendance] = useState<AttendanceRecord[]>([]);
+  const [filteredAttendance, setFilteredAttendance] = useState<
+    AttendanceRecord[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -35,10 +37,14 @@ export default function ViewAttendance() {
   const [recordsPerPage] = useState(20);
 
   // Modal state
-  const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(
+    null
+  );
 
   // User's projects
-  const [userProjects, setUserProjects] = useState<Array<{ id: string; name: string }>>([]);
+  const [userProjects, setUserProjects] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
 
   // Fetch attendance data
   useEffect(() => {
@@ -55,19 +61,26 @@ export default function ViewAttendance() {
       setFilteredAttendance(records);
 
       // Extract unique projects
-      const projects = records.reduce((acc: Array<{ id: string; name: string }>, record: AttendanceRecord) => {
-        const projectId = record.projectAssignment.project.projectName;
-        if (!acc.find((p) => p.id === projectId)) {
-          acc.push({
-            id: projectId,
-            name: record.projectAssignment.project.projectName,
-          });
-        }
-        return acc;
-      }, []);
+      const projects = records.reduce(
+        (
+          acc: Array<{ id: string; name: string }>,
+          record: AttendanceRecord
+        ) => {
+          const projectId = record.projectAssignment.project.projectName;
+          if (!acc.find((p) => p.id === projectId)) {
+            acc.push({
+              id: projectId,
+              name: record.projectAssignment.project.projectName,
+            });
+          }
+          return acc;
+        },
+        []
+      );
       setUserProjects(projects);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to fetch attendance');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      setError(error.response?.data?.error || 'Failed to fetch attendance');
     } finally {
       setLoading(false);
     }
@@ -85,18 +98,25 @@ export default function ViewAttendance() {
     }
 
     if (typeFilter) {
-      filtered = filtered.filter((record) => record.attendanceType === typeFilter);
+      filtered = filtered.filter(
+        (record) => record.attendanceType === typeFilter
+      );
     }
 
     if (searchDate) {
       filtered = filtered.filter((record) => {
-        const recordDate = new Date(record.workDate).toISOString().split('T')[0];
+        const recordDate = new Date(record.workDate)
+          .toISOString()
+          .split('T')[0];
         return recordDate === searchDate;
       });
     }
 
     if (projectFilter) {
-      filtered = filtered.filter((record) => record.projectAssignment.project.projectName === projectFilter);
+      filtered = filtered.filter(
+        (record) =>
+          record.projectAssignment.project.projectName === projectFilter
+      );
     }
 
     setFilteredAttendance(filtered);
@@ -110,7 +130,10 @@ export default function ViewAttendance() {
   // Pagination calculations
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredAttendance.slice(indexOfFirstRecord, indexOfLastRecord);
+  const currentRecords = filteredAttendance.slice(
+    indexOfFirstRecord,
+    indexOfLastRecord
+  );
   const totalPages = Math.ceil(filteredAttendance.length / recordsPerPage);
 
   // Change page
@@ -251,7 +274,8 @@ export default function ViewAttendance() {
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#3182CE';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(49, 130, 206, 0.1)';
+                    e.target.style.boxShadow =
+                      '0 0 0 4px rgba(49, 130, 206, 0.1)';
                   }}
                   onBlur={(e) => {
                     e.target.style.borderColor = '#E2E8F0';
@@ -273,7 +297,13 @@ export default function ViewAttendance() {
                   pointerEvents="none"
                   transition="all 0.2s"
                 >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: '#718096' }}>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    style={{ color: '#718096' }}
+                  >
                     <path
                       d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                       fill="currentColor"
@@ -308,7 +338,8 @@ export default function ViewAttendance() {
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#3182CE';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(49, 130, 206, 0.1)';
+                    e.target.style.boxShadow =
+                      '0 0 0 4px rgba(49, 130, 206, 0.1)';
                   }}
                   onBlur={(e) => {
                     e.target.style.borderColor = '#E2E8F0';
@@ -331,7 +362,13 @@ export default function ViewAttendance() {
                   pointerEvents="none"
                   transition="all 0.2s"
                 >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: '#718096' }}>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    style={{ color: '#718096' }}
+                  >
                     <path
                       d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                       fill="currentColor"
@@ -357,7 +394,12 @@ export default function ViewAttendance() {
 
             {/* Reset Button */}
             <Box display="flex" alignItems="flex-end">
-              <Button onClick={resetFilters} colorScheme="gray" variant="outline" w="full">
+              <Button
+                onClick={resetFilters}
+                colorScheme="gray"
+                variant="outline"
+                w="full"
+              >
                 Reset Filters
               </Button>
             </Box>
@@ -368,7 +410,12 @@ export default function ViewAttendance() {
             <Text fontSize="sm" color="gray.600">
               Showing <strong>{filteredAttendance.length}</strong> total records
             </Text>
-            <Button onClick={fetchAttendance} size="sm" variant="ghost" colorScheme="blue">
+            <Button
+              onClick={fetchAttendance}
+              size="sm"
+              variant="ghost"
+              colorScheme="blue"
+            >
               🔄 Refresh
             </Button>
           </HStack>
@@ -439,25 +486,67 @@ export default function ViewAttendance() {
             <Box as="table" w="full">
               <Box as="thead" bg="gray.50">
                 <Box as="tr">
-                  <Box as="th" p={4} textAlign="left" fontSize="sm" fontWeight="semibold">
+                  <Box
+                    as="th"
+                    p={4}
+                    textAlign="left"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                  >
                     Date
                   </Box>
-                  <Box as="th" p={4} textAlign="left" fontSize="sm" fontWeight="semibold">
+                  <Box
+                    as="th"
+                    p={4}
+                    textAlign="left"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                  >
                     Project
                   </Box>
-                  <Box as="th" p={4} textAlign="left" fontSize="sm" fontWeight="semibold">
+                  <Box
+                    as="th"
+                    p={4}
+                    textAlign="left"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                  >
                     Type
                   </Box>
-                  <Box as="th" p={4} textAlign="left" fontSize="sm" fontWeight="semibold">
+                  <Box
+                    as="th"
+                    p={4}
+                    textAlign="left"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                  >
                     Time
                   </Box>
-                  <Box as="th" p={4} textAlign="left" fontSize="sm" fontWeight="semibold">
+                  <Box
+                    as="th"
+                    p={4}
+                    textAlign="left"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                  >
                     Location
                   </Box>
-                  <Box as="th" p={4} textAlign="left" fontSize="sm" fontWeight="semibold">
+                  <Box
+                    as="th"
+                    p={4}
+                    textAlign="left"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                  >
                     Description
                   </Box>
-                  <Box as="th" p={4} textAlign="left" fontSize="sm" fontWeight="semibold">
+                  <Box
+                    as="th"
+                    p={4}
+                    textAlign="left"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                  >
                     Actions
                   </Box>
                 </Box>
@@ -503,7 +592,8 @@ export default function ViewAttendance() {
                     </Box>
                     <Box as="td" p={4}>
                       <Text fontSize="sm">
-                        {formatTime(record.startTime)} - {formatTime(record.endTime)}
+                        {formatTime(record.startTime)} -{' '}
+                        {formatTime(record.endTime)}
                       </Text>
                     </Box>
                     <Box as="td" p={4}>
@@ -515,7 +605,12 @@ export default function ViewAttendance() {
                       </Text>
                     </Box>
                     <Box as="td" p={4}>
-                      <Button size="sm" colorScheme="blue" variant="ghost" onClick={() => openDetailModal(record)}>
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        variant="ghost"
+                        onClick={() => openDetailModal(record)}
+                      >
                         View Details
                       </Button>
                     </Box>
@@ -529,7 +624,14 @@ export default function ViewAttendance() {
           <VStack gap={4} display={{ base: 'flex', lg: 'none' }}>
             {currentRecords.map((record) => (
               <Card.Root key={record.id} p={4} w="full" position="relative">
-                <Button position="absolute" top={3} right={3} size="xs" colorScheme="blue" onClick={() => openDetailModal(record)}>
+                <Button
+                  position="absolute"
+                  top={3}
+                  right={3}
+                  size="xs"
+                  colorScheme="blue"
+                  onClick={() => openDetailModal(record)}
+                >
                   View
                 </Button>
 
@@ -539,7 +641,8 @@ export default function ViewAttendance() {
                       {formatDate(record.workDate)}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
-                      {formatTime(record.startTime)} - {formatTime(record.endTime)}
+                      {formatTime(record.startTime)} -{' '}
+                      {formatTime(record.endTime)}
                     </Text>
                   </VStack>
 
@@ -566,7 +669,12 @@ export default function ViewAttendance() {
                     </Text>
                   </VStack>
 
-                  <HStack gap={3} fontSize="xs" color="gray.600" flexWrap="wrap">
+                  <HStack
+                    gap={3}
+                    fontSize="xs"
+                    color="gray.600"
+                    flexWrap="wrap"
+                  >
                     <HStack gap={1}>
                       <Text>📍</Text>
                       <Text>{record.workLocation || 'N/A'}</Text>
@@ -578,7 +686,13 @@ export default function ViewAttendance() {
                   </HStack>
 
                   {record.workDescription && (
-                    <Box p={2} bg="gray.50" borderRadius="md" borderLeft="3px solid" borderColor="blue.400">
+                    <Box
+                      p={2}
+                      bg="gray.50"
+                      borderRadius="md"
+                      borderLeft="3px solid"
+                      borderColor="blue.400"
+                    >
                       <Text
                         fontSize="xs"
                         color="gray.600"
@@ -601,21 +715,36 @@ export default function ViewAttendance() {
 
           {/* Pagination Controls */}
           <Card.Root p={4} mt={6}>
-            <HStack justify="space-between" align="center" flexWrap="wrap" gap={4}>
+            <HStack
+              justify="space-between"
+              align="center"
+              flexWrap="wrap"
+              gap={4}
+            >
               <Text fontSize="sm" color="gray.600">
-                Showing {indexOfFirstRecord + 1} to {Math.min(indexOfLastRecord, filteredAttendance.length)} of{' '}
+                Showing {indexOfFirstRecord + 1} to{' '}
+                {Math.min(indexOfLastRecord, filteredAttendance.length)} of{' '}
                 {filteredAttendance.length} records
               </Text>
 
               <HStack gap={2}>
-                <Button size="sm" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} variant="outline">
+                <Button
+                  size="sm"
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  variant="outline"
+                >
                   ← Previous
                 </Button>
 
                 <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter((page) => {
-                      return page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1);
+                      return (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      );
                     })
                     .map((page, index, array) => (
                       <Box key={page}>
@@ -636,11 +765,20 @@ export default function ViewAttendance() {
                     ))}
                 </HStack>
 
-                <Text fontSize="sm" fontWeight="medium" display={{ base: 'block', md: 'none' }}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  display={{ base: 'block', md: 'none' }}
+                >
                   Page {currentPage} of {totalPages}
                 </Text>
 
-                <Button size="sm" onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} variant="outline">
+                <Button
+                  size="sm"
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  variant="outline"
+                >
                   Next →
                 </Button>
               </HStack>
@@ -652,7 +790,13 @@ export default function ViewAttendance() {
       {/* Detail Modal */}
       {selectedRecord && (
         <>
-          <Box position="fixed" inset={0} bg="blackAlpha.600" zIndex={999} onClick={closeDetailModal} />
+          <Box
+            position="fixed"
+            inset={0}
+            bg="blackAlpha.600"
+            zIndex={999}
+            onClick={closeDetailModal}
+          />
 
           <Box
             position="fixed"
@@ -673,7 +817,14 @@ export default function ViewAttendance() {
                 <Text fontSize="xl" fontWeight="bold">
                   Attendance Details
                 </Text>
-                <Box as="button" onClick={closeDetailModal} cursor="pointer" fontSize="24px" color="gray.500" _hover={{ color: 'gray.700' }}>
+                <Box
+                  as="button"
+                  onClick={closeDetailModal}
+                  cursor="pointer"
+                  fontSize="24px"
+                  color="gray.500"
+                  _hover={{ color: 'gray.700' }}
+                >
                   ✕
                 </Box>
               </HStack>
@@ -696,7 +847,8 @@ export default function ViewAttendance() {
                     {selectedRecord.projectAssignment.project.projectName}
                   </Text>
                   <Text fontSize="sm" color="gray.600">
-                    Client: {selectedRecord.projectAssignment.project.client.name}
+                    Client:{' '}
+                    {selectedRecord.projectAssignment.project.client.name}
                   </Text>
                 </Box>
 
@@ -723,13 +875,17 @@ export default function ViewAttendance() {
                     <Text fontSize="xs" color="gray.500" mb={1}>
                       Start Time
                     </Text>
-                    <Text fontSize="md">{formatTime(selectedRecord.startTime)}</Text>
+                    <Text fontSize="md">
+                      {formatTime(selectedRecord.startTime)}
+                    </Text>
                   </Box>
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
                       End Time
                     </Text>
-                    <Text fontSize="md">{formatTime(selectedRecord.endTime)}</Text>
+                    <Text fontSize="md">
+                      {formatTime(selectedRecord.endTime)}
+                    </Text>
                   </Box>
                 </Grid>
 
@@ -738,7 +894,9 @@ export default function ViewAttendance() {
                     <Text fontSize="xs" color="gray.500" mb={1}>
                       Work Location
                     </Text>
-                    <Text fontSize="md">{selectedRecord.workLocation || '-'}</Text>
+                    <Text fontSize="md">
+                      {selectedRecord.workLocation || '-'}
+                    </Text>
                   </Box>
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
@@ -752,14 +910,27 @@ export default function ViewAttendance() {
                   <Text fontSize="xs" color="gray.500" mb={1}>
                     Work Description
                   </Text>
-                  <Box p={3} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
+                  <Box
+                    p={3}
+                    bg="gray.50"
+                    borderRadius="md"
+                    border="1px solid"
+                    borderColor="gray.200"
+                  >
                     <Text fontSize="sm" color="gray.700" whiteSpace="pre-wrap">
-                      {selectedRecord.workDescription || 'No description provided'}
+                      {selectedRecord.workDescription ||
+                        'No description provided'}
                     </Text>
                   </Box>
                 </Box>
 
-                <Grid templateColumns="repeat(2, 1fr)" gap={4} pt={4} borderTop="1px solid" borderColor="gray.200">
+                <Grid
+                  templateColumns="repeat(2, 1fr)"
+                  gap={4}
+                  pt={4}
+                  borderTop="1px solid"
+                  borderColor="gray.200"
+                >
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
                       Submitted At
@@ -768,15 +939,17 @@ export default function ViewAttendance() {
                       {selectedRecord.submittedAt
                         ? new Date(selectedRecord.submittedAt).toLocaleString()
                         : selectedRecord.createdAt
-                        ? new Date(selectedRecord.createdAt).toLocaleString()
-                        : 'N/A'}
+                          ? new Date(selectedRecord.createdAt).toLocaleString()
+                          : 'N/A'}
                     </Text>
                   </Box>
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
                       Last Updated
                     </Text>
-                    <Text fontSize="sm">{new Date(selectedRecord.updatedAt).toLocaleString()}</Text>
+                    <Text fontSize="sm">
+                      {new Date(selectedRecord.updatedAt).toLocaleString()}
+                    </Text>
                   </Box>
                 </Grid>
               </VStack>

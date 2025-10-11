@@ -1,14 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import {
-  Box,
-  Text,
-  VStack,
-  HStack,
-  Badge,
-  Button,
-} from '@chakra-ui/react';
+import { Box, Text, VStack, HStack, Badge, Button } from '@chakra-ui/react';
 
 interface NavbarProps {
   title: string;
@@ -22,7 +15,6 @@ interface NavbarProps {
 export const Navbar = ({
   title,
   subtitle,
-  userName,
   userInitials,
   notificationCount = 0,
   onMenuClick,
@@ -73,10 +65,18 @@ export const Navbar = ({
 
         {/* Title */}
         <VStack align="start" gap={0}>
-          <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="bold" color="gray.800">
+          <Text
+            fontSize={{ base: 'lg', md: 'xl' }}
+            fontWeight="bold"
+            color="gray.800"
+          >
             {title}
           </Text>
-          <Text fontSize="sm" color="gray.500" display={{ base: 'none', md: 'block' }}>
+          <Text
+            fontSize="sm"
+            color="gray.500"
+            display={{ base: 'none', md: 'block' }}
+          >
             {subtitle}
           </Text>
         </VStack>
