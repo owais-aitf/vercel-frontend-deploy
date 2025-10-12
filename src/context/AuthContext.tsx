@@ -15,7 +15,7 @@ type User = {
 type AuthContextType = {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   setToken: (t: string | null) => void;
   setUser: (u: User | null) => void;
@@ -24,10 +24,10 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
-  login: async () => {},
-  logout: () => {},
-  setToken: () => {},
-  setUser: () => {},
+  login: async () => ({ id: '', email: '', role: '' }),
+  logout: () => { },
+  setToken: () => { },
+  setUser: () => { },
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -38,11 +38,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!isHydrated) return;
 
-    const t = localStorage.getItem('authToken');
-    if (t) {
-      setTokenState(t);
-      const decoded = jwtDecode(t);
-      if (decoded) setUser(decoded);
+    try {
+      const t = localStorage.getItem('authToken');
+      if (t) {
+        setTokenState(t);
+        const decoded = jwtDecode(t);
+        if (decoded) {
+          setUser(decoded);
+        } else {
+          // Token is invalid, clear it
+          localStorage.removeItem('authToken');
+          setTokenState(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading auth token:', error);
+      // Clear potentially corrupted data
+      localStorage.removeItem('authToken');
+      setTokenState(null);
+      setUser(null);
     }
   }, [isHydrated]);
 
@@ -57,15 +71,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (email: string, password: string): Promise<User> => {
     const res = await api.post('/auth/login', { email, password });
     const tokenFromRes = res.data?.data?.token;
     const userFromRes = res.data?.data?.user;
     if (!tokenFromRes) throw new Error('Token missing from response');
+    const userData = userFromRes || jwtDecode(tokenFromRes);
     setToken(tokenFromRes);
-    setUser(userFromRes || jwtDecode(tokenFromRes));
-    // do not return the raw response to avoid exposing 'any' in the type
-    return;
+    setUser(userData);
+    // Return user data so caller can use it immediately
+    return userData;
   };
 
   const logout = () => {

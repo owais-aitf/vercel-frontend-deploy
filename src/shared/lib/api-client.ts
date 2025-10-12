@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { navigateTo } from './navigation';
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
@@ -29,7 +30,8 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('authToken');
-        window.location.href = '/login';
+        // Use Next.js navigation instead of hard redirect
+        navigateTo('/login');
       }
     }
     return Promise.reject(error);

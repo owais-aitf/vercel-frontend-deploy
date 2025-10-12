@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { engineerNavigation } from '@/shared/config/navigation';
+import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import {
   attendanceService,
   AttendanceData,
@@ -206,466 +207,468 @@ export default function EngineerAttendance() {
   };
 
   return (
-    <DashboardLayout
-      navigation={engineerNavigation}
-      pageTitle="Attendance"
-      pageSubtitle="Manage your daily attendance"
-      userName={user?.fullName || 'User'}
-      userInitials={
-        user?.fullName
-          ?.split(' ')
-          .map((n) => n[0])
-          .join('')
-          .toUpperCase() || 'U'
-      }
-      notificationCount={0}
-    >
-      <Box
-        bg="white"
-        p={{ base: 4, md: 6, lg: 8 }}
-        borderRadius="xl"
-        boxShadow="lg"
-        border="1px solid"
-        borderColor="gray.200"
-        maxW="1200px"
-        w="full"
+    <FeatureErrorBoundary featureName="Attendance">
+      <DashboardLayout
+        navigation={engineerNavigation}
+        pageTitle="Attendance"
+        pageSubtitle="Manage your daily attendance"
+        userName={user?.fullName || 'User'}
+        userInitials={
+          user?.fullName
+            ?.split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase() || 'U'
+        }
+        notificationCount={0}
       >
-        <VStack align="stretch" gap={{ base: 4, md: 6 }}>
-          <Box borderBottom="1px solid" borderColor="gray.200" pb={4}>
-            <Text
-              fontSize={{ base: 'xl', md: '2xl' }}
-              fontWeight="bold"
-              color="gray.800"
-            >
-              📅 Daily Attendance Entry
-            </Text>
-            <Text color="gray.600" fontSize={{ base: 'xs', md: 'sm' }} mt={1}>
-              Record your work hours and activities for today
-            </Text>
-          </Box>
-
-          <form onSubmit={handleSubmit}>
-            <VStack align="stretch" gap={{ base: 4, md: 6 }}>
-              {/* Date and Project Row */}
-              <Grid
-                templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                gap={{ base: 4, md: 6 }}
-              >
-                <GridItem>
-                  <VStack align="stretch" gap={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                      📆 Date
-                    </Text>
-                    <Input
-                      type="date"
-                      value={workDate}
-                      onChange={(e) => setWorkDate(e.target.value)}
-                      required
-                      size="lg"
-                      borderRadius="lg"
-                      borderColor="gray.300"
-                      _hover={{ borderColor: 'blue.400' }}
-                      _focus={{
-                        borderColor: 'blue.500',
-                        boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
-                      }}
-                    />
-                  </VStack>
-                </GridItem>
-
-                <GridItem>
-                  <VStack align="stretch" gap={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                      📁 Project
-                    </Text>
-                    <Box position="relative">
-                      <select
-                        value={projectAssignmentId}
-                        onChange={(e) => setProjectAssignmentId(e.target.value)}
-                        required
-                        style={{
-                          padding: '12px',
-                          paddingRight: '40px',
-                          borderRadius: '8px',
-                          border: '2px solid #E2E8F0',
-                          fontSize: '16px',
-                          backgroundColor: 'white',
-                          cursor: 'pointer',
-                          width: '100%',
-                          appearance: 'none',
-                          outline: 'none',
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.borderColor = '#63B3ED')
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.borderColor = '#E2E8F0')
-                        }
-                        onFocus={(e) => {
-                          e.currentTarget.style.borderColor = '#3182CE';
-                          e.currentTarget.style.boxShadow =
-                            '0 0 0 3px rgba(66, 153, 225, 0.15)';
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.borderColor = '#E2E8F0';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
-                      >
-                        <option value="">📂 Select project</option>
-                        {projects.map((project) => (
-                          <option key={project.id} value={project.assignmentId}>
-                            {project.projectName} - {project.clientName}
-                          </option>
-                        ))}
-                      </select>
-                      <Box
-                        position="absolute"
-                        right={3}
-                        top="50%"
-                        transform="translateY(-50%)"
-                        pointerEvents="none"
-                      >
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                        >
-                          <path
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            fill="#718096"
-                          />
-                        </svg>
-                      </Box>
-                    </Box>
-                  </VStack>
-                </GridItem>
-              </Grid>
-
-              {/* Attendance Type and Work Location Row */}
-              <Grid
-                templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                gap={{ base: 4, md: 6 }}
-              >
-                <GridItem>
-                  <VStack align="stretch" gap={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                      ✅ Attendance Type
-                    </Text>
-                    <Box position="relative">
-                      <select
-                        value={attendanceType}
-                        onChange={(e) =>
-                          handleAttendanceTypeChange(e.target.value)
-                        }
-                        required
-                        style={{
-                          padding: '12px',
-                          paddingRight: '40px',
-                          borderRadius: '8px',
-                          border: '2px solid #E2E8F0',
-                          fontSize: '16px',
-                          backgroundColor: 'white',
-                          cursor: 'pointer',
-                          width: '100%',
-                          appearance: 'none',
-                          outline: 'none',
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.borderColor = '#63B3ED')
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.borderColor = '#E2E8F0')
-                        }
-                        onFocus={(e) => {
-                          e.currentTarget.style.borderColor = '#3182CE';
-                          e.currentTarget.style.boxShadow =
-                            '0 0 0 3px rgba(66, 153, 225, 0.15)';
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.borderColor = '#E2E8F0';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
-                      >
-                        <option value="PRESENT">✅ Present</option>
-                        <option value="PAID_LEAVE">🏖️ Paid Leave</option>
-                        <option value="ABSENT">❌ Absent</option>
-                        <option value="LEGAL_HOLIDAY">🎉 Legal Holiday</option>
-                      </select>
-                      <Box
-                        position="absolute"
-                        right={3}
-                        top="50%"
-                        transform="translateY(-50%)"
-                        pointerEvents="none"
-                      >
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                        >
-                          <path
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            fill="#718096"
-                          />
-                        </svg>
-                      </Box>
-                    </Box>
-                  </VStack>
-                </GridItem>
-
-                <GridItem>
-                  <VStack align="stretch" gap={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                      📍 Work Location
-                    </Text>
-                    <Box position="relative">
-                      <select
-                        value={workLocation}
-                        onChange={(e) => setWorkLocation(e.target.value)}
-                        disabled={attendanceType !== 'PRESENT'}
-                        style={{
-                          padding: '12px',
-                          paddingRight: '40px',
-                          borderRadius: '8px',
-                          border: '2px solid #E2E8F0',
-                          fontSize: '16px',
-                          backgroundColor:
-                            attendanceType !== 'PRESENT' ? '#F7FAFC' : 'white',
-                          cursor:
-                            attendanceType !== 'PRESENT'
-                              ? 'not-allowed'
-                              : 'pointer',
-                          opacity: attendanceType !== 'PRESENT' ? 0.6 : 1,
-                          width: '100%',
-                          appearance: 'none',
-                          outline: 'none',
-                        }}
-                        onMouseEnter={(e) => {
-                          if (attendanceType === 'PRESENT') {
-                            e.currentTarget.style.borderColor = '#63B3ED';
-                          }
-                        }}
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.borderColor = '#E2E8F0')
-                        }
-                        onFocus={(e) => {
-                          e.currentTarget.style.borderColor = '#3182CE';
-                          e.currentTarget.style.boxShadow =
-                            '0 0 0 3px rgba(66, 153, 225, 0.15)';
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.style.borderColor = '#E2E8F0';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
-                      >
-                        <option value="">📍 Select location</option>
-                        <option value="CLIENT_SITE">🏢 Client Site</option>
-                        <option value="HOME">🏠 Home</option>
-                        <option value="OFFICE">🏛️ Office</option>
-                      </select>
-                      <Box
-                        position="absolute"
-                        right={3}
-                        top="50%"
-                        transform="translateY(-50%)"
-                        pointerEvents="none"
-                        opacity={attendanceType !== 'PRESENT' ? 0.6 : 1}
-                      >
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                        >
-                          <path
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            fill="#718096"
-                          />
-                        </svg>
-                      </Box>
-                    </Box>
-                  </VStack>
-                </GridItem>
-              </Grid>
-
-              {/* Start Time and End Time Row */}
-              <Grid
-                templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                gap={{ base: 4, md: 6 }}
-              >
-                <GridItem>
-                  <VStack align="stretch" gap={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                      🕐 Start Time
-                    </Text>
-                    <Input
-                      type="time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      disabled={attendanceType !== 'PRESENT'}
-                      size="lg"
-                      borderRadius="lg"
-                      borderColor="gray.300"
-                      bg={attendanceType !== 'PRESENT' ? 'gray.100' : 'white'}
-                      opacity={attendanceType !== 'PRESENT' ? 0.6 : 1}
-                      _hover={{
-                        borderColor:
-                          attendanceType === 'PRESENT'
-                            ? 'blue.400'
-                            : 'gray.300',
-                      }}
-                      _focus={{
-                        borderColor: 'blue.500',
-                        boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
-                      }}
-                    />
-                  </VStack>
-                </GridItem>
-
-                <GridItem>
-                  <VStack align="stretch" gap={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                      🕐 End Time
-                    </Text>
-                    <Input
-                      type="time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      disabled={attendanceType !== 'PRESENT'}
-                      size="lg"
-                      borderRadius="lg"
-                      borderColor="gray.300"
-                      bg={attendanceType !== 'PRESENT' ? 'gray.100' : 'white'}
-                      opacity={attendanceType !== 'PRESENT' ? 0.6 : 1}
-                      _hover={{
-                        borderColor:
-                          attendanceType === 'PRESENT'
-                            ? 'blue.400'
-                            : 'gray.300',
-                      }}
-                      _focus={{
-                        borderColor: 'blue.500',
-                        boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
-                      }}
-                    />
-                  </VStack>
-                </GridItem>
-              </Grid>
-
-              {/* Break Hours and Work Hours Row */}
-              <Grid
-                templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                gap={{ base: 4, md: 6 }}
-              >
-                <GridItem>
-                  <VStack align="stretch" gap={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                      ☕ Break Hours
-                    </Text>
-                    <Input
-                      type="number"
-                      step="0.5"
-                      min="0"
-                      value={breakHours}
-                      onChange={(e) => setBreakHours(e.target.value)}
-                      disabled={attendanceType !== 'PRESENT'}
-                      size="lg"
-                      borderRadius="lg"
-                      borderColor="gray.300"
-                      bg={attendanceType !== 'PRESENT' ? 'gray.100' : 'white'}
-                      opacity={attendanceType !== 'PRESENT' ? 0.6 : 1}
-                      _hover={{
-                        borderColor:
-                          attendanceType === 'PRESENT'
-                            ? 'blue.400'
-                            : 'gray.300',
-                      }}
-                      _focus={{
-                        borderColor: 'blue.500',
-                        boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
-                      }}
-                    />
-                  </VStack>
-                </GridItem>
-
-                <GridItem>
-                  <VStack align="stretch" gap={2}>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                      ⏱️ Work Hours (Calculated)
-                    </Text>
-                    <Box
-                      p={3}
-                      borderRadius="lg"
-                      bg="blue.50"
-                      border="2px solid"
-                      borderColor="blue.200"
-                      fontSize="lg"
-                      fontWeight="bold"
-                      color="blue.700"
-                      display="flex"
-                      alignItems="center"
-                      h="48px"
-                    >
-                      {workHours} hours
-                    </Box>
-                  </VStack>
-                </GridItem>
-              </Grid>
-
-              {/* Work Description */}
-              <VStack align="stretch" gap={2}>
-                <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                  📝 Work Description
-                </Text>
-                <Textarea
-                  value={workDescription}
-                  onChange={(e) => setWorkDescription(e.target.value)}
-                  placeholder="Describe your work activities for the day..."
-                  rows={4}
-                  resize="vertical"
-                  borderRadius="lg"
-                  borderColor="gray.300"
-                  _hover={{ borderColor: 'blue.400' }}
-                  _focus={{
-                    borderColor: 'blue.500',
-                    boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
-                  }}
-                />
-              </VStack>
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                colorScheme="blue"
-                size="lg"
-                loading={submitting}
-                loadingText="Submitting attendance..."
-                w={{ base: 'full', md: 'fit-content' }}
-                px={8}
-                py={6}
-                fontSize="md"
+        <Box
+          bg="white"
+          p={{ base: 4, md: 6, lg: 8 }}
+          borderRadius="xl"
+          boxShadow="lg"
+          border="1px solid"
+          borderColor="gray.200"
+          maxW="1200px"
+          w="full"
+        >
+          <VStack align="stretch" gap={{ base: 4, md: 6 }}>
+            <Box borderBottom="1px solid" borderColor="gray.200" pb={4}>
+              <Text
+                fontSize={{ base: 'xl', md: '2xl' }}
                 fontWeight="bold"
-                borderRadius="xl"
-                boxShadow="md"
-                _hover={{
-                  transform: 'translateY(-2px)',
-                  boxShadow: 'lg',
-                }}
-                _active={{
-                  transform: 'translateY(0)',
-                  boxShadow: 'md',
-                }}
-                transition="all 0.2s"
-                disabled={submitting}
+                color="gray.800"
               >
-                {submitting ? '⏳ Submitting...' : '✅ Submit Attendance'}
-              </Button>
-            </VStack>
-          </form>
-        </VStack>
-      </Box>
-    </DashboardLayout>
+                📅 Daily Attendance Entry
+              </Text>
+              <Text color="gray.600" fontSize={{ base: 'xs', md: 'sm' }} mt={1}>
+                Record your work hours and activities for today
+              </Text>
+            </Box>
+
+            <form onSubmit={handleSubmit}>
+              <VStack align="stretch" gap={{ base: 4, md: 6 }}>
+                {/* Date and Project Row */}
+                <Grid
+                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                  gap={{ base: 4, md: 6 }}
+                >
+                  <GridItem>
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                        📆 Date
+                      </Text>
+                      <Input
+                        type="date"
+                        value={workDate}
+                        onChange={(e) => setWorkDate(e.target.value)}
+                        required
+                        size="lg"
+                        borderRadius="lg"
+                        borderColor="gray.300"
+                        _hover={{ borderColor: 'blue.400' }}
+                        _focus={{
+                          borderColor: 'blue.500',
+                          boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
+                        }}
+                      />
+                    </VStack>
+                  </GridItem>
+
+                  <GridItem>
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                        📁 Project
+                      </Text>
+                      <Box position="relative">
+                        <select
+                          value={projectAssignmentId}
+                          onChange={(e) => setProjectAssignmentId(e.target.value)}
+                          required
+                          style={{
+                            padding: '12px',
+                            paddingRight: '40px',
+                            borderRadius: '8px',
+                            border: '2px solid #E2E8F0',
+                            fontSize: '16px',
+                            backgroundColor: 'white',
+                            cursor: 'pointer',
+                            width: '100%',
+                            appearance: 'none',
+                            outline: 'none',
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.borderColor = '#63B3ED')
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.borderColor = '#E2E8F0')
+                          }
+                          onFocus={(e) => {
+                            e.currentTarget.style.borderColor = '#3182CE';
+                            e.currentTarget.style.boxShadow =
+                              '0 0 0 3px rgba(66, 153, 225, 0.15)';
+                          }}
+                          onBlur={(e) => {
+                            e.currentTarget.style.borderColor = '#E2E8F0';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                        >
+                          <option value="">📂 Select project</option>
+                          {projects.map((project) => (
+                            <option key={project.id} value={project.assignmentId}>
+                              {project.projectName} - {project.clientName}
+                            </option>
+                          ))}
+                        </select>
+                        <Box
+                          position="absolute"
+                          right={3}
+                          top="50%"
+                          transform="translateY(-50%)"
+                          pointerEvents="none"
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                          >
+                            <path
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill="#718096"
+                            />
+                          </svg>
+                        </Box>
+                      </Box>
+                    </VStack>
+                  </GridItem>
+                </Grid>
+
+                {/* Attendance Type and Work Location Row */}
+                <Grid
+                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                  gap={{ base: 4, md: 6 }}
+                >
+                  <GridItem>
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                        ✅ Attendance Type
+                      </Text>
+                      <Box position="relative">
+                        <select
+                          value={attendanceType}
+                          onChange={(e) =>
+                            handleAttendanceTypeChange(e.target.value)
+                          }
+                          required
+                          style={{
+                            padding: '12px',
+                            paddingRight: '40px',
+                            borderRadius: '8px',
+                            border: '2px solid #E2E8F0',
+                            fontSize: '16px',
+                            backgroundColor: 'white',
+                            cursor: 'pointer',
+                            width: '100%',
+                            appearance: 'none',
+                            outline: 'none',
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.borderColor = '#63B3ED')
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.borderColor = '#E2E8F0')
+                          }
+                          onFocus={(e) => {
+                            e.currentTarget.style.borderColor = '#3182CE';
+                            e.currentTarget.style.boxShadow =
+                              '0 0 0 3px rgba(66, 153, 225, 0.15)';
+                          }}
+                          onBlur={(e) => {
+                            e.currentTarget.style.borderColor = '#E2E8F0';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                        >
+                          <option value="PRESENT">✅ Present</option>
+                          <option value="PAID_LEAVE">🏖️ Paid Leave</option>
+                          <option value="ABSENT">❌ Absent</option>
+                          <option value="LEGAL_HOLIDAY">🎉 Legal Holiday</option>
+                        </select>
+                        <Box
+                          position="absolute"
+                          right={3}
+                          top="50%"
+                          transform="translateY(-50%)"
+                          pointerEvents="none"
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                          >
+                            <path
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill="#718096"
+                            />
+                          </svg>
+                        </Box>
+                      </Box>
+                    </VStack>
+                  </GridItem>
+
+                  <GridItem>
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                        📍 Work Location
+                      </Text>
+                      <Box position="relative">
+                        <select
+                          value={workLocation}
+                          onChange={(e) => setWorkLocation(e.target.value)}
+                          disabled={attendanceType !== 'PRESENT'}
+                          style={{
+                            padding: '12px',
+                            paddingRight: '40px',
+                            borderRadius: '8px',
+                            border: '2px solid #E2E8F0',
+                            fontSize: '16px',
+                            backgroundColor:
+                              attendanceType !== 'PRESENT' ? '#F7FAFC' : 'white',
+                            cursor:
+                              attendanceType !== 'PRESENT'
+                                ? 'not-allowed'
+                                : 'pointer',
+                            opacity: attendanceType !== 'PRESENT' ? 0.6 : 1,
+                            width: '100%',
+                            appearance: 'none',
+                            outline: 'none',
+                          }}
+                          onMouseEnter={(e) => {
+                            if (attendanceType === 'PRESENT') {
+                              e.currentTarget.style.borderColor = '#63B3ED';
+                            }
+                          }}
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.borderColor = '#E2E8F0')
+                          }
+                          onFocus={(e) => {
+                            e.currentTarget.style.borderColor = '#3182CE';
+                            e.currentTarget.style.boxShadow =
+                              '0 0 0 3px rgba(66, 153, 225, 0.15)';
+                          }}
+                          onBlur={(e) => {
+                            e.currentTarget.style.borderColor = '#E2E8F0';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                        >
+                          <option value="">📍 Select location</option>
+                          <option value="CLIENT_SITE">🏢 Client Site</option>
+                          <option value="HOME">🏠 Home</option>
+                          <option value="OFFICE">🏛️ Office</option>
+                        </select>
+                        <Box
+                          position="absolute"
+                          right={3}
+                          top="50%"
+                          transform="translateY(-50%)"
+                          pointerEvents="none"
+                          opacity={attendanceType !== 'PRESENT' ? 0.6 : 1}
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                          >
+                            <path
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill="#718096"
+                            />
+                          </svg>
+                        </Box>
+                      </Box>
+                    </VStack>
+                  </GridItem>
+                </Grid>
+
+                {/* Start Time and End Time Row */}
+                <Grid
+                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                  gap={{ base: 4, md: 6 }}
+                >
+                  <GridItem>
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                        🕐 Start Time
+                      </Text>
+                      <Input
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        disabled={attendanceType !== 'PRESENT'}
+                        size="lg"
+                        borderRadius="lg"
+                        borderColor="gray.300"
+                        bg={attendanceType !== 'PRESENT' ? 'gray.100' : 'white'}
+                        opacity={attendanceType !== 'PRESENT' ? 0.6 : 1}
+                        _hover={{
+                          borderColor:
+                            attendanceType === 'PRESENT'
+                              ? 'blue.400'
+                              : 'gray.300',
+                        }}
+                        _focus={{
+                          borderColor: 'blue.500',
+                          boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
+                        }}
+                      />
+                    </VStack>
+                  </GridItem>
+
+                  <GridItem>
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                        🕐 End Time
+                      </Text>
+                      <Input
+                        type="time"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        disabled={attendanceType !== 'PRESENT'}
+                        size="lg"
+                        borderRadius="lg"
+                        borderColor="gray.300"
+                        bg={attendanceType !== 'PRESENT' ? 'gray.100' : 'white'}
+                        opacity={attendanceType !== 'PRESENT' ? 0.6 : 1}
+                        _hover={{
+                          borderColor:
+                            attendanceType === 'PRESENT'
+                              ? 'blue.400'
+                              : 'gray.300',
+                        }}
+                        _focus={{
+                          borderColor: 'blue.500',
+                          boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
+                        }}
+                      />
+                    </VStack>
+                  </GridItem>
+                </Grid>
+
+                {/* Break Hours and Work Hours Row */}
+                <Grid
+                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                  gap={{ base: 4, md: 6 }}
+                >
+                  <GridItem>
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                        ☕ Break Hours
+                      </Text>
+                      <Input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        value={breakHours}
+                        onChange={(e) => setBreakHours(e.target.value)}
+                        disabled={attendanceType !== 'PRESENT'}
+                        size="lg"
+                        borderRadius="lg"
+                        borderColor="gray.300"
+                        bg={attendanceType !== 'PRESENT' ? 'gray.100' : 'white'}
+                        opacity={attendanceType !== 'PRESENT' ? 0.6 : 1}
+                        _hover={{
+                          borderColor:
+                            attendanceType === 'PRESENT'
+                              ? 'blue.400'
+                              : 'gray.300',
+                        }}
+                        _focus={{
+                          borderColor: 'blue.500',
+                          boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
+                        }}
+                      />
+                    </VStack>
+                  </GridItem>
+
+                  <GridItem>
+                    <VStack align="stretch" gap={2}>
+                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                        ⏱️ Work Hours (Calculated)
+                      </Text>
+                      <Box
+                        p={3}
+                        borderRadius="lg"
+                        bg="blue.50"
+                        border="2px solid"
+                        borderColor="blue.200"
+                        fontSize="lg"
+                        fontWeight="bold"
+                        color="blue.700"
+                        display="flex"
+                        alignItems="center"
+                        h="48px"
+                      >
+                        {workHours} hours
+                      </Box>
+                    </VStack>
+                  </GridItem>
+                </Grid>
+
+                {/* Work Description */}
+                <VStack align="stretch" gap={2}>
+                  <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                    📝 Work Description
+                  </Text>
+                  <Textarea
+                    value={workDescription}
+                    onChange={(e) => setWorkDescription(e.target.value)}
+                    placeholder="Describe your work activities for the day..."
+                    rows={4}
+                    resize="vertical"
+                    borderRadius="lg"
+                    borderColor="gray.300"
+                    _hover={{ borderColor: 'blue.400' }}
+                    _focus={{
+                      borderColor: 'blue.500',
+                      boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
+                    }}
+                  />
+                </VStack>
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  size="lg"
+                  loading={submitting}
+                  loadingText="Submitting attendance..."
+                  w={{ base: 'full', md: 'fit-content' }}
+                  px={8}
+                  py={6}
+                  fontSize="md"
+                  fontWeight="bold"
+                  borderRadius="xl"
+                  boxShadow="md"
+                  _hover={{
+                    transform: 'translateY(-2px)',
+                    boxShadow: 'lg',
+                  }}
+                  _active={{
+                    transform: 'translateY(0)',
+                    boxShadow: 'md',
+                  }}
+                  transition="all 0.2s"
+                  disabled={submitting}
+                >
+                  {submitting ? '⏳ Submitting...' : '✅ Submit Attendance'}
+                </Button>
+              </VStack>
+            </form>
+          </VStack>
+        </Box>
+      </DashboardLayout>
+    </FeatureErrorBoundary>
   );
 }
