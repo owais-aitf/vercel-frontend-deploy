@@ -82,24 +82,31 @@ export default function LoginPage() {
     try {
       await login(email, password);
 
-      const token = localStorage.getItem('authToken');
+      // Get role from context after login
       let role: string | null = null;
 
-      if (token) {
-        try {
-          const payload = token.split('.')[1];
-          const decoded = JSON.parse(atob(payload));
-          role = decoded?.role || null;
-        } catch {}
-      }
+      // Small delay to ensure context is updated
+      setTimeout(() => {
+        const token =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('authToken')
+            : null;
+        if (token) {
+          try {
+            const payload = token.split('.')[1];
+            const decoded = JSON.parse(atob(payload));
+            role = decoded?.role || null;
+          } catch {}
+        }
 
-      if (role === UserRole.ADMIN) {
-        router.push('/admin/dashboard');
-      } else if (role === UserRole.SALES) {
-        router.push('/sales/dashboard');
-      } else {
-        router.push('/engineer/dashboard');
-      }
+        if (role === UserRole.ADMIN) {
+          router.push('/admin/dashboard');
+        } else if (role === UserRole.SALES) {
+          router.push('/sales/dashboard');
+        } else {
+          router.push('/engineer/dashboard');
+        }
+      }, 100);
     } catch (err: unknown) {
       let errorMessage = 'Login failed. Please try again.';
 

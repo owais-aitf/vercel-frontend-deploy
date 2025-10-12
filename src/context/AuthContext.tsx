@@ -3,6 +3,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import api from '@/shared/lib/api-client';
 import jwtDecode from '@/utils/jwtDecode';
+import { useIsHydrated } from '@/hooks/useIsHydrated';
 
 type User = {
   id: string;
@@ -32,19 +33,21 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setTokenState] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const isHydrated = useIsHydrated();
 
   useEffect(() => {
-    const t =
-      typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+    if (!isHydrated) return;
+
+    const t = localStorage.getItem('authToken');
     if (t) {
       setTokenState(t);
       const decoded = jwtDecode(t);
       if (decoded) setUser(decoded);
     }
-  }, []);
+  }, [isHydrated]);
 
   const setToken = (t: string | null) => {
-    if (typeof window === 'undefined') return;
+    if (!isHydrated) return;
     if (t) {
       localStorage.setItem('authToken', t);
       setTokenState(t);
