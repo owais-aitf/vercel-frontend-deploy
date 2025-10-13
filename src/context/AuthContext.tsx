@@ -4,6 +4,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import api from '@/shared/lib/api-client';
 import jwtDecode from '@/utils/jwtDecode';
 import { useIsHydrated } from '@/hooks/useIsHydrated';
+import { clearAllCaches } from '@/shared/utils/cache';
 
 type User = {
   id: string;
@@ -84,6 +85,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
+    // Clear all cached data before logging out
+    clearAllCaches();
     setToken(null);
     setUser(null);
     // optionally call backend logout endpoint if available

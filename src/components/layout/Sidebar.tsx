@@ -35,15 +35,15 @@ export const Sidebar = ({
       try {
         const userData = JSON.parse(userDataString);
         const role = userData.role as UserRole;
-        
+
         // Format role to display name
         const roleMap: Record<UserRole, string> = {
-          'ENGINEER': 'Engineer',
-          'ADMIN': 'Admin',
-          'SALES': 'Sales',
-          'MANAGER': 'Manager',
+          ENGINEER: 'Engineer',
+          ADMIN: 'Admin',
+          SALES: 'Sales',
+          MANAGER: 'Manager',
         };
-        
+
         const roleDisplayName = roleMap[role] || 'User';
         setUserRole(roleDisplayName);
       } catch (error) {
@@ -167,7 +167,12 @@ export const Sidebar = ({
               {userInitials}
             </Box>
             <VStack align="start" gap={0} flex={1} overflow="hidden">
-              <Text fontSize="sm" fontWeight="semibold" color="gray.800" truncate>
+              <Text
+                fontSize="sm"
+                fontWeight="semibold"
+                color="gray.800"
+                truncate
+              >
                 {userName}
               </Text>
               <Text fontSize="xs" color="gray.500">
