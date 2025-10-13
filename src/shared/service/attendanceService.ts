@@ -82,4 +82,9 @@ export const attendanceService = {
     const response = await apiClient.delete(`/attendance/${id}`);
     return response.data;
   },
+  getAllProjects: async () => {
+    const response = await apiClient.get('/attendance/all-projects');
+    return response.data;
+  },
+
 };

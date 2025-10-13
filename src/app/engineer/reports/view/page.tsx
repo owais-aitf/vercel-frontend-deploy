@@ -234,7 +234,7 @@ export default function ViewAttendance() {
         <Card.Root p={{ base: 4, md: 6 }} mb={{ base: 4, md: 6 }}>
           <VStack align="stretch" gap={4}>
             <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
-              Filters
+              🔍 Filters
             </Text>
 
             <Grid
