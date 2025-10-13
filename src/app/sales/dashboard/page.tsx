@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import {
   Box,
   Grid,
@@ -40,13 +40,26 @@ export default function SalesDashboard() {
   const [engineers, setEngineers] = useState<EngineerWithAssignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const isFetching = useRef(false);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    // Only fetch once when component mounts and user is available
+    if (user && !hasFetched.current) {
+      hasFetched.current = true;
+      fetchDashboardData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const fetchDashboardData = async () => {
+    // Prevent multiple simultaneous fetches
+    if (isFetching.current) {
+      return;
+    }
+
     try {
+      isFetching.current = true;
       setLoading(true);
 
       // Fetch all data in parallel
@@ -76,6 +89,7 @@ export default function SalesDashboard() {
       });
     } finally {
       setLoading(false);
+      isFetching.current = false;
     }
   };
 

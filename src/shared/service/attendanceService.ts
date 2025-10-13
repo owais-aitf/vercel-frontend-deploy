@@ -86,5 +86,4 @@ export const attendanceService = {
     const response = await apiClient.get('/attendance/all-projects');
     return response.data;
   },
-
 };

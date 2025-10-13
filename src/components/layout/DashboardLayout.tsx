@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
@@ -26,6 +26,11 @@ export const DashboardLayout = ({
   notificationCount = 0,
 }: DashboardLayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <Flex h="100vh" overflow="hidden">
@@ -38,8 +43,8 @@ export const DashboardLayout = ({
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      {/* Overlay for Mobile Sidebar */}
-      {isSidebarOpen && (
+      {/* Overlay for Mobile Sidebar - Only render after mount to avoid hydration mismatch */}
+      {isMounted && isSidebarOpen && (
         <Box
           position="fixed"
           inset={0}

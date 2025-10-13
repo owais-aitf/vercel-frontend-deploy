@@ -64,10 +64,10 @@ export default function ViewAssignedProjects() {
     try {
       setLoading(true);
       setError('');
-      
+
       const response = await attendanceService.getAllProjects();
       const projectsData = response.data || [];
-      
+
       setProjects(projectsData);
       setFilteredProjects(projectsData);
     } catch (err: unknown) {
@@ -80,13 +80,13 @@ export default function ViewAssignedProjects() {
 
   const isProjectActive = (endDate: string | null) => {
     if (!endDate) return true;
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const projectEndDate = new Date(endDate);
     projectEndDate.setHours(0, 0, 0, 0);
-    
+
     return projectEndDate >= today;
   };
 
@@ -154,7 +154,7 @@ export default function ViewAssignedProjects() {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Ongoing';
-    
+
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -165,7 +165,7 @@ export default function ViewAssignedProjects() {
   const calculateDuration = (startDate: string, endDate: string | null) => {
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : new Date();
-    
+
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const months = Math.floor(diffDays / 30);
@@ -451,7 +451,9 @@ export default function ViewAssignedProjects() {
                           {project.project.projectName}
                         </Text>
                         <Badge
-                          colorScheme={getStatusBadgeColor(project.assignmentEnd)}
+                          colorScheme={getStatusBadgeColor(
+                            project.assignmentEnd
+                          )}
                           fontSize="xs"
                         >
                           {active ? 'Active' : 'Completed'}
