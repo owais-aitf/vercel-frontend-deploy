@@ -410,7 +410,8 @@ export default function ViewAttendance() {
             {/* Results Count */}
             <HStack justify="space-between">
               <Text fontSize="sm" color="gray.600">
-                Showing <strong>{filteredAttendance.length}</strong> total records
+                Showing <strong>{filteredAttendance.length}</strong> total
+                records
               </Text>
               <Button
                 onClick={fetchAttendance}
@@ -919,7 +920,11 @@ export default function ViewAttendance() {
                       border="1px solid"
                       borderColor="gray.200"
                     >
-                      <Text fontSize="sm" color="gray.700" whiteSpace="pre-wrap">
+                      <Text
+                        fontSize="sm"
+                        color="gray.700"
+                        whiteSpace="pre-wrap"
+                      >
                         {selectedRecord.workDescription ||
                           'No description provided'}
                       </Text>
@@ -939,9 +944,13 @@ export default function ViewAttendance() {
                       </Text>
                       <Text fontSize="sm">
                         {selectedRecord.submittedAt
-                          ? new Date(selectedRecord.submittedAt).toLocaleString()
+                          ? new Date(
+                              selectedRecord.submittedAt
+                            ).toLocaleString()
                           : selectedRecord.createdAt
-                            ? new Date(selectedRecord.createdAt).toLocaleString()
+                            ? new Date(
+                                selectedRecord.createdAt
+                              ).toLocaleString()
                             : 'N/A'}
                       </Text>
                     </Box>

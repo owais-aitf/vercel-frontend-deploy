@@ -255,7 +255,11 @@ export default function EngineerAttendance() {
                 >
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         📆 Date
                       </Text>
                       <Input
@@ -277,13 +281,19 @@ export default function EngineerAttendance() {
 
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         📁 Project
                       </Text>
                       <Box position="relative">
                         <select
                           value={projectAssignmentId}
-                          onChange={(e) => setProjectAssignmentId(e.target.value)}
+                          onChange={(e) =>
+                            setProjectAssignmentId(e.target.value)
+                          }
                           required
                           style={{
                             padding: '12px',
@@ -315,7 +325,10 @@ export default function EngineerAttendance() {
                         >
                           <option value="">📂 Select project</option>
                           {projects.map((project) => (
-                            <option key={project.id} value={project.assignmentId}>
+                            <option
+                              key={project.id}
+                              value={project.assignmentId}
+                            >
                               {project.projectName} - {project.clientName}
                             </option>
                           ))}
@@ -351,7 +364,11 @@ export default function EngineerAttendance() {
                 >
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         ✅ Attendance Type
                       </Text>
                       <Box position="relative">
@@ -392,7 +409,9 @@ export default function EngineerAttendance() {
                           <option value="PRESENT">✅ Present</option>
                           <option value="PAID_LEAVE">🏖️ Paid Leave</option>
                           <option value="ABSENT">❌ Absent</option>
-                          <option value="LEGAL_HOLIDAY">🎉 Legal Holiday</option>
+                          <option value="LEGAL_HOLIDAY">
+                            🎉 Legal Holiday
+                          </option>
                         </select>
                         <Box
                           position="absolute"
@@ -419,7 +438,11 @@ export default function EngineerAttendance() {
 
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         📍 Work Location
                       </Text>
                       <Box position="relative">
@@ -434,7 +457,9 @@ export default function EngineerAttendance() {
                             border: '2px solid #E2E8F0',
                             fontSize: '16px',
                             backgroundColor:
-                              attendanceType !== 'PRESENT' ? '#F7FAFC' : 'white',
+                              attendanceType !== 'PRESENT'
+                                ? '#F7FAFC'
+                                : 'white',
                             cursor:
                               attendanceType !== 'PRESENT'
                                 ? 'not-allowed'
@@ -499,7 +524,11 @@ export default function EngineerAttendance() {
                 >
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         🕐 Start Time
                       </Text>
                       <Input
@@ -528,7 +557,11 @@ export default function EngineerAttendance() {
 
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         🕐 End Time
                       </Text>
                       <Input
@@ -563,7 +596,11 @@ export default function EngineerAttendance() {
                 >
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         ☕ Break Hours
                       </Text>
                       <Input
@@ -594,7 +631,11 @@ export default function EngineerAttendance() {
 
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        color="gray.700"
+                      >
                         ⏱️ Work Hours (Calculated)
                       </Text>
                       <Box
