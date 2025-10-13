@@ -41,7 +41,17 @@ export default function UpdateAttendance() {
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>('');
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<
+    Array<{
+      id: string;
+      project: {
+        projectName: string;
+        client: {
+          name: string;
+        };
+      };
+    }>
+  >([]);
 
   // Filter states
   const [projectFilter, setProjectFilter] = useState('');
@@ -153,10 +163,11 @@ export default function UpdateAttendance() {
         []
       );
       setUserProjects(uniqueProjects);
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       toaster.create({
         title: 'Error',
-        description: error.response?.data?.message || 'Failed to load records',
+        description: err.response?.data?.message || 'Failed to load records',
         type: 'error',
       });
     } finally {
@@ -177,7 +188,7 @@ export default function UpdateAttendance() {
     setEditingRecord(record);
 
     // Get projectAssignmentId from the record
-    const projectAssignmentId = (record as any).projectAssignmentId || '';
+    const projectAssignmentId = record.projectAssignmentId || '';
 
     setFormData({
       workDate: record.workDate.split('T')[0],
@@ -205,10 +216,11 @@ export default function UpdateAttendance() {
       });
       setIsEditModalOpen(false);
       fetchAttendanceRecords();
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       toaster.create({
         title: 'Error',
-        description: error.response?.data?.message || 'Failed to update record',
+        description: err.response?.data?.message || 'Failed to update record',
         type: 'error',
       });
     } finally {
@@ -235,10 +247,11 @@ export default function UpdateAttendance() {
       });
       setIsDeleteDialogOpen(false);
       fetchAttendanceRecords();
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       toaster.create({
         title: 'Error',
-        description: error.response?.data?.message || 'Failed to delete record',
+        description: err.response?.data?.message || 'Failed to delete record',
         type: 'error',
       });
     } finally {

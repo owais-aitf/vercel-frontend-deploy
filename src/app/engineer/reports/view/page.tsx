@@ -797,12 +797,8 @@ export default function ViewAttendance() {
                             key={page}
                             size="sm"
                             onClick={() => paginate(page as number)}
-                            colorScheme={
-                              currentPage === page ? 'blue' : 'gray'
-                            }
-                            variant={
-                              currentPage === page ? 'solid' : 'outline'
-                            }
+                            colorScheme={currentPage === page ? 'blue' : 'gray'}
+                            variant={currentPage === page ? 'solid' : 'outline'}
                           >
                             {page}
                           </Button>
