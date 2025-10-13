@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Box, Text, VStack, HStack, Button } from '@chakra-ui/react';
 import { NavigationConfig } from '@/shared/config/navigation';
@@ -13,6 +14,9 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+// Define role type
+type UserRole = 'ENGINEER' | 'ADMIN' | 'SALES' | 'MANAGER';
+
 export const Sidebar = ({
   navigation,
   userName,
@@ -22,6 +26,31 @@ export const Sidebar = ({
 }: SidebarProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const [userRole, setUserRole] = useState('User');
+
+  useEffect(() => {
+    // Get user role from localStorage
+    const userDataString = localStorage.getItem('user');
+    if (userDataString) {
+      try {
+        const userData = JSON.parse(userDataString);
+        const role = userData.role as UserRole;
+        
+        // Format role to display name
+        const roleMap: Record<UserRole, string> = {
+          'ENGINEER': 'Engineer',
+          'ADMIN': 'Admin',
+          'SALES': 'Sales',
+          'MANAGER': 'Manager',
+        };
+        
+        const roleDisplayName = roleMap[role] || 'User';
+        setUserRole(roleDisplayName);
+      } catch (error) {
+        console.error('Error parsing user role:', error);
+      }
+    }
+  }, []);
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -29,7 +58,10 @@ export const Sidebar = ({
   };
 
   const handleLogout = () => {
+    // Clear all auth data
     localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     router.push('/login');
   };
 
@@ -70,7 +102,7 @@ export const Sidebar = ({
       </Box>
 
       {/* Navigation Items */}
-      <VStack gap={1} p={4} align="stretch">
+      <VStack gap={1} p={4} align="stretch" pb="180px">
         {navigation.items.map((item) => {
           const isActive = pathname === item.path;
           return (
@@ -117,28 +149,34 @@ export const Sidebar = ({
         bg="white"
       >
         <VStack gap={3} align="stretch">
-          <HStack gap={3}>
+          {/* User Profile Section */}
+          <HStack gap={3} p={3} bg="gray.50" borderRadius="md">
             <Box
-              w="32px"
-              h="32px"
+              w="40px"
+              h="40px"
               borderRadius="full"
               bg="blue.500"
               color="white"
               display="flex"
               alignItems="center"
               justifyContent="center"
-              fontSize="sm"
+              fontSize="md"
               fontWeight="bold"
+              flexShrink={0}
             >
               {userInitials}
             </Box>
-            <Box flex={1} overflow="hidden">
-              <Text fontSize="sm" fontWeight="medium" truncate>
+            <VStack align="start" gap={0} flex={1} overflow="hidden">
+              <Text fontSize="sm" fontWeight="semibold" color="gray.800" truncate>
                 {userName}
               </Text>
-            </Box>
+              <Text fontSize="xs" color="gray.500">
+                {userRole} Portal
+              </Text>
+            </VStack>
           </HStack>
 
+          {/* Logout Button */}
           <Button
             onClick={handleLogout}
             size="sm"

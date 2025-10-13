@@ -9,6 +9,7 @@ export interface AttendanceRecord {
   endTime: string | null;
   breakHours: string;
   workDescription: string | null;
+  projectAssignmentId: string;
   projectAssignment: {
     project: {
       projectName: string;

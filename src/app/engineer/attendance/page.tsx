@@ -18,6 +18,7 @@ import {
   attendanceService,
   AttendanceData,
 } from '@/shared/service/attendanceService';
+import { clearDashboardCache } from '@/shared/utils/cache';
 import { AuthContext } from '@/context/AuthContext';
 import { toaster } from '@/components/ui/toaster';
 
@@ -179,6 +180,9 @@ export default function EngineerAttendance() {
           type: 'success',
           duration: 2500,
         });
+
+        // Clear dashboard cache to force refresh on next visit
+        clearDashboardCache();
 
         // Reset form
         setWorkDescription('');
