@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useContext } from 'react';
 import {
   Box,
   Grid,
@@ -18,8 +18,10 @@ import {
   attendanceService,
   AttendanceRecord,
 } from '@/shared/service/attendanceService';
+import { AuthContext } from '@/context/AuthContext';
 
 export default function ViewAttendance() {
+  const { user } = useContext(AuthContext);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
   const [filteredAttendance, setFilteredAttendance] = useState<
     AttendanceRecord[]
@@ -218,8 +220,14 @@ export default function ViewAttendance() {
         navigation={engineerNavigation}
         pageTitle="Attendance Records"
         pageSubtitle="View your attendance history"
-        userName="John Doe"
-        userInitials="JD"
+        userName={user?.fullName || 'User'}
+        userInitials={
+          user?.fullName
+            ?.split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase() || 'U'
+        }
         notificationCount={3}
       >
         {/* Filters Section */}

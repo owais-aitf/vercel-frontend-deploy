@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
   Box,
   Grid,
@@ -20,6 +20,7 @@ import {
   AttendanceRecord,
 } from '@/shared/service/attendanceService';
 import { toaster } from '@/components/ui/toaster';
+import { AuthContext } from '@/context/AuthContext';
 
 interface FormData {
   workDate: string;
@@ -33,6 +34,7 @@ interface FormData {
 }
 
 export default function UpdateAttendance() {
+  const { user } = useContext(AuthContext);
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [filteredRecords, setFilteredRecords] = useState<AttendanceRecord[]>(
     []
@@ -337,8 +339,14 @@ export default function UpdateAttendance() {
         navigation={engineerNavigation}
         pageTitle="Update Daily Reports"
         pageSubtitle="Edit or delete your attendance records from current month"
-        userName="John Doe"
-        userInitials="JD"
+        userName={user?.fullName || 'User'}
+        userInitials={
+          user?.fullName
+            ?.split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase() || 'U'
+        }
         notificationCount={3}
       >
         {/* Info Card */}
