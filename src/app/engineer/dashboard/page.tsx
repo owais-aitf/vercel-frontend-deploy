@@ -10,6 +10,7 @@ import {
   DashboardStats,
   RecentActivity,
 } from '@/shared/service/dashboardService';
+import { getUserCacheKey, CACHE_KEYS } from '@/shared/utils/cache';
 
 // Cache duration: 2 minutes
 const CACHE_DURATION = 2 * 60 * 1000;
@@ -30,9 +31,17 @@ export default function EngineerDashboard() {
   const currentMonth = new Date().toISOString().slice(0, 7);
 
   useEffect(() => {
-    // Try to load cached data from localStorage first
-    const cachedData = localStorage.getItem('dashboardCache');
-    const cachedTime = localStorage.getItem('dashboardCacheTime');
+    // Don't try to load cache if no user is logged in
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+
+    // Try to load cached data from localStorage first (user-specific)
+    const cacheKey = getUserCacheKey(CACHE_KEYS.DASHBOARD, user.id);
+    const cacheTimeKey = getUserCacheKey(CACHE_KEYS.DASHBOARD_TIME, user.id);
+    const cachedData = localStorage.getItem(cacheKey);
+    const cachedTime = localStorage.getItem(cacheTimeKey);
 
     if (cachedData && cachedTime) {
       const timeSinceCache = Date.now() - parseInt(cachedTime);
@@ -52,7 +61,7 @@ export default function EngineerDashboard() {
     // No valid cache, fetch fresh data
     fetchDashboardData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user?.id]);
 
   const fetchDashboardData = async (forceRefresh = false) => {
     // Check if data is still fresh (within cache duration)
@@ -98,16 +107,23 @@ export default function EngineerDashboard() {
       // Update last fetch time
       lastFetchTime.current = Date.now();
 
-      // Cache data in localStorage
-      localStorage.setItem(
-        'dashboardCache',
-        JSON.stringify({
-          stats: statsResponse.data,
-          recentActivities: activitiesResponse.data || [],
-          activeProjectsCount: projectsResponse.data?.length || 0,
-        })
-      );
-      localStorage.setItem('dashboardCacheTime', Date.now().toString());
+      // Cache data in localStorage (user-specific)
+      if (user?.id) {
+        const cacheKey = getUserCacheKey(CACHE_KEYS.DASHBOARD, user.id);
+        const cacheTimeKey = getUserCacheKey(
+          CACHE_KEYS.DASHBOARD_TIME,
+          user.id
+        );
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify({
+            stats: statsResponse.data,
+            recentActivities: activitiesResponse.data || [],
+            activeProjectsCount: projectsResponse.data?.length || 0,
+          })
+        );
+        localStorage.setItem(cacheTimeKey, Date.now().toString());
+      }
     } catch (err) {
       const error = err as { response?: { data?: { error?: string } } };
       setError(error.response?.data?.error || 'Failed to load dashboard data');

@@ -182,7 +182,7 @@ export default function EngineerAttendance() {
         });
 
         // Clear dashboard cache to force refresh on next visit
-        clearDashboardCache();
+        clearDashboardCache(user?.id);
 
         // Reset form
         setWorkDescription('');

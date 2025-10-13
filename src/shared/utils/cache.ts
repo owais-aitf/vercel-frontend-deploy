@@ -8,12 +8,38 @@ export const CACHE_KEYS = {
 };
 
 /**
- * Clear dashboard cache to force refresh on next visit
+ * Get user-specific cache key
  */
-export const clearDashboardCache = () => {
+export const getUserCacheKey = (baseKey: string, userId?: string) => {
+  if (!userId) return baseKey;
+  return `${baseKey}_${userId}`;
+};
+
+/**
+ * Clear dashboard cache for a specific user or all users
+ */
+export const clearDashboardCache = (userId?: string) => {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(CACHE_KEYS.DASHBOARD);
-  localStorage.removeItem(CACHE_KEYS.DASHBOARD_TIME);
+
+  if (userId) {
+    // Clear specific user's cache
+    localStorage.removeItem(getUserCacheKey(CACHE_KEYS.DASHBOARD, userId));
+    localStorage.removeItem(getUserCacheKey(CACHE_KEYS.DASHBOARD_TIME, userId));
+  } else {
+    // Clear all dashboard caches (fallback for backward compatibility)
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (
+        key &&
+        (key.startsWith(CACHE_KEYS.DASHBOARD) ||
+          key.startsWith(CACHE_KEYS.DASHBOARD_TIME))
+      ) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+  }
 };
 
 /**
