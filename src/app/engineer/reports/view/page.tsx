@@ -410,7 +410,8 @@ export default function ViewAttendance() {
             {/* Results Count */}
             <HStack justify="space-between">
               <Text fontSize="sm" color="gray.600">
-                Showing <strong>{filteredAttendance.length}</strong> total records
+                Showing <strong>{filteredAttendance.length}</strong> total
+                records
               </Text>
               <Button
                 onClick={fetchAttendance}
@@ -695,17 +696,7 @@ export default function ViewAttendance() {
                         borderLeft="3px solid"
                         borderColor="blue.400"
                       >
-                        <Text
-                          fontSize="xs"
-                          color="gray.600"
-                          style={{
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
+                        <Text fontSize="xs" color="gray.600" lineClamp={2}>
                           {record.workDescription}
                         </Text>
                       </Box>
@@ -715,7 +706,7 @@ export default function ViewAttendance() {
               ))}
             </VStack>
 
-            {/* Pagination Controls */}
+            {/* Fixed Pagination Controls */}
             <Card.Root p={4} mt={6}>
               <HStack
                 justify="space-between"
@@ -739,34 +730,88 @@ export default function ViewAttendance() {
                     ← Previous
                   </Button>
 
+                  {/* Desktop Page Numbers - FIXED */}
                   <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1)
-                      .filter((page) => {
-                        return (
-                          page === 1 ||
-                          page === totalPages ||
-                          (page >= currentPage - 1 && page <= currentPage + 1)
-                        );
-                      })
-                      .map((page, index, array) => (
-                        <Box key={page}>
-                          {index > 0 && array[index - 1] !== page - 1 && (
-                            <Text px={2} color="gray.400">
+                    {(() => {
+                      const pageNumbers = [];
+                      const maxVisiblePages = 5;
+
+                      if (totalPages <= maxVisiblePages) {
+                        // Show all pages if total is less than max visible
+                        for (let i = 1; i <= totalPages; i++) {
+                          pageNumbers.push(i);
+                        }
+                      } else {
+                        // Always show first page
+                        pageNumbers.push(1);
+
+                        let startPage = Math.max(2, currentPage - 1);
+                        let endPage = Math.min(totalPages - 1, currentPage + 1);
+
+                        // Adjust if we're near the start
+                        if (currentPage <= 3) {
+                          startPage = 2;
+                          endPage = 4;
+                        }
+
+                        // Adjust if we're near the end
+                        if (currentPage >= totalPages - 2) {
+                          startPage = totalPages - 3;
+                          endPage = totalPages - 1;
+                        }
+
+                        // Add ellipsis after first page if needed
+                        if (startPage > 2) {
+                          pageNumbers.push('...');
+                        }
+
+                        // Add middle pages
+                        for (let i = startPage; i <= endPage; i++) {
+                          pageNumbers.push(i);
+                        }
+
+                        // Add ellipsis before last page if needed
+                        if (endPage < totalPages - 1) {
+                          pageNumbers.push('...');
+                        }
+
+                        // Always show last page
+                        pageNumbers.push(totalPages);
+                      }
+
+                      return pageNumbers.map((page, index) => {
+                        if (page === '...') {
+                          return (
+                            <Text
+                              key={`ellipsis-${index}`}
+                              px={2}
+                              color="gray.400"
+                            >
                               ...
                             </Text>
-                          )}
+                          );
+                        }
+
+                        return (
                           <Button
+                            key={page}
                             size="sm"
-                            onClick={() => paginate(page)}
-                            colorScheme={currentPage === page ? 'blue' : 'gray'}
-                            variant={currentPage === page ? 'solid' : 'outline'}
+                            onClick={() => paginate(page as number)}
+                            colorScheme={
+                              currentPage === page ? 'blue' : 'gray'
+                            }
+                            variant={
+                              currentPage === page ? 'solid' : 'outline'
+                            }
                           >
                             {page}
                           </Button>
-                        </Box>
-                      ))}
+                        );
+                      });
+                    })()}
                   </HStack>
 
+                  {/* Mobile Page Indicator */}
                   <Text
                     fontSize="sm"
                     fontWeight="medium"
@@ -919,7 +964,11 @@ export default function ViewAttendance() {
                       border="1px solid"
                       borderColor="gray.200"
                     >
-                      <Text fontSize="sm" color="gray.700" whiteSpace="pre-wrap">
+                      <Text
+                        fontSize="sm"
+                        color="gray.700"
+                        whiteSpace="pre-wrap"
+                      >
                         {selectedRecord.workDescription ||
                           'No description provided'}
                       </Text>
@@ -939,9 +988,13 @@ export default function ViewAttendance() {
                       </Text>
                       <Text fontSize="sm">
                         {selectedRecord.submittedAt
-                          ? new Date(selectedRecord.submittedAt).toLocaleString()
+                          ? new Date(
+                              selectedRecord.submittedAt
+                            ).toLocaleString()
                           : selectedRecord.createdAt
-                            ? new Date(selectedRecord.createdAt).toLocaleString()
+                            ? new Date(
+                                selectedRecord.createdAt
+                              ).toLocaleString()
                             : 'N/A'}
                       </Text>
                     </Box>
