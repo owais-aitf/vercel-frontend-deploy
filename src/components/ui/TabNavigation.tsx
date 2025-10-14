@@ -22,22 +22,14 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
   const defaultIndex = activeIndex !== -1 ? activeIndex : 0;
 
   return (
-    <Tabs.Root 
-      defaultValue={String(defaultIndex)} 
-      variant="line" 
-      mb={6}
-    >
+    <Tabs.Root defaultValue={String(defaultIndex)} variant="line" mb={6}>
       <Tabs.List>
         {tabs.map((tab, index) => {
           const isActive = pathname === tab.href;
-          
+
           return (
-            <Tabs.Trigger 
-              key={tab.href} 
-              value={String(index)}
-              asChild
-            >
-              <Link 
+            <Tabs.Trigger key={tab.href} value={String(index)} asChild>
+              <Link
                 href={tab.href}
                 style={{
                   display: 'flex',
@@ -48,7 +40,9 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
                   textDecoration: 'none',
                   color: isActive ? '#3182CE' : '#4A5568',
                   fontWeight: isActive ? '600' : '500',
-                  borderBottom: isActive ? '2px solid #3182CE' : '2px solid transparent',
+                  borderBottom: isActive
+                    ? '2px solid #3182CE'
+                    : '2px solid transparent',
                   transition: 'all 0.2s',
                 }}
               >

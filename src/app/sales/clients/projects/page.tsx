@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useContext,useRef } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import {
   Box,
   Grid,
@@ -59,8 +59,7 @@ export default function ClientProjectsPage() {
     'all' | 'active' | 'inactive'
   >('all');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getUserInitials = () => {
     if (!user?.fullName) return 'SR';
@@ -81,7 +80,7 @@ const dropdownRef = useRef<HTMLDivElement>(null);
       setLoadingClients(true);
       const response = await clientService.getClients();
       setClients(response.data || []);
-    } catch (err: any) {
+    } catch {
       setError('Failed to load clients');
     } finally {
       setLoadingClients(false);
@@ -89,17 +88,19 @@ const dropdownRef = useRef<HTMLDivElement>(null);
   };
 
   // Close dropdown when clicking outside
-useEffect(() => {
-  const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-      setIsDropdownOpen(false);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
 
-  document.addEventListener('mousedown', handleClickOutside);
-  return () => document.removeEventListener('mousedown', handleClickOutside);
-}, []);
-
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Fetch projects for selected client
   const handleClientSelect = async (clientId: string) => {
@@ -122,23 +123,37 @@ useEffect(() => {
       setSelectedClient(client);
 
       // ✅ Map backend field names to frontend field names
-      const mappedProjects = (client.projects || []).map((project: any) => ({
-        id: project.id || '',
-        name: project.name || project.projectName || 'Untitled Project',
-        description: project.description || '',
-        startDate: project.startDate || new Date().toISOString(),
-        endDate: project.endDate || null,
-        budget: typeof project.budget === 'number' ? project.budget : 0,
-        isActive: project.isActive !== undefined ? project.isActive : true,
-        clientId: project.clientId || clientId,
-        createdAt: project.createdAt || new Date().toISOString(),
-        updatedAt: project.updatedAt || new Date().toISOString(),
-      }));
+      const mappedProjects = (client.projects || []).map(
+        (project: {
+          id?: string;
+          name?: string;
+          projectName?: string;
+          description?: string;
+          startDate?: string;
+          endDate?: string | null;
+          budget?: number;
+          isActive?: boolean;
+          clientId?: string;
+          createdAt?: string;
+          updatedAt?: string;
+        }) => ({
+          id: project.id || '',
+          name: project.name || project.projectName || 'Untitled Project',
+          description: project.description || '',
+          startDate: project.startDate || new Date().toISOString(),
+          endDate: project.endDate || null,
+          budget: typeof project.budget === 'number' ? project.budget : 0,
+          isActive: project.isActive !== undefined ? project.isActive : true,
+          clientId: project.clientId || clientId,
+          createdAt: project.createdAt || new Date().toISOString(),
+          updatedAt: project.updatedAt || new Date().toISOString(),
+        })
+      );
 
       setClientProjects(mappedProjects);
       console.log('✅ Mapped projects:', mappedProjects);
-    } catch (err: any) {
-      console.error('❌ Error loading projects:', err);
+    } catch (error) {
+      console.error('❌ Error loading projects:', error);
       setError('Failed to load client projects');
     } finally {
       setLoadingProjects(false);
@@ -254,256 +269,288 @@ useEffect(() => {
         )}
 
         {/* Client Selection */}
-        <Card.Root p={6} mb={6} bg="gradient.to-br" bgGradient="linear(to-br, blue.50, white)">
-  <VStack align="stretch" gap={4}>
-    <HStack justify="space-between">
-      <VStack align="start" gap={1}>
-        <HStack gap={2}>
-          <Box
-            w="10px"
-            h="10px"
-            borderRadius="full"
-            bg="blue.500"
-            animation="pulse 2s ease-in-out infinite"
-          />
-          <Text fontSize="lg" fontWeight="bold" color="gray.800">
-            Select Client
-          </Text>
-        </HStack>
-        <Text fontSize="sm" color="gray.600">
-          Choose a client to view their projects
-        </Text>
-      </VStack>
-      {clients.length > 0 && (
-        <Badge colorScheme="blue" fontSize="xs" px={3} py={1} borderRadius="full">
-          {clients.length} Clients
-        </Badge>
-      )}
-    </HStack>
-
-    <Box position="relative" ref={dropdownRef}>
-      {/* Dropdown Button */}
-      <Button
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        disabled={loadingClients}
-        w="full"
-        h="auto"
-        p={4}
-        bg="white"
-        border="2px solid"
-        borderColor={isDropdownOpen ? 'blue.500' : 'gray.200'}
-        borderRadius="12px"
-        _hover={{ borderColor: 'blue.300', bg: 'gray.50' }}
-        _active={{ bg: 'blue.50' }}
-        boxShadow={isDropdownOpen ? '0 0 0 4px rgba(66, 153, 225, 0.15)' : 'sm'}
-        transition="all 0.3s ease"
-        textAlign="left"
-        justifyContent="space-between"
-      >
-        <HStack justify="space-between" w="full">
-          <HStack gap={2}>
-            {selectedClientId && (
-              <Box
-                w="8px"
-                h="8px"
-                borderRadius="full"
-                bg="green.500"
-                animation="pulse 2s infinite"
-              />
-            )}
-            <Text fontSize="15px" fontWeight="500" color={selectedClientId ? 'gray.800' : 'gray.500'}>
-              {selectedClientId
-                ? `${clients.find((c) => c.id === selectedClientId)?.isActive ? '●' : '○'} ${
-                    clients.find((c) => c.id === selectedClientId)?.name
-                  }`
-                : '-- Click to select a client --'}
-            </Text>
-          </HStack>
-          <Box
-            color={isDropdownOpen ? 'blue.500' : 'gray.400'}
-            transform={isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}
-            transition="all 0.3s ease"
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </Box>
-        </HStack>
-      </Button>
-
-      {/* Dropdown List */}
-      {isDropdownOpen && !loadingClients && (
-        <Box
-          position="absolute"
-          top="calc(100% + 8px)"
-          left={0}
-          right={0}
-          bg="white"
-          borderRadius="12px"
-          border="2px solid"
-          borderColor="blue.500"
-          boxShadow="0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
-          zIndex={1000}
-          maxH="280px"
-          overflowY="auto"
-          animation="slideDown 0.3s ease"
+        <Card.Root
+          p={6}
+          mb={6}
+          bg="gradient.to-br"
+          bgGradient="linear(to-br, blue.50, white)"
         >
-          {clients
-            .sort((a, b) => {
-              if (a.isActive === b.isActive) {
-                return a.name.localeCompare(b.name);
-              }
-              return a.isActive ? -1 : 1;
-            })
-            .map((client, index) => (
-              <Box
-                key={client.id}
+          <VStack align="stretch" gap={4}>
+            <HStack justify="space-between">
+              <VStack align="start" gap={1}>
+                <HStack gap={2}>
+                  <Box
+                    w="10px"
+                    h="10px"
+                    borderRadius="full"
+                    bg="blue.500"
+                    animation="pulse 2s ease-in-out infinite"
+                  />
+                  <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                    Select Client
+                  </Text>
+                </HStack>
+                <Text fontSize="sm" color="gray.600">
+                  Choose a client to view their projects
+                </Text>
+              </VStack>
+              {clients.length > 0 && (
+                <Badge
+                  colorScheme="blue"
+                  fontSize="xs"
+                  px={3}
+                  py={1}
+                  borderRadius="full"
+                >
+                  {clients.length} Clients
+                </Badge>
+              )}
+            </HStack>
+
+            <Box position="relative" ref={dropdownRef}>
+              {/* Dropdown Button */}
+              <Button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                disabled={loadingClients}
+                w="full"
+                h="auto"
                 p={4}
-                bg={index % 2 === 0 ? '#EBF8FF' : 'white'}
-                borderBottom={index < clients.length - 1 ? '1px solid #E2E8F0' : 'none'}
-                cursor="pointer"
-                transition="all 0.2s ease"
-                _hover={{
-                  bg: '#BEE3F8',
-                  paddingLeft: 6,
-                }}
-                onClick={() => {
-                  handleClientSelect(client.id);
-                  setIsDropdownOpen(false);
-                }}
+                bg="white"
+                border="2px solid"
+                borderColor={isDropdownOpen ? 'blue.500' : 'gray.200'}
+                borderRadius="12px"
+                _hover={{ borderColor: 'blue.300', bg: 'gray.50' }}
+                _active={{ bg: 'blue.50' }}
+                boxShadow={
+                  isDropdownOpen ? '0 0 0 4px rgba(66, 153, 225, 0.15)' : 'sm'
+                }
+                transition="all 0.3s ease"
+                textAlign="left"
+                justifyContent="space-between"
               >
-                <HStack justify="space-between">
+                <HStack justify="space-between" w="full">
                   <HStack gap={2}>
-                    <Text fontSize="15px" fontWeight={client.isActive ? '600' : '500'} color={client.isActive ? '#1A365D' : '#718096'}>
-                      {client.isActive ? '●' : '○'} {client.name}
+                    {selectedClientId && (
+                      <Box
+                        w="8px"
+                        h="8px"
+                        borderRadius="full"
+                        bg="green.500"
+                        animation="pulse 2s infinite"
+                      />
+                    )}
+                    <Text
+                      fontSize="15px"
+                      fontWeight="500"
+                      color={selectedClientId ? 'gray.800' : 'gray.500'}
+                    >
+                      {selectedClientId
+                        ? `${clients.find((c) => c.id === selectedClientId)?.isActive ? '●' : '○'} ${
+                            clients.find((c) => c.id === selectedClientId)?.name
+                          }`
+                        : '-- Click to select a client --'}
                     </Text>
                   </HStack>
-                  {!client.isActive && (
-                    <Badge colorScheme="red" fontSize="xs">
-                      Inactive
-                    </Badge>
-                  )}
+                  <Box
+                    color={isDropdownOpen ? 'blue.500' : 'gray.400'}
+                    transform={
+                      isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                    }
+                    transition="all 0.3s ease"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </Box>
                 </HStack>
-              </Box>
-            ))}
-        </Box>
-      )}
+              </Button>
 
-      {/* Scroll Indicator */}
-      {isDropdownOpen && clients.length > 5 && (
-        <HStack
-          position="absolute"
-          bottom="-10"
-          left="50%"
-          transform="translateX(-50%)"
-          gap={1}
-          bg="white"
-          px={3}
-          py={1}
-          borderRadius="full"
-          boxShadow="md"
-          fontSize="xs"
-          color="gray.500"
-          border="1px solid"
-          borderColor="gray.200"
-          zIndex={1001}
-        >
-          <Text fontWeight="medium">Scroll for more</Text>
-          <Box animation="bounce 1s infinite">↓</Box>
-        </HStack>
-      )}
-    </Box>
+              {/* Dropdown List */}
+              {isDropdownOpen && !loadingClients && (
+                <Box
+                  position="absolute"
+                  top="calc(100% + 8px)"
+                  left={0}
+                  right={0}
+                  bg="white"
+                  borderRadius="12px"
+                  border="2px solid"
+                  borderColor="blue.500"
+                  boxShadow="0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+                  zIndex={1000}
+                  maxH="280px"
+                  overflowY="auto"
+                  animation="slideDown 0.3s ease"
+                >
+                  {clients
+                    .sort((a, b) => {
+                      if (a.isActive === b.isActive) {
+                        return a.name.localeCompare(b.name);
+                      }
+                      return a.isActive ? -1 : 1;
+                    })
+                    .map((client, index) => (
+                      <Box
+                        key={client.id}
+                        p={4}
+                        bg={index % 2 === 0 ? '#EBF8FF' : 'white'}
+                        borderBottom={
+                          index < clients.length - 1
+                            ? '1px solid #E2E8F0'
+                            : 'none'
+                        }
+                        cursor="pointer"
+                        transition="all 0.2s ease"
+                        _hover={{
+                          bg: '#BEE3F8',
+                          paddingLeft: 6,
+                        }}
+                        onClick={() => {
+                          handleClientSelect(client.id);
+                          setIsDropdownOpen(false);
+                        }}
+                      >
+                        <HStack justify="space-between">
+                          <HStack gap={2}>
+                            <Text
+                              fontSize="15px"
+                              fontWeight={client.isActive ? '600' : '500'}
+                              color={client.isActive ? '#1A365D' : '#718096'}
+                            >
+                              {client.isActive ? '●' : '○'} {client.name}
+                            </Text>
+                          </HStack>
+                          {!client.isActive && (
+                            <Badge colorScheme="red" fontSize="xs">
+                              Inactive
+                            </Badge>
+                          )}
+                        </HStack>
+                      </Box>
+                    ))}
+                </Box>
+              )}
 
-    {/* Loading State */}
-    {loadingClients && (
-      <HStack justify="center" p={8}>
-        <HStack gap={2}>
-          <Box
-            w="12px"
-            h="12px"
-            borderRadius="full"
-            bg="blue.400"
-            animation="bounce 1s infinite"
-            style={{ animationDelay: '0s' }}
-          />
-          <Box
-            w="12px"
-            h="12px"
-            borderRadius="full"
-            bg="blue.500"
-            animation="bounce 1s infinite"
-            style={{ animationDelay: '0.2s' }}
-          />
-          <Box
-            w="12px"
-            h="12px"
-            borderRadius="full"
-            bg="blue.600"
-            animation="bounce 1s infinite"
-            style={{ animationDelay: '0.4s' }}
-          />
-        </HStack>
-      </HStack>
-    )}
+              {/* Scroll Indicator */}
+              {isDropdownOpen && clients.length > 5 && (
+                <HStack
+                  position="absolute"
+                  bottom="-10"
+                  left="50%"
+                  transform="translateX(-50%)"
+                  gap={1}
+                  bg="white"
+                  px={3}
+                  py={1}
+                  borderRadius="full"
+                  boxShadow="md"
+                  fontSize="xs"
+                  color="gray.500"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  zIndex={1001}
+                >
+                  <Text fontWeight="medium">Scroll for more</Text>
+                  <Box animation="bounce 1s infinite">↓</Box>
+                </HStack>
+              )}
+            </Box>
 
-    {/* Custom Styles */}
-    <style jsx>{`
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.5;
-        }
-      }
+            {/* Loading State */}
+            {loadingClients && (
+              <HStack justify="center" p={8}>
+                <HStack gap={2}>
+                  <Box
+                    w="12px"
+                    h="12px"
+                    borderRadius="full"
+                    bg="blue.400"
+                    animation="bounce 1s infinite"
+                    style={{ animationDelay: '0s' }}
+                  />
+                  <Box
+                    w="12px"
+                    h="12px"
+                    borderRadius="full"
+                    bg="blue.500"
+                    animation="bounce 1s infinite"
+                    style={{ animationDelay: '0.2s' }}
+                  />
+                  <Box
+                    w="12px"
+                    h="12px"
+                    borderRadius="full"
+                    bg="blue.600"
+                    animation="bounce 1s infinite"
+                    style={{ animationDelay: '0.4s' }}
+                  />
+                </HStack>
+              </HStack>
+            )}
 
-      @keyframes bounce {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-6px);
-        }
-      }
+            {/* Custom Styles */}
+            <style jsx>{`
+              @keyframes pulse {
+                0%,
+                100% {
+                  opacity: 1;
+                }
+                50% {
+                  opacity: 0.5;
+                }
+              }
 
-      @keyframes slideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+              @keyframes bounce {
+                0%,
+                100% {
+                  transform: translateY(0);
+                }
+                50% {
+                  transform: translateY(-6px);
+                }
+              }
 
-      /* Custom Scrollbar */
-      div::-webkit-scrollbar {
-        width: 8px;
-      }
+              @keyframes slideDown {
+                from {
+                  opacity: 0;
+                  transform: translateY(-10px);
+                }
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
 
-      div::-webkit-scrollbar-track {
-        background: #f7fafc;
-        border-radius: 0 12px 12px 0;
-      }
+              /* Custom Scrollbar */
+              div::-webkit-scrollbar {
+                width: 8px;
+              }
 
-      div::-webkit-scrollbar-thumb {
-        background: #cbd5e0;
-        border-radius: 10px;
-      }
+              div::-webkit-scrollbar-track {
+                background: #f7fafc;
+                border-radius: 0 12px 12px 0;
+              }
 
-      div::-webkit-scrollbar-thumb:hover {
-        background: #a0aec0;
-      }
-    `}</style>
-  </VStack>
-</Card.Root>
+              div::-webkit-scrollbar-thumb {
+                background: #cbd5e0;
+                border-radius: 10px;
+              }
+
+              div::-webkit-scrollbar-thumb:hover {
+                background: #a0aec0;
+              }
+            `}</style>
+          </VStack>
+        </Card.Root>
 
         {/* Client & Project Details */}
         {selectedClient && (

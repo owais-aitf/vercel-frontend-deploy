@@ -4,7 +4,6 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
-  Grid,
   Text,
   VStack,
   HStack,
@@ -95,8 +94,8 @@ export default function UpdateClientPage() {
       const response = await clientService.getClients();
       console.log('✅ Clients fetched:', response.data);
       setClients(response.data || []);
-    } catch (err: any) {
-      console.error('❌ Error fetching clients:', err);
+    } catch (error) {
+      console.error('❌ Error fetching clients:', error);
       setError('Failed to load clients');
       setClients([]);
     } finally {
@@ -140,11 +139,11 @@ export default function UpdateClientPage() {
       // Count active projects
       if (client.projects) {
         const activeCount = client.projects.filter(
-          (p: any) => p.isActive
+          (p: { isActive: boolean }) => p.isActive
         ).length;
         setActiveProjectsCount(activeCount);
       }
-    } catch (err: any) {
+    } catch {
       setError('Failed to load client details');
     } finally {
       setLoading(false);
@@ -229,7 +228,13 @@ export default function UpdateClientPage() {
       setError('');
       setSuccess(false);
 
-      const dataToSubmit: any = {
+      const dataToSubmit: {
+        name: string;
+        isActive: boolean;
+        contactEmail?: string;
+        contactPhone?: string;
+        address?: string;
+      } = {
         name: formData.name.trim(),
         isActive: formData.isActive,
       };
@@ -264,8 +269,9 @@ export default function UpdateClientPage() {
           router.push('/sales/clients');
         }, 2000);
       }
-    } catch (err: any) {
-      console.error('❌ Error updating client:', err);
+    } catch (error) {
+      console.error('❌ Error updating client:', error);
+      const err = error as { response?: { data?: { message?: string } } };
       setError(
         err.response?.data?.message ||
           'Failed to update client. Please try again.'

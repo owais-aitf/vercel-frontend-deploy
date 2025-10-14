@@ -4,7 +4,6 @@ import { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
-  Grid,
   Text,
   VStack,
   HStack,
@@ -129,7 +128,13 @@ export default function AddClientPage() {
       setSuccess(false);
 
       // Prepare data for API - ALWAYS include ALL fields
-      const dataToSubmit: any = {
+      const dataToSubmit: {
+        name: string;
+        isActive: boolean;
+        contactEmail?: string;
+        contactPhone?: string;
+        address?: string;
+      } = {
         name: formData.name.trim(),
         isActive: formData.isActive, // ✅ This is the key - always send it
       };
@@ -172,12 +177,16 @@ export default function AddClientPage() {
           router.push('/sales/clients');
         }, 2000);
       }
-    } catch (err: any) {
-      console.error('❌ Error creating client:', err);
+    } catch (error) {
+      console.error('❌ Error creating client:', error);
 
       // Extract the actual error message from the response
       let errorMessage = 'Failed to create client. Please try again.';
 
+      const err = error as {
+        response?: { data?: { error?: string; message?: string } };
+        message?: string;
+      };
       if (err.response?.data?.error) {
         errorMessage = err.response.data.error;
       } else if (err.response?.data?.message) {
@@ -415,7 +424,7 @@ export default function AddClientPage() {
                         • Use a different email address for this client
                       </Text>
                       <Text fontSize="xs" color="blue.700">
-                        • Or leave the email field empty (it's optional)
+                        • Or leave the email field empty (it&apos;s optional)
                       </Text>
                       <Text fontSize="xs" color="blue.700">
                         • You can add the email later when updating the client
@@ -457,7 +466,7 @@ export default function AddClientPage() {
                   w="full"
                   size="lg"
                 >
-                  Got it, I'll fix this
+                  Got it, I&apos;ll fix this
                 </Button>
               </VStack>
             </Box>

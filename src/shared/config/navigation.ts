@@ -33,6 +33,7 @@ export const salesNavigation: NavigationConfig = {
     { label: 'Projects', icon: '📁', path: '/sales/projects' },
     { label: 'Clients', icon: '👥', path: '/sales/clients' },
     { label: 'Engineers', icon: '👨‍💼', path: '/sales/engineers' },
+    { label: 'Assignments', icon: '🔗', path: '/sales/assignments' },
     { label: 'Reports', icon: '📈', path: '/sales/reports' },
   ],
 };

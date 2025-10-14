@@ -34,11 +34,13 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'active' | 'inactive'
+  >('all');
+
   // Modal state
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [clientsPerPage] = useState(9); // 3x3 grid
@@ -65,8 +67,13 @@ export default function ClientsPage() {
       const clientsData = response.data || [];
       setClients(clientsData);
       setFilteredClients(clientsData);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch clients');
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error && 'response' in error
+          ? (error as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
+          : undefined;
+      setError(errorMessage || 'Failed to fetch clients');
     } finally {
       setLoading(false);
     }
@@ -86,7 +93,9 @@ export default function ClientsPage() {
       filtered = filtered.filter(
         (client) =>
           client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          client.contactEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          client.contactEmail
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           client.contactPhone?.includes(searchTerm)
       );
     }
@@ -98,7 +107,10 @@ export default function ClientsPage() {
   // Pagination calculations
   const indexOfLastClient = currentPage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentClients = filteredClients.slice(indexOfFirstClient, indexOfLastClient);
+  const currentClients = filteredClients.slice(
+    indexOfFirstClient,
+    indexOfLastClient
+  );
   const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
 
   const paginate = (pageNumber: number) => {
@@ -141,7 +153,11 @@ export default function ClientsPage() {
         <TabNavigation tabs={clientTabs} />
 
         {/* Stats Cards */}
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={4} mb={6}>
+        <Grid
+          templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+          gap={4}
+          mb={6}
+        >
           <Card.Root p={4} bg="blue.50">
             <VStack align="start" gap={2}>
               <Text fontSize="sm" color="blue.700" fontWeight="medium">
@@ -183,7 +199,10 @@ export default function ClientsPage() {
               🔍 Filters
             </Text>
 
-            <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+            <Grid
+              templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+              gap={4}
+            >
               {/* Search */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
@@ -206,7 +225,11 @@ export default function ClientsPage() {
                 <Box position="relative">
                   <select
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as any)}
+                    onChange={(e) =>
+                      setStatusFilter(
+                        e.target.value as 'all' | 'active' | 'inactive'
+                      )
+                    }
                     style={{
                       width: '100%',
                       padding: '11px 40px 11px 14px',
@@ -292,7 +315,11 @@ export default function ClientsPage() {
         {!loading && !error && currentClients.length > 0 && (
           <>
             <Grid
-              templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }}
+              templateColumns={{
+                base: '1fr',
+                md: 'repeat(2, 1fr)',
+                lg: 'repeat(3, 1fr)',
+              }}
               gap={6}
               mb={6}
             >
@@ -310,7 +337,10 @@ export default function ClientsPage() {
                       <Text fontSize="lg" fontWeight="bold" flex={1}>
                         {client.name}
                       </Text>
-                      <Badge colorScheme={client.isActive ? 'green' : 'red'} fontSize="xs">
+                      <Badge
+                        colorScheme={client.isActive ? 'green' : 'red'}
+                        fontSize="xs"
+                      >
                         {client.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </HStack>
@@ -342,9 +372,9 @@ export default function ClientsPage() {
                         <Text fontSize="sm" color="gray.500">
                           📍
                         </Text>
-                        <Text 
-                          fontSize="sm" 
-                          color="gray.700" 
+                        <Text
+                          fontSize="sm"
+                          color="gray.700"
                           lineClamp={2}
                           flex={1}
                         >
@@ -353,7 +383,13 @@ export default function ClientsPage() {
                       </HStack>
                     )}
 
-                    <Button size="sm" colorScheme="blue" variant="outline" w="full" mt={2}>
+                    <Button
+                      size="sm"
+                      colorScheme="blue"
+                      variant="outline"
+                      w="full"
+                      mt={2}
+                    >
                       View Details
                     </Button>
                   </VStack>
@@ -363,7 +399,12 @@ export default function ClientsPage() {
 
             {/* Pagination */}
             <Card.Root p={4}>
-              <HStack justify="space-between" align="center" flexWrap="wrap" gap={4}>
+              <HStack
+                justify="space-between"
+                align="center"
+                flexWrap="wrap"
+                gap={4}
+              >
                 <Text fontSize="sm" color="gray.600">
                   Showing {indexOfFirstClient + 1} to{' '}
                   {Math.min(indexOfLastClient, filteredClients.length)} of{' '}
@@ -422,7 +463,11 @@ export default function ClientsPage() {
                       return pageNumbers.map((page, index) => {
                         if (page === '...') {
                           return (
-                            <Text key={`ellipsis-${index}`} px={2} color="gray.400">
+                            <Text
+                              key={`ellipsis-${index}`}
+                              px={2}
+                              color="gray.400"
+                            >
                               ...
                             </Text>
                           );
@@ -494,12 +539,20 @@ export default function ClientsPage() {
             >
               <VStack align="stretch" gap={4}>
                 {/* Header */}
-                <HStack justify="space-between" borderBottom="1px solid" borderColor="gray.200" pb={4}>
+                <HStack
+                  justify="space-between"
+                  borderBottom="1px solid"
+                  borderColor="gray.200"
+                  pb={4}
+                >
                   <VStack align="start" gap={1}>
                     <Text fontSize="xl" fontWeight="bold">
                       Client Details
                     </Text>
-                    <Badge colorScheme={selectedClient.isActive ? 'green' : 'red'} fontSize="sm">
+                    <Badge
+                      colorScheme={selectedClient.isActive ? 'green' : 'red'}
+                      fontSize="sm"
+                    >
                       {selectedClient.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </VStack>
@@ -581,13 +634,17 @@ export default function ClientsPage() {
                         <Text fontSize="xs" color="gray.500" mb={1}>
                           Created At
                         </Text>
-                        <Text fontSize="sm">{formatDate(selectedClient.createdAt)}</Text>
+                        <Text fontSize="sm">
+                          {formatDate(selectedClient.createdAt)}
+                        </Text>
                       </Box>
                       <Box>
                         <Text fontSize="xs" color="gray.500" mb={1}>
                           Last Updated
                         </Text>
-                        <Text fontSize="sm">{formatDate(selectedClient.updatedAt)}</Text>
+                        <Text fontSize="sm">
+                          {formatDate(selectedClient.updatedAt)}
+                        </Text>
                       </Box>
                     </Grid>
                   </Box>
@@ -604,7 +661,12 @@ export default function ClientsPage() {
                 </VStack>
 
                 {/* Footer */}
-                <HStack justify="flex-end" pt={4} borderTop="1px solid" borderColor="gray.200">
+                <HStack
+                  justify="flex-end"
+                  pt={4}
+                  borderTop="1px solid"
+                  borderColor="gray.200"
+                >
                   <Button onClick={closeClientModal} colorScheme="blue">
                     Close
                   </Button>
