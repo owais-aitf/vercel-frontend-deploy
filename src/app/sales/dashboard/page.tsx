@@ -19,8 +19,6 @@ import { AuthContext } from '@/context/AuthContext';
 import {
   salesService,
   DashboardStats,
-  RecentProject,
-  RecentAssignment,
   PendingReport,
   EngineerWithAssignment,
 } from '@/shared/service/salesService';
@@ -49,7 +47,6 @@ export default function SalesDashboard() {
       hasFetched.current = true;
       fetchDashboardData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchDashboardData = async () => {
@@ -98,6 +95,7 @@ export default function SalesDashboard() {
     engineerName: string
   ) => {
     // TODO: Implement reminder API endpoint in backend
+    console.log('Send reminder to:', engineerId, engineerName);
     toaster.create({
       title: 'Coming Soon',
       description: 'Reminder feature will be available soon',

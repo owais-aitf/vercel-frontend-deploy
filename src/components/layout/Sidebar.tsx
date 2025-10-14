@@ -104,7 +104,9 @@ export const Sidebar = ({
       {/* Navigation Items */}
       <VStack gap={1} p={4} align="stretch" pb="180px">
         {navigation.items.map((item) => {
-          const isActive = pathname === item.path;
+          // Check if current path matches or starts with the item path
+          const isActive =
+            pathname === item.path || pathname?.startsWith(`${item.path}/`);
           return (
             <Box
               key={item.path}

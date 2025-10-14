@@ -57,7 +57,6 @@ export default function ViewAssignedProjects() {
   // Fetch projects data
   useEffect(() => {
     fetchProjects();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchProjects = async () => {
