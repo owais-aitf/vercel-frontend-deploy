@@ -184,11 +184,14 @@ export default function UpdateEngineerPage() {
         {/* Tab Navigation */}
         <TabNavigation tabs={engineerTabs} />
 
-        <Grid templateColumns={{ base: '1fr', lg: '1fr 2fr' }} gap={6}>
+        <Grid
+          templateColumns={{ base: '1fr', lg: '1fr 2fr' }}
+          gap={{ base: 4, md: 6 }}
+        >
           {/* Engineer Selection List */}
-          <Card.Root p={5}>
+          <Card.Root p={{ base: 4, md: 5 }}>
             <VStack align="stretch" gap={4}>
-              <Text fontSize="lg" fontWeight="bold">
+              <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
                 📋 Select Engineer
               </Text>
 
@@ -205,7 +208,7 @@ export default function UpdateEngineerPage() {
               <VStack
                 align="stretch"
                 gap={2}
-                maxH="600px"
+                maxH={{ base: '400px', md: '600px' }}
                 overflowY="auto"
                 pr={2}
               >
@@ -235,7 +238,7 @@ export default function UpdateEngineerPage() {
                   filteredEngineers.map((engineer) => (
                     <Card.Root
                       key={engineer.id}
-                      p={3}
+                      p={{ base: 2, md: 3 }}
                       cursor="pointer"
                       onClick={() => handleSelectEngineer(engineer)}
                       bg={
@@ -275,14 +278,18 @@ export default function UpdateEngineerPage() {
           </Card.Root>
 
           {/* Update Form */}
-          <Card.Root p={6}>
+          <Card.Root p={{ base: 4, md: 6 }}>
             {!selectedEngineer ? (
-              <VStack gap={4} py={20}>
-                <Text fontSize="4xl">👈</Text>
-                <Text fontSize="lg" fontWeight="bold">
+              <VStack gap={4} py={{ base: 10, md: 20 }}>
+                <Text fontSize={{ base: '3xl', md: '4xl' }}>👈</Text>
+                <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
                   Select an Engineer
                 </Text>
-                <Text fontSize="sm" color="gray.600" textAlign="center">
+                <Text
+                  fontSize={{ base: 'xs', md: 'sm' }}
+                  color="gray.600"
+                  textAlign="center"
+                >
                   Choose an engineer from the list to view and update their
                   information
                 </Text>
@@ -290,19 +297,24 @@ export default function UpdateEngineerPage() {
             ) : (
               <VStack align="stretch" gap={6}>
                 <Box>
-                  <HStack justify="space-between" mb={2}>
-                    <Text fontSize="xl" fontWeight="bold">
+                  <HStack
+                    justify="space-between"
+                    mb={2}
+                    flexWrap="wrap"
+                    gap={2}
+                  >
+                    <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="bold">
                       ✏️ Update Engineer
                     </Text>
                     <Button
-                      size="sm"
+                      size={{ base: 'xs', md: 'sm' }}
                       variant="ghost"
                       onClick={() => setSelectedEngineer(null)}
                     >
                       ✕ Clear
                     </Button>
                   </HStack>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize={{ base: 'xs', md: 'sm' }} color="gray.600">
                     Update engineer information below
                   </Text>
                 </Box>
@@ -418,14 +430,20 @@ export default function UpdateEngineerPage() {
                     </Box>
 
                     {/* Action Buttons */}
-                    <HStack gap={3} pt={2}>
+                    <HStack
+                      gap={{ base: 2, md: 3 }}
+                      pt={2}
+                      flexWrap={{ base: 'wrap', sm: 'nowrap' }}
+                    >
                       <Button
                         type="submit"
                         colorScheme="blue"
-                        size="lg"
+                        size={{ base: 'md', md: 'lg' }}
+                        fontSize={{ base: 'sm', md: 'md' }}
                         loading={updating}
                         loadingText="Updating..."
                         flex={1}
+                        minW={{ base: 'full', sm: 'auto' }}
                       >
                         💾 Update Engineer
                       </Button>
@@ -433,13 +451,15 @@ export default function UpdateEngineerPage() {
                         type="button"
                         colorScheme="red"
                         variant="outline"
-                        size="lg"
+                        size={{ base: 'md', md: 'lg' }}
+                        fontSize={{ base: 'sm', md: 'md' }}
                         onClick={() =>
                           handleDelete(
                             selectedEngineer.id,
                             selectedEngineer.fullName
                           )
                         }
+                        minW={{ base: 'full', sm: 'auto' }}
                       >
                         🗑️ Delete
                       </Button>

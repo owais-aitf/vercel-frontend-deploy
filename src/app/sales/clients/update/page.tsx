@@ -477,100 +477,108 @@ export default function UpdateClientPage() {
 
         {/* Warning Popup for Deactivation */}
         {showDeactivateWarning && (
-  <>
-    <Box
-      position="fixed"
-      inset={0}
-      bg="blackAlpha.400"
-      zIndex={999}
-      onClick={() => setShowDeactivateWarning(false)}
-    />
-    <Box
-      position="fixed"
-      top={{ base: '20px', md: '50%' }}
-      left={{ base: '20px', md: '50%' }}
-      right={{ base: '20px', md: 'auto' }}
-      transform={{ base: 'none', md: 'translate(-50%, -50%)' }}
-      bg="white"
-      borderRadius={{ base: 'lg', md: 'xl' }}
-      shadow="2xl"
-      zIndex={1000}
-      p={{ base: 6, md: 8 }}
-      w={{ base: 'auto', md: '450px' }}
-      maxW="90%"
-      maxH={{ base: 'calc(100vh - 40px)', md: 'auto' }}
-      overflowY="auto"
-    >
-      <VStack gap={{ base: 3, md: 4 }} align="stretch">
-        <HStack gap={{ base: 2, md: 3 }} align="start">
-          <Box
-            w={{ base: '40px', md: '50px' }}
-            h={{ base: '40px', md: '50px' }}
-            borderRadius="full"
-            bg="orange.100"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            flexShrink={0}
-          >
-            <Text fontSize={{ base: 'xl', md: '2xl' }}>⚠️</Text>
-          </Box>
-          <VStack align="start" gap={1} flex={1}>
-            <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold" lineHeight="short">
-              Cannot Deactivate Client
-            </Text>
-            <Text fontSize={{ base: 'xs', md: 'sm' }} color="gray.600">
-              This client has {activeProjectsCount} active{' '}
-              {activeProjectsCount === 1 ? 'project' : 'projects'}
-            </Text>
-          </VStack>
-        </HStack>
+          <>
+            <Box
+              position="fixed"
+              inset={0}
+              bg="blackAlpha.400"
+              zIndex={999}
+              onClick={() => setShowDeactivateWarning(false)}
+            />
+            <Box
+              position="fixed"
+              top={{ base: '20px', md: '50%' }}
+              left={{ base: '20px', md: '50%' }}
+              right={{ base: '20px', md: 'auto' }}
+              transform={{ base: 'none', md: 'translate(-50%, -50%)' }}
+              bg="white"
+              borderRadius={{ base: 'lg', md: 'xl' }}
+              shadow="2xl"
+              zIndex={1000}
+              p={{ base: 6, md: 8 }}
+              w={{ base: 'auto', md: '450px' }}
+              maxW="90%"
+              maxH={{ base: 'calc(100vh - 40px)', md: 'auto' }}
+              overflowY="auto"
+            >
+              <VStack gap={{ base: 3, md: 4 }} align="stretch">
+                <HStack gap={{ base: 2, md: 3 }} align="start">
+                  <Box
+                    w={{ base: '40px', md: '50px' }}
+                    h={{ base: '40px', md: '50px' }}
+                    borderRadius="full"
+                    bg="orange.100"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    flexShrink={0}
+                  >
+                    <Text fontSize={{ base: 'xl', md: '2xl' }}>⚠️</Text>
+                  </Box>
+                  <VStack align="start" gap={1} flex={1}>
+                    <Text
+                      fontSize={{ base: 'md', md: 'lg' }}
+                      fontWeight="bold"
+                      lineHeight="short"
+                    >
+                      Cannot Deactivate Client
+                    </Text>
+                    <Text fontSize={{ base: 'xs', md: 'sm' }} color="gray.600">
+                      This client has {activeProjectsCount} active{' '}
+                      {activeProjectsCount === 1 ? 'project' : 'projects'}
+                    </Text>
+                  </VStack>
+                </HStack>
 
-        <Box
-          p={{ base: 3, md: 4 }}
-          bg="orange.50"
-          borderRadius="md"
-          borderLeft="4px solid"
-          borderColor="orange.400"
-        >
-          <Text fontSize={{ base: 'xs', md: 'sm' }} color="gray.700" lineHeight="base">
-            Please complete or deactivate all active projects before
-            setting this client to inactive.
-          </Text>
-        </Box>
+                <Box
+                  p={{ base: 3, md: 4 }}
+                  bg="orange.50"
+                  borderRadius="md"
+                  borderLeft="4px solid"
+                  borderColor="orange.400"
+                >
+                  <Text
+                    fontSize={{ base: 'xs', md: 'sm' }}
+                    color="gray.700"
+                    lineHeight="base"
+                  >
+                    Please complete or deactivate all active projects before
+                    setting this client to inactive.
+                  </Text>
+                </Box>
 
-        <Button
-          colorScheme="blue"
-          onClick={() => setShowDeactivateWarning(false)}
-          w="full"
-          size={{ base: 'md', md: 'lg' }}
-        >
-          Got it
-        </Button>
-      </VStack>
+                <Button
+                  colorScheme="blue"
+                  onClick={() => setShowDeactivateWarning(false)}
+                  w="full"
+                  size={{ base: 'md', md: 'lg' }}
+                >
+                  Got it
+                </Button>
+              </VStack>
 
-      {/* Custom scrollbar for mobile */}
-      <style jsx>{`
-        div::-webkit-scrollbar {
-          width: 4px;
-        }
+              {/* Custom scrollbar for mobile */}
+              <style jsx>{`
+                div::-webkit-scrollbar {
+                  width: 4px;
+                }
 
-        div::-webkit-scrollbar-track {
-          background: #f7fafc;
-        }
+                div::-webkit-scrollbar-track {
+                  background: #f7fafc;
+                }
 
-        div::-webkit-scrollbar-thumb {
-          background: #cbd5e0;
-          border-radius: 10px;
-        }
+                div::-webkit-scrollbar-thumb {
+                  background: #cbd5e0;
+                  border-radius: 10px;
+                }
 
-        div::-webkit-scrollbar-thumb:hover {
-          background: #a0aec0;
-        }
-      `}</style>
-    </Box>
-  </>
-)}
+                div::-webkit-scrollbar-thumb:hover {
+                  background: #a0aec0;
+                }
+              `}</style>
+            </Box>
+          </>
+        )}
 
         {/* Info Card */}
         {/* <Card.Root p={6} mt={6} mb={6} bg="blue.50">

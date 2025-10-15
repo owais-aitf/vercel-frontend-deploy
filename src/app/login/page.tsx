@@ -173,7 +173,7 @@ export default function LoginPage() {
           radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 0%, transparent 50%),
           radial-gradient(circle at 50% 10%, rgba(255,255,255,0.08) 0%, transparent 40%)
         `,
-        pointerEvents: 'none'
+        pointerEvents: 'none',
       }}
       _after={{
         content: '""',
@@ -187,7 +187,7 @@ export default function LoginPage() {
           linear-gradient(-45deg, transparent 30%, rgba(255,255,255,0.02) 50%, transparent 70%)
         `,
         animation: 'float 20s ease-in-out infinite',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
       }}
     >
       {/* Floating geometric shapes */}
@@ -294,10 +294,11 @@ export default function LoginPage() {
             bottom: 0,
             borderRadius: '2xl',
             padding: '1px',
-            background: 'linear-gradient(135deg, rgba(66,153,225,0.3), rgba(255,255,255,0.1), rgba(66,153,225,0.3))',
+            background:
+              'linear-gradient(135deg, rgba(66,153,225,0.3), rgba(255,255,255,0.1), rgba(66,153,225,0.3))',
             mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
             maskComposite: 'xor',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
           }}
         >
           <VStack gap={6} align="stretch">
@@ -322,7 +323,12 @@ export default function LoginPage() {
                   priority
                 />
               </Box>
-              <Heading size="2xl" textAlign="center" color="blue.700" fontWeight="bold">
+              <Heading
+                size="2xl"
+                textAlign="center"
+                color="blue.700"
+                fontWeight="bold"
+              >
                 Welcome Back
               </Heading>
               <Text color="gray.500" textAlign="center" fontSize="lg">
@@ -335,7 +341,12 @@ export default function LoginPage() {
               <VStack gap={4}>
                 {/* Email Field */}
                 <Box w="full">
-                  <Text mb={3} fontWeight="semibold" fontSize="sm" color="gray.700">
+                  <Text
+                    mb={3}
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="gray.700"
+                  >
                     Email Address
                   </Text>
                   <Box position="relative">
@@ -371,7 +382,7 @@ export default function LoginPage() {
                       fontSize="md"
                       _hover={{
                         borderColor: emailError ? 'red.500' : 'blue.300',
-                        bg: 'white'
+                        bg: 'white',
                       }}
                       _focus={{
                         borderColor: 'blue.500',
@@ -383,7 +394,12 @@ export default function LoginPage() {
                     />
                   </Box>
                   {emailError && (
-                    <Text color="red.500" fontSize="sm" mt={1} fontWeight="medium">
+                    <Text
+                      color="red.500"
+                      fontSize="sm"
+                      mt={1}
+                      fontWeight="medium"
+                    >
                       {emailError}
                     </Text>
                   )}
@@ -391,7 +407,12 @@ export default function LoginPage() {
 
                 {/* Password Field */}
                 <Box w="full">
-                  <Text mb={3} fontWeight="semibold" fontSize="sm" color="gray.700">
+                  <Text
+                    mb={3}
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="gray.700"
+                  >
                     Password
                   </Text>
                   <Box position="relative">
@@ -428,7 +449,7 @@ export default function LoginPage() {
                       fontSize="md"
                       _hover={{
                         borderColor: passwordError ? 'red.500' : 'blue.300',
-                        bg: 'white'
+                        bg: 'white',
                       }}
                       _focus={{
                         borderColor: 'blue.500',
@@ -459,17 +480,22 @@ export default function LoginPage() {
                       transition="all 0.2s ease"
                       _hover={{
                         color: 'blue.500',
-                        bg: 'blue.50'
+                        bg: 'blue.50',
                       }}
                       _active={{
-                        transform: 'translateY(-50%) scale(0.95)'
+                        transform: 'translateY(-50%) scale(0.95)',
                       }}
                     >
                       {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                     </Box>
                   </Box>
                   {passwordError && (
-                    <Text color="red.500" fontSize="sm" mt={1} fontWeight="medium">
+                    <Text
+                      color="red.500"
+                      fontSize="sm"
+                      mt={1}
+                      fontWeight="medium"
+                    >
                       {passwordError}
                     </Text>
                   )}
@@ -505,20 +531,19 @@ export default function LoginPage() {
                   color="white"
                   fontWeight="semibold"
                   borderRadius="lg"
-
                   _hover={{
                     bg: loading ? 'blue.600' : 'blue.700',
                     transform: loading ? 'none' : 'translateY(-1px)',
-                    shadow: loading ? 'md' : 'lg'
+                    shadow: loading ? 'md' : 'lg',
                   }}
                   _active={{
                     transform: loading ? 'none' : 'translateY(0)',
-                    shadow: 'md'
+                    shadow: 'md',
                   }}
                   _loading={{
                     bg: 'blue.600',
                     _hover: { bg: 'blue.600' },
-                    cursor: 'not-allowed'
+                    cursor: 'not-allowed',
                   }}
                   transition="all 0.2s"
                   loading={loading}
