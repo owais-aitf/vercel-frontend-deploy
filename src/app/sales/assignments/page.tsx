@@ -46,6 +46,8 @@ export default function AssignmentsPage() {
   const [statusFilter, setStatusFilter] = useState<
     'all' | 'active' | 'inactive'
   >('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchAssignments();
@@ -185,6 +187,17 @@ export default function AssignmentsPage() {
   const uniqueProjects = new Set(assignments.map((a) => a.project.projectName))
     .size;
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedAssignments = filteredAssignments.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
   return (
     <FeatureErrorBoundary featureName="Assignments">
       <DashboardLayout
@@ -204,134 +217,92 @@ export default function AssignmentsPage() {
         {/* Tab Navigation */}
         <TabNavigation tabs={assignmentTabs} />
 
-        {/* Stats Cards */}
-        <Grid
-          templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }}
-          gap={4}
-          mb={6}
+        {/* Compact Stats Bar with Boxes */}
+        <HStack
+          p={4}
+          bg="white"
+          borderRadius="lg"
+          shadow="sm"
+          mb={4}
+          flexWrap="wrap"
+          gap={3}
         >
-          <Card.Root p={4} bg="blue.50">
-            <VStack align="start" gap={2}>
-              <Text fontSize="sm" color="blue.700" fontWeight="medium">
-                Total Assignments
+          {/* Total */}
+          <Box
+            p={3}
+            bg="blue.50"
+            borderRadius="md"
+            border="1px solid"
+            borderColor="blue.100"
+            minW="100px"
+          >
+            <VStack align="start" gap={0}>
+              <Text fontSize="xs" color="blue.700" fontWeight="medium">
+                Total
               </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="blue.900">
+              <Text fontSize="2xl" fontWeight="bold" color="blue.600">
                 {assignments.length}
               </Text>
             </VStack>
-          </Card.Root>
+          </Box>
 
-          <Card.Root p={4} bg="green.50">
-            <VStack align="start" gap={2}>
-              <Text fontSize="sm" color="green.700" fontWeight="medium">
-                Active Assignments
+          {/* Active */}
+          <Box
+            p={3}
+            bg="green.50"
+            borderRadius="md"
+            border="1px solid"
+            borderColor="green.100"
+            minW="100px"
+          >
+            <VStack align="start" gap={0}>
+              <Text fontSize="xs" color="green.700" fontWeight="medium">
+                Active
               </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="green.900">
+              <Text fontSize="2xl" fontWeight="bold" color="green.600">
                 {activeCount}
               </Text>
             </VStack>
-          </Card.Root>
+          </Box>
 
-          <Card.Root p={4} bg="purple.50">
-            <VStack align="start" gap={2}>
-              <Text fontSize="sm" color="purple.700" fontWeight="medium">
-                Engineers Assigned
+          {/* Engineers */}
+          <Box
+            p={3}
+            bg="purple.50"
+            borderRadius="md"
+            border="1px solid"
+            borderColor="purple.100"
+            minW="100px"
+          >
+            <VStack align="start" gap={0}>
+              <Text fontSize="xs" color="purple.700" fontWeight="medium">
+                Engineers
               </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="purple.900">
+              <Text fontSize="2xl" fontWeight="bold" color="purple.600">
                 {uniqueEngineers}
               </Text>
             </VStack>
-          </Card.Root>
+          </Box>
 
-          <Card.Root p={4} bg="orange.50">
-            <VStack align="start" gap={2}>
-              <Text fontSize="sm" color="orange.700" fontWeight="medium">
-                Active Projects
+          {/* Projects */}
+          <Box
+            p={3}
+            bg="orange.50"
+            borderRadius="md"
+            border="1px solid"
+            borderColor="orange.100"
+            minW="100px"
+          >
+            <VStack align="start" gap={0}>
+              <Text fontSize="xs" color="orange.700" fontWeight="medium">
+                Projects
               </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="orange.900">
+              <Text fontSize="2xl" fontWeight="bold" color="orange.600">
                 {uniqueProjects}
               </Text>
             </VStack>
-          </Card.Root>
-        </Grid>
-
-        {/* Filters */}
-        <Card.Root p={6} mb={6}>
-          <VStack align="stretch" gap={4}>
-            <Text fontSize="lg" fontWeight="bold">
-              🔍 Filters
-            </Text>
-
-            <Grid
-              templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-              gap={4}
-            >
-              {/* Search */}
-              <Box>
-                <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Search
-                </Text>
-                <Input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search by engineer, project, or client..."
-                  bg="white"
-                />
-              </Box>
-
-              {/* Status Filter */}
-              <Box>
-                <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Status
-                </Text>
-                <Box position="relative">
-                  <select
-                    value={statusFilter}
-                    onChange={(e) =>
-                      setStatusFilter(
-                        e.target.value as 'all' | 'active' | 'inactive'
-                      )
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '11px 40px 11px 14px',
-                      borderRadius: '10px',
-                      border: '2px solid #E2E8F0',
-                      backgroundColor: 'white',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      appearance: 'none',
-                      outline: 'none',
-                      transition: 'all 0.3s ease',
-                      fontWeight: '500',
-                      color: '#2D3748',
-                    }}
-                  >
-                    <option value="all">All Assignments</option>
-                    <option value="active">Active Only</option>
-                    <option value="inactive">Inactive Only</option>
-                  </select>
-                </Box>
-              </Box>
-            </Grid>
-
-            <HStack justify="space-between">
-              <Text fontSize="sm" color="gray.600">
-                Showing <strong>{filteredAssignments.length}</strong>{' '}
-                assignments
-              </Text>
-              <Button
-                onClick={fetchAssignments}
-                size="sm"
-                variant="ghost"
-                colorScheme="blue"
-              >
-                🔄 Refresh
-              </Button>
-            </HStack>
-          </VStack>
-        </Card.Root>
+          </Box>
+        </HStack>
 
         {/* Loading/Error/Empty States */}
         {loading && (
@@ -378,21 +349,101 @@ export default function AssignmentsPage() {
         {/* Assignments Table */}
         {!loading && !error && filteredAssignments.length > 0 && (
           <Card.Root>
-            <Box overflowX="auto">
-              <Table.Root size="sm">
+            {/* Integrated Filters in Table Header */}
+            <Box
+              p={4}
+              borderBottom="1px solid"
+              borderColor="gray.200"
+              bg="gray.50"
+            >
+              <HStack justify="space-between" flexWrap="wrap" gap={4}>
+                <HStack gap={3} flex={1} flexWrap="wrap">
+                  {/* Search */}
+                  <Input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="🔍 Search by engineer, project, or client..."
+                    size="sm"
+                    bg="white"
+                    maxW={{ base: '100%', md: '300px' }}
+                    fontSize="sm"
+                  />
+
+                  {/* Status Filter */}
+                  <Box minW="150px">
+                    <select
+                      value={statusFilter}
+                      onChange={(e) =>
+                        setStatusFilter(
+                          e.target.value as 'all' | 'active' | 'inactive'
+                        )
+                      }
+                      style={{
+                        width: '100%',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #E2E8F0',
+                        backgroundColor: 'white',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        outline: 'none',
+                      }}
+                    >
+                      <option value="all">All Assignments</option>
+                      <option value="active">Active Only</option>
+                      <option value="inactive">Inactive Only</option>
+                    </select>
+                  </Box>
+                </HStack>
+
+                <HStack gap={3}>
+                  <Text fontSize="xs" color="gray.600">
+                    {filteredAssignments.length} results
+                  </Text>
+                  <Button
+                    onClick={fetchAssignments}
+                    size="sm"
+                    variant="ghost"
+                    colorScheme="blue"
+                    fontSize="xs"
+                  >
+                    🔄 Refresh
+                  </Button>
+                </HStack>
+              </HStack>
+            </Box>
+
+            {/* Desktop Table View */}
+            <Box overflowX="auto" display={{ base: 'none', lg: 'block' }}>
+              <Table.Root size="sm" variant="line">
                 <Table.Header>
-                  <Table.Row bg="gray.50">
-                    <Table.ColumnHeader>Engineer</Table.ColumnHeader>
-                    <Table.ColumnHeader>Project</Table.ColumnHeader>
-                    <Table.ColumnHeader>Client</Table.ColumnHeader>
-                    <Table.ColumnHeader>Start Date</Table.ColumnHeader>
-                    <Table.ColumnHeader>End Date</Table.ColumnHeader>
-                    <Table.ColumnHeader>Status</Table.ColumnHeader>
-                    <Table.ColumnHeader>Actions</Table.ColumnHeader>
+                  <Table.Row bg="white">
+                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                      Engineer
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                      Project
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                      Client
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                      Start Date
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                      End Date
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                      Status
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                      Actions
+                    </Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {filteredAssignments.map((assignment) => (
+                  {paginatedAssignments.map((assignment) => (
                     <Table.Row key={assignment.id}>
                       <Table.Cell>
                         <VStack align="start" gap={0}>
@@ -475,6 +526,204 @@ export default function AssignmentsPage() {
                 </Table.Body>
               </Table.Root>
             </Box>
+
+            {/* Mobile Card View */}
+            <VStack
+              display={{ base: 'flex', lg: 'none' }}
+              align="stretch"
+              gap={3}
+              p={4}
+            >
+              {paginatedAssignments.map((assignment) => (
+                <Box
+                  key={assignment.id}
+                  p={4}
+                  bg="white"
+                  borderRadius="md"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  shadow="sm"
+                >
+                  <VStack align="stretch" gap={3}>
+                    {/* Engineer */}
+                    <VStack align="start" gap={0}>
+                      <Text fontSize="sm" fontWeight="bold">
+                        {assignment.engineer.fullName}
+                      </Text>
+                      <Text fontSize="xs" color="gray.600">
+                        {assignment.engineer.email}
+                      </Text>
+                    </VStack>
+
+                    {/* Project & Client */}
+                    <VStack align="stretch" gap={1}>
+                      <HStack justify="space-between">
+                        <Text fontSize="xs" color="gray.600">
+                          Project:
+                        </Text>
+                        <Text fontSize="sm" fontWeight="medium">
+                          {assignment.project.projectName}
+                        </Text>
+                      </HStack>
+                      <HStack justify="space-between">
+                        <Text fontSize="xs" color="gray.600">
+                          Client:
+                        </Text>
+                        <Text fontSize="sm">
+                          {assignment.project.client.name}
+                        </Text>
+                      </HStack>
+                    </VStack>
+
+                    {/* Dates */}
+                    <HStack justify="space-between" gap={4}>
+                      <VStack align="start" gap={0} flex={1}>
+                        <Text fontSize="xs" color="gray.600">
+                          Start Date
+                        </Text>
+                        <Text fontSize="sm">
+                          {new Date(
+                            assignment.assignmentStart
+                          ).toLocaleDateString()}
+                        </Text>
+                      </VStack>
+                      <VStack align="start" gap={0} flex={1}>
+                        <Text fontSize="xs" color="gray.600">
+                          End Date
+                        </Text>
+                        <Text fontSize="sm">
+                          {assignment.assignmentEnd
+                            ? new Date(
+                                assignment.assignmentEnd
+                              ).toLocaleDateString()
+                            : '-'}
+                        </Text>
+                      </VStack>
+                    </HStack>
+
+                    {/* Status & Actions */}
+                    <HStack
+                      justify="space-between"
+                      pt={2}
+                      borderTop="1px solid"
+                      borderColor="gray.100"
+                    >
+                      <Badge
+                        colorScheme={assignment.isActive ? 'green' : 'gray'}
+                        fontSize="xs"
+                      >
+                        {assignment.isActive ? 'Active' : 'Ended'}
+                      </Badge>
+                      <HStack gap={2}>
+                        {assignment.isActive && (
+                          <Button
+                            size="sm"
+                            colorScheme="orange"
+                            variant="outline"
+                            onClick={() =>
+                              handleEndAssignment(
+                                assignment.id,
+                                assignment.engineer.fullName
+                              )
+                            }
+                            fontSize="xs"
+                          >
+                            End
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          colorScheme="red"
+                          variant="ghost"
+                          onClick={() =>
+                            handleDeleteAssignment(
+                              assignment.id,
+                              assignment.engineer.fullName
+                            )
+                          }
+                        >
+                          🗑️
+                        </Button>
+                      </HStack>
+                    </HStack>
+                  </VStack>
+                </Box>
+              ))}
+            </VStack>
+
+            {/* Pagination */}
+            {filteredAssignments.length > 0 && (
+              <HStack
+                justify="space-between"
+                mt={6}
+                p={4}
+                bg="white"
+                borderRadius="lg"
+                border="1px solid"
+                borderColor="gray.200"
+              >
+                {/* Results Info */}
+                <Text fontSize="sm" color="gray.600">
+                  Showing {startIndex + 1} to{' '}
+                  {Math.min(endIndex, filteredAssignments.length)} of{' '}
+                  {filteredAssignments.length} assignments
+                </Text>
+
+                {/* Pagination Controls */}
+                <HStack gap={2}>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                    variant="ghost"
+                    fontSize="sm"
+                    color="gray.600"
+                    _hover={{ bg: 'gray.100' }}
+                  >
+                    ← Previous
+                  </Button>
+
+                  <HStack gap={1}>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <Button
+                          key={page}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          bg={currentPage === page ? 'gray.900' : 'white'}
+                          color={currentPage === page ? 'white' : 'gray.700'}
+                          border="1px solid"
+                          borderColor="gray.200"
+                          _hover={{
+                            bg: currentPage === page ? 'gray.800' : 'gray.50',
+                          }}
+                          minW="40px"
+                          fontWeight={currentPage === page ? 'bold' : 'normal'}
+                        >
+                          {page}
+                        </Button>
+                      )
+                    )}
+                  </HStack>
+
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                    variant="ghost"
+                    fontSize="sm"
+                    color="gray.600"
+                    _hover={{ bg: 'gray.100' }}
+                  >
+                    Next →
+                  </Button>
+                </HStack>
+              </HStack>
+            )}
           </Card.Root>
         )}
       </DashboardLayout>

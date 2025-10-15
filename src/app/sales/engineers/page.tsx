@@ -411,16 +411,19 @@ export default function EngineersPage() {
                     </Text>
                   </HStack>
 
-                  {engineer.slackUserId && (
-                    <HStack gap={2}>
-                      <Text fontSize="sm" color="gray.500">
-                        💬
-                      </Text>
-                      <Text fontSize="sm" color="gray.700">
-                        {engineer.slackUserId}
-                      </Text>
-                    </HStack>
-                  )}
+                  {/* Slack User ID - Always render with min height */}
+                  <HStack gap={2} minH="20px">
+                    {engineer.slackUserId && (
+                      <>
+                        <Text fontSize="sm" color="gray.500">
+                          💬
+                        </Text>
+                        <Text fontSize="sm" color="gray.700">
+                          {engineer.slackUserId}
+                        </Text>
+                      </>
+                    )}
+                  </HStack>
 
                   <HStack gap={2}>
                     <Text fontSize="sm" color="gray.500">
@@ -432,17 +435,20 @@ export default function EngineersPage() {
                     </Text>
                   </HStack>
 
-                  {engineer.lastLoginAt && (
-                    <HStack gap={2}>
-                      <Text fontSize="sm" color="gray.500">
-                        🕐
-                      </Text>
-                      <Text fontSize="sm" color="gray.700">
-                        Last login:{' '}
-                        {new Date(engineer.lastLoginAt).toLocaleDateString()}
-                      </Text>
-                    </HStack>
-                  )}
+                  {/* Last Login - Always render with min height */}
+                  <HStack gap={2} minH="20px">
+                    {engineer.lastLoginAt && (
+                      <>
+                        <Text fontSize="sm" color="gray.500">
+                          🕐
+                        </Text>
+                        <Text fontSize="sm" color="gray.700">
+                          Last login:{' '}
+                          {new Date(engineer.lastLoginAt).toLocaleDateString()}
+                        </Text>
+                      </>
+                    )}
+                  </HStack>
 
                   <HStack gap={2} mt={2}>
                     <Button

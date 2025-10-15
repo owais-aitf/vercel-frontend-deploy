@@ -189,19 +189,57 @@ export default function UpdateEngineerPage() {
           gap={{ base: 4, md: 6 }}
         >
           {/* Engineer Selection List */}
-          <Card.Root p={{ base: 4, md: 5 }}>
+          <Card.Root
+            p={6}
+            bg="gradient.to-br"
+            bgGradient="linear(to-br, blue.50, white)"
+          >
             <VStack align="stretch" gap={4}>
-              <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
-                📋 Select Engineer
-              </Text>
+              <HStack justify="space-between">
+                <VStack align="start" gap={1}>
+                  <HStack gap={2}>
+                    <Box
+                      w="10px"
+                      h="10px"
+                      borderRadius="full"
+                      bg="blue.500"
+                      animation="pulse 2s ease-in-out infinite"
+                    />
+                    <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                      Select Engineer
+                    </Text>
+                  </HStack>
+                  <Text fontSize="sm" color="gray.600">
+                    Choose an engineer to update
+                  </Text>
+                </VStack>
+                {engineers.length > 0 && (
+                  <Badge
+                    colorScheme="blue"
+                    fontSize="xs"
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                  >
+                    {engineers.length} Engineers
+                  </Badge>
+                )}
+              </HStack>
 
               {/* Search */}
               <Input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search engineers..."
+                placeholder="🔍 Search engineers..."
                 size="md"
+                bg="white"
+                borderColor="gray.200"
+                _hover={{ borderColor: 'blue.300' }}
+                _focus={{
+                  borderColor: 'blue.500',
+                  boxShadow: '0 0 0 1px var(--chakra-colors-blue-500)',
+                }}
               />
 
               {/* Engineers List */}

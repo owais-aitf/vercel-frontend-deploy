@@ -57,6 +57,8 @@ export default function ManageAttendancePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9; // 3x3 grid
   const [editingRecord, setEditingRecord] = useState<AttendanceRecord | null>(
     null
   );
@@ -296,6 +298,17 @@ export default function ManageAttendancePage() {
       engineer.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredEngineers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedEngineers = filteredEngineers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const totalWorkDays = attendanceRecords.filter(
     (r) => r.attendanceType === 'PRESENT'
   ).length;
@@ -346,377 +359,777 @@ export default function ManageAttendancePage() {
           </HStack>
         </Card.Root>
 
-        <Grid templateColumns={{ base: '1fr', lg: '1fr 2fr' }} gap={6}>
-          {/* Engineer Selection List */}
-          <Card.Root p={5}>
-            <VStack align="stretch" gap={4}>
-              <HStack justify="space-between">
-                <Text fontSize="lg" fontWeight="bold">
-                  👥 Engineers ({engineers.length})
+        {/* Filter Section */}
+        <Card.Root
+          p={6}
+          mb={6}
+          bg="gradient.to-br"
+          bgGradient="linear(to-br, purple.50, white)"
+        >
+          <VStack align="stretch" gap={4}>
+            <HStack justify="space-between">
+              <VStack align="start" gap={1}>
+                <HStack gap={2}>
+                  <Box
+                    w="10px"
+                    h="10px"
+                    borderRadius="full"
+                    bg="purple.500"
+                    animation="pulse 2s ease-in-out infinite"
+                  />
+                  <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                    Select Engineer
+                  </Text>
+                </HStack>
+                <Text fontSize="sm" color="gray.600">
+                  Choose an engineer to manage attendance
                 </Text>
-              </HStack>
-
-              {/* Search */}
-              <Input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search engineers..."
-                size="md"
-              />
-
-              {/* Engineers List */}
-              <VStack
-                align="stretch"
-                gap={2}
-                maxH="700px"
-                overflowY="auto"
-                pr={2}
-              >
-                {loading && (
-                  <Text
-                    fontSize="sm"
-                    color="gray.600"
-                    textAlign="center"
-                    py={4}
-                  >
-                    Loading engineers...
-                  </Text>
-                )}
-
-                {!loading && filteredEngineers.length === 0 && (
-                  <Text
-                    fontSize="sm"
-                    color="gray.600"
-                    textAlign="center"
-                    py={4}
-                  >
-                    No engineers found
-                  </Text>
-                )}
-
-                {!loading &&
-                  filteredEngineers.map((engineer) => (
-                    <Card.Root
-                      key={engineer.id}
-                      p={3}
-                      cursor="pointer"
-                      onClick={() => setSelectedEngineer(engineer)}
-                      bg={
-                        selectedEngineer?.id === engineer.id
-                          ? 'blue.50'
-                          : 'white'
-                      }
-                      borderColor={
-                        selectedEngineer?.id === engineer.id
-                          ? 'blue.500'
-                          : 'gray.200'
-                      }
-                      borderWidth={2}
-                      _hover={{ bg: 'gray.50' }}
-                      transition="all 0.2s"
-                    >
-                      <VStack align="stretch" gap={2}>
-                        <HStack justify="space-between">
-                          <Text fontSize="sm" fontWeight="bold">
-                            {engineer.fullName}
-                          </Text>
-                          <Button
-                            size="xs"
-                            colorScheme="purple"
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSendReminder(
-                                engineer.id,
-                                engineer.fullName
-                              );
-                            }}
-                          >
-                            🔔
-                          </Button>
-                        </HStack>
-                        <Text fontSize="xs" color="gray.600">
-                          {engineer.email}
-                        </Text>
-                        <HStack fontSize="xs" color="gray.600">
-                          <Text>
-                            🏖️ {engineer.paidLeaveUsedThisYear}/
-                            {engineer.annualPaidLeaveAllowance}
-                          </Text>
-                        </HStack>
-                      </VStack>
-                    </Card.Root>
-                  ))}
               </VStack>
+              {engineers.length > 0 && (
+                <Badge
+                  colorScheme="purple"
+                  fontSize="xs"
+                  px={3}
+                  py={1}
+                  borderRadius="full"
+                >
+                  {filteredEngineers.length} Engineers
+                </Badge>
+              )}
+            </HStack>
+
+            {/* Search */}
+            <Input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="🔍 Search engineers..."
+              size="md"
+              bg="white"
+              borderColor="gray.200"
+              _hover={{ borderColor: 'purple.300' }}
+              _focus={{
+                borderColor: 'purple.500',
+                boxShadow: '0 0 0 1px var(--chakra-colors-purple-500)',
+              }}
+            />
+          </VStack>
+        </Card.Root>
+
+        {/* Loading State */}
+        {loading && (
+          <Card.Root p={8}>
+            <VStack gap={4}>
+              <Text fontSize="2xl">⏳</Text>
+              <Text color="gray.600">Loading engineers...</Text>
             </VStack>
           </Card.Root>
+        )}
 
-          {/* Attendance Records */}
-          <VStack align="stretch" gap={6}>
-            {!selectedEngineer ? (
-              <Card.Root p={6}>
-                <VStack gap={4} py={20}>
-                  <Text fontSize="4xl">👈</Text>
-                  <Text fontSize="lg" fontWeight="bold">
-                    Select an Engineer
-                  </Text>
-                  <Text fontSize="sm" color="gray.600" textAlign="center">
-                    Choose an engineer to view their attendance records
-                  </Text>
-                </VStack>
-              </Card.Root>
-            ) : (
-              <>
-                {/* Engineer Info & Controls */}
-                <Card.Root p={5}>
-                  <VStack align="stretch" gap={4}>
-                    <HStack justify="space-between">
-                      <VStack align="start" gap={1}>
-                        <Text fontSize="xl" fontWeight="bold">
-                          {selectedEngineer.fullName}
+        {/* Empty State */}
+        {!loading && filteredEngineers.length === 0 && (
+          <Card.Root p={8}>
+            <VStack gap={4}>
+              <Text fontSize="4xl">👨‍💼</Text>
+              <Text fontSize="lg" fontWeight="bold">
+                No Engineers Found
+              </Text>
+              <Text color="gray.600" textAlign="center">
+                {engineers.length === 0
+                  ? 'No engineers available'
+                  : 'No engineers match your search'}
+              </Text>
+            </VStack>
+          </Card.Root>
+        )}
+
+        {/* Engineers Grid */}
+        {!loading && filteredEngineers.length > 0 && (
+          <>
+            <Grid
+              templateColumns={{
+                base: '1fr',
+                md: 'repeat(2, 1fr)',
+                lg: 'repeat(3, 1fr)',
+              }}
+              gap={6}
+            >
+              {paginatedEngineers.map((engineer) => (
+                <Card.Root
+                  key={engineer.id}
+                  p={5}
+                  cursor="pointer"
+                  onClick={() => setSelectedEngineer(engineer)}
+                  bg="white"
+                  borderColor="gray.200"
+                  borderWidth={2}
+                  _hover={{
+                    shadow: 'lg',
+                    transform: 'translateY(-2px)',
+                    borderColor: 'purple.300',
+                  }}
+                  transition="all 0.2s"
+                >
+                  <VStack align="stretch" gap={3}>
+                    <HStack justify="space-between" align="start">
+                      <VStack align="start" gap={1} flex={1}>
+                        <Text fontSize="lg" fontWeight="bold">
+                          {engineer.fullName}
                         </Text>
-                        <Text fontSize="sm" color="gray.600">
-                          {selectedEngineer.email}
-                        </Text>
+                        <Badge colorScheme="green" fontSize="xs">
+                          Active
+                        </Badge>
                       </VStack>
+                    </HStack>
+
+                    <VStack align="stretch" gap={2}>
+                      <HStack gap={2}>
+                        <Text fontSize="sm" color="gray.500">
+                          📧
+                        </Text>
+                        <Text
+                          fontSize="sm"
+                          color="gray.700"
+                          wordBreak="break-all"
+                        >
+                          {engineer.email}
+                        </Text>
+                      </HStack>
+
+                      <HStack gap={2}>
+                        <Text fontSize="sm" color="gray.500">
+                          🏖️
+                        </Text>
+                        <Text fontSize="sm" color="gray.700">
+                          Leave: {engineer.paidLeaveUsedThisYear}/
+                          {engineer.annualPaidLeaveAllowance} days
+                        </Text>
+                      </HStack>
+                    </VStack>
+
+                    <HStack
+                      gap={2}
+                      mt={2}
+                      pt={3}
+                      borderTop="1px solid"
+                      borderColor="gray.100"
+                    >
                       <Button
-                        colorScheme="purple"
                         size="sm"
-                        onClick={() =>
-                          handleSendReminder(
-                            selectedEngineer.id,
-                            selectedEngineer.fullName
-                          )
-                        }
+                        colorScheme="purple"
+                        variant="outline"
+                        flex={1}
+                        onClick={() => setSelectedEngineer(engineer)}
                       >
-                        🔔 Send Reminder
+                        📅 Manage Attendance
+                      </Button>
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        variant="ghost"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSendReminder(engineer.id, engineer.fullName);
+                        }}
+                        title="Send Reminder"
+                      >
+                        🔔
                       </Button>
                     </HStack>
-
-                    {/* Month/Year Selector */}
-                    <HStack gap={3}>
-                      <Box flex={1}>
-                        <Text fontSize="xs" mb={1} color="gray.600">
-                          Month
-                        </Text>
-                        <select
-                          value={selectedMonth}
-                          onChange={(e) =>
-                            setSelectedMonth(parseInt(e.target.value))
-                          }
-                          style={{
-                            width: '100%',
-                            padding: '8px',
-                            borderRadius: '8px',
-                            border: '2px solid #E2E8F0',
-                            fontSize: '14px',
-                          }}
-                        >
-                          {Array.from({ length: 12 }, (_, i) => i + 1).map(
-                            (month) => (
-                              <option key={month} value={month}>
-                                {new Date(2000, month - 1).toLocaleString(
-                                  'default',
-                                  { month: 'long' }
-                                )}
-                              </option>
-                            )
-                          )}
-                        </select>
-                      </Box>
-                      <Box flex={1}>
-                        <Text fontSize="xs" mb={1} color="gray.600">
-                          Year
-                        </Text>
-                        <select
-                          value={selectedYear}
-                          onChange={(e) =>
-                            setSelectedYear(parseInt(e.target.value))
-                          }
-                          style={{
-                            width: '100%',
-                            padding: '8px',
-                            borderRadius: '8px',
-                            border: '2px solid #E2E8F0',
-                            fontSize: '14px',
-                          }}
-                        >
-                          {Array.from({ length: 5 }, (_, i) => 2023 + i).map(
-                            (year) => (
-                              <option key={year} value={year}>
-                                {year}
-                              </option>
-                            )
-                          )}
-                        </select>
-                      </Box>
-                    </HStack>
                   </VStack>
                 </Card.Root>
+              ))}
+            </Grid>
 
-                {/* Stats */}
-                <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-                  <Card.Root p={4} bg="green.50">
-                    <VStack gap={1}>
-                      <Text fontSize="2xl" fontWeight="bold" color="green.900">
-                        {totalWorkDays}
-                      </Text>
-                      <Text fontSize="xs" color="green.700">
-                        Work Days
-                      </Text>
-                    </VStack>
-                  </Card.Root>
-                  <Card.Root p={4} bg="blue.50">
-                    <VStack gap={1}>
-                      <Text fontSize="2xl" fontWeight="bold" color="blue.900">
-                        {totalLeave}
-                      </Text>
-                      <Text fontSize="xs" color="blue.700">
-                        Leave Days
-                      </Text>
-                    </VStack>
-                  </Card.Root>
-                  <Card.Root p={4} bg="red.50">
-                    <VStack gap={1}>
-                      <Text fontSize="2xl" fontWeight="bold" color="red.900">
-                        {totalAbsent}
-                      </Text>
-                      <Text fontSize="xs" color="red.700">
-                        Absent Days
-                      </Text>
-                    </VStack>
-                  </Card.Root>
-                </Grid>
+            {/* Pagination */}
+            <HStack
+              justify="space-between"
+              mt={8}
+              p={4}
+              bg="white"
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="gray.200"
+            >
+              {/* Results Info */}
+              <Text fontSize="sm" color="gray.600">
+                Showing {startIndex + 1} to{' '}
+                {Math.min(endIndex, filteredEngineers.length)} of{' '}
+                {filteredEngineers.length} engineers
+              </Text>
 
-                {/* Attendance Records */}
-                <Card.Root p={5}>
-                  <VStack align="stretch" gap={4}>
-                    <Text fontSize="lg" fontWeight="bold">
-                      📅 Attendance Records
+              {/* Pagination Controls */}
+              <HStack gap={2}>
+                <Button
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  variant="ghost"
+                  fontSize="sm"
+                  color="gray.600"
+                  _hover={{ bg: 'gray.100' }}
+                >
+                  ← Previous
+                </Button>
+
+                <HStack gap={1}>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        bg={currentPage === page ? 'gray.900' : 'white'}
+                        color={currentPage === page ? 'white' : 'gray.700'}
+                        border="1px solid"
+                        borderColor="gray.200"
+                        _hover={{
+                          bg: currentPage === page ? 'gray.800' : 'gray.50',
+                        }}
+                        minW="40px"
+                        fontWeight={currentPage === page ? 'bold' : 'normal'}
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
+                </HStack>
+
+                <Button
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  variant="ghost"
+                  fontSize="sm"
+                  color="gray.600"
+                  _hover={{ bg: 'gray.100' }}
+                >
+                  Next →
+                </Button>
+              </HStack>
+            </HStack>
+          </>
+        )}
+
+        {/* Attendance Management Modal */}
+        {selectedEngineer && (
+          <>
+            {/* Backdrop */}
+            <Box
+              position="fixed"
+              inset={0}
+              bg="blackAlpha.600"
+              zIndex={999}
+              onClick={() => setSelectedEngineer(null)}
+            />
+
+            {/* Modal */}
+            <Box
+              position="fixed"
+              top="50%"
+              left="50%"
+              transform="translate(-50%, -50%)"
+              bg="white"
+              borderRadius="xl"
+              shadow="2xl"
+              zIndex={1000}
+              w={{ base: '95%', md: '90%', lg: '1200px' }}
+              maxH="90vh"
+              overflowY="auto"
+            >
+              <VStack align="stretch" gap={0}>
+                {/* Modal Header */}
+                <HStack
+                  justify="space-between"
+                  p={6}
+                  borderBottom="1px solid"
+                  borderColor="gray.200"
+                  bg="purple.50"
+                >
+                  <VStack align="start" gap={1}>
+                    <Text fontSize="xl" fontWeight="bold">
+                      {selectedEngineer.fullName}
                     </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      {selectedEngineer.email}
+                    </Text>
+                  </VStack>
+                  <HStack gap={2}>
+                    <Button
+                      colorScheme="purple"
+                      size="sm"
+                      onClick={() =>
+                        handleSendReminder(
+                          selectedEngineer.id,
+                          selectedEngineer.fullName
+                        )
+                      }
+                    >
+                      🔔 Send Reminder
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setSelectedEngineer(null)}
+                    >
+                      ✕
+                    </Button>
+                  </HStack>
+                </HStack>
 
-                    {loadingAttendance && (
-                      <Text
-                        fontSize="sm"
-                        color="gray.600"
-                        textAlign="center"
-                        py={4}
-                      >
-                        Loading attendance records...
-                      </Text>
-                    )}
+                {/* Modal Content */}
+                <Box p={6}>
+                  <VStack align="stretch" gap={6}>
+                    {/* Month/Year Selector */}
+                    <Card.Root p={4} bg="gray.50">
+                      <HStack gap={3}>
+                        <Box flex={1}>
+                          <Text fontSize="xs" mb={1} color="gray.600">
+                            Month
+                          </Text>
+                          <select
+                            value={selectedMonth}
+                            onChange={(e) =>
+                              setSelectedMonth(parseInt(e.target.value))
+                            }
+                            style={{
+                              width: '100%',
+                              padding: '8px',
+                              borderRadius: '8px',
+                              border: '2px solid #E2E8F0',
+                              fontSize: '14px',
+                            }}
+                          >
+                            {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                              (month) => (
+                                <option key={month} value={month}>
+                                  {new Date(2000, month - 1).toLocaleString(
+                                    'default',
+                                    { month: 'long' }
+                                  )}
+                                </option>
+                              )
+                            )}
+                          </select>
+                        </Box>
+                        <Box flex={1}>
+                          <Text fontSize="xs" mb={1} color="gray.600">
+                            Year
+                          </Text>
+                          <select
+                            value={selectedYear}
+                            onChange={(e) =>
+                              setSelectedYear(parseInt(e.target.value))
+                            }
+                            style={{
+                              width: '100%',
+                              padding: '8px',
+                              borderRadius: '8px',
+                              border: '2px solid #E2E8F0',
+                              fontSize: '14px',
+                            }}
+                          >
+                            {Array.from({ length: 5 }, (_, i) => 2023 + i).map(
+                              (year) => (
+                                <option key={year} value={year}>
+                                  {year}
+                                </option>
+                              )
+                            )}
+                          </select>
+                        </Box>
+                      </HStack>
+                    </Card.Root>
 
-                    {!loadingAttendance && attendanceRecords.length === 0 && (
-                      <Text
-                        fontSize="sm"
-                        color="gray.600"
-                        textAlign="center"
-                        py={4}
-                      >
-                        No attendance records for this period
-                      </Text>
-                    )}
+                    {/* Stats */}
+                    <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+                      <Card.Root p={4} bg="green.50">
+                        <VStack gap={1}>
+                          <Text
+                            fontSize="2xl"
+                            fontWeight="bold"
+                            color="green.900"
+                          >
+                            {totalWorkDays}
+                          </Text>
+                          <Text fontSize="xs" color="green.700">
+                            Work Days
+                          </Text>
+                        </VStack>
+                      </Card.Root>
+                      <Card.Root p={4} bg="blue.50">
+                        <VStack gap={1}>
+                          <Text
+                            fontSize="2xl"
+                            fontWeight="bold"
+                            color="blue.900"
+                          >
+                            {totalLeave}
+                          </Text>
+                          <Text fontSize="xs" color="blue.700">
+                            Leave Days
+                          </Text>
+                        </VStack>
+                      </Card.Root>
+                      <Card.Root p={4} bg="red.50">
+                        <VStack gap={1}>
+                          <Text
+                            fontSize="2xl"
+                            fontWeight="bold"
+                            color="red.900"
+                          >
+                            {totalAbsent}
+                          </Text>
+                          <Text fontSize="xs" color="red.700">
+                            Absent Days
+                          </Text>
+                        </VStack>
+                      </Card.Root>
+                    </Grid>
 
-                    {!loadingAttendance && attendanceRecords.length > 0 && (
-                      <VStack
-                        align="stretch"
-                        gap={2}
-                        maxH="500px"
-                        overflowY="auto"
-                      >
-                        {attendanceRecords.map((record) => (
-                          <Card.Root key={record.id} p={4} bg="gray.50">
-                            <HStack justify="space-between" align="start">
-                              <VStack align="start" gap={1} flex={1}>
-                                <HStack>
-                                  <Text fontSize="sm" fontWeight="bold">
-                                    {new Date(
-                                      record.workDate
-                                    ).toLocaleDateString()}
-                                  </Text>
-                                  <Badge
-                                    colorScheme={getAttendanceTypeColor(
-                                      record.attendanceType
-                                    )}
-                                    fontSize="xs"
-                                  >
-                                    {getAttendanceTypeLabel(
-                                      record.attendanceType
-                                    )}
-                                  </Badge>
-                                </HStack>
-                                {record.workLocation && (
-                                  <Text fontSize="xs" color="gray.600">
-                                    📍 {record.workLocation}
-                                  </Text>
-                                )}
-                                {record.startTime && record.endTime && (
-                                  <Text fontSize="xs" color="gray.600">
-                                    🕐 {formatTime(record.startTime)} -{' '}
-                                    {formatTime(record.endTime)}
-                                  </Text>
-                                )}
-                                {record.workDescription && (
-                                  <Text fontSize="xs" color="gray.700" mt={1}>
-                                    {record.workDescription}
-                                  </Text>
-                                )}
-                              </VStack>
+                    {/* Calendar View */}
+                    <Card.Root p={5}>
+                      <VStack align="stretch" gap={4}>
+                        <Text fontSize="lg" fontWeight="bold">
+                          📅 Attendance Calendar
+                        </Text>
 
-                              {/* Edit/Delete Actions - Only for current month */}
-                              {isCurrentMonth() && (
-                                <VStack gap={2} align="stretch">
-                                  <Button
-                                    size="sm"
-                                    colorScheme="blue"
-                                    variant="outline"
-                                    onClick={() => openEditModal(record)}
-                                    title="Edit attendance record"
-                                    fontSize="xs"
-                                    fontWeight="medium"
-                                    _hover={{
-                                      bg: 'blue.50',
-                                      borderColor: 'blue.500',
-                                      transform: 'translateY(-1px)',
-                                      shadow: 'sm',
-                                    }}
-                                    transition="all 0.2s"
-                                  >
-                                    ✏️ Edit
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    colorScheme="red"
-                                    variant="ghost"
-                                    onClick={() =>
-                                      handleDeleteAttendance(record.id)
-                                    }
-                                    title="Delete attendance record"
-                                    fontSize="xs"
-                                    fontWeight="medium"
-                                    _hover={{
-                                      bg: 'red.50',
-                                      color: 'red.600',
-                                      transform: 'translateY(-1px)',
-                                    }}
-                                    transition="all 0.2s"
-                                  >
-                                    🗑️ Delete
-                                  </Button>
-                                </VStack>
-                              )}
-                            </HStack>
-                          </Card.Root>
-                        ))}
+                        {loadingAttendance && (
+                          <Text
+                            fontSize="sm"
+                            color="gray.600"
+                            textAlign="center"
+                            py={4}
+                          >
+                            Loading attendance records...
+                          </Text>
+                        )}
+
+                        {!loadingAttendance &&
+                          (() => {
+                            // Get calendar data
+                            const daysInMonth = new Date(
+                              selectedYear,
+                              selectedMonth,
+                              0
+                            ).getDate();
+                            const firstDayOfMonth = new Date(
+                              selectedYear,
+                              selectedMonth - 1,
+                              1
+                            ).getDay();
+                            const days = Array.from(
+                              { length: daysInMonth },
+                              (_, i) => i + 1
+                            );
+                            const weekDays = [
+                              'Sun',
+                              'Mon',
+                              'Tue',
+                              'Wed',
+                              'Thu',
+                              'Fri',
+                              'Sat',
+                            ];
+
+                            // Create attendance map for quick lookup
+                            const attendanceMap = new Map(
+                              attendanceRecords.map((record) => [
+                                new Date(record.workDate).getDate(),
+                                record,
+                              ])
+                            );
+
+                            return (
+                              <Box>
+                                {/* Week day headers */}
+                                <Grid
+                                  templateColumns="repeat(7, 1fr)"
+                                  gap={2}
+                                  mb={2}
+                                >
+                                  {weekDays.map((day) => (
+                                    <Box key={day} textAlign="center" p={2}>
+                                      <Text
+                                        fontSize="xs"
+                                        fontWeight="bold"
+                                        color="gray.600"
+                                      >
+                                        {day}
+                                      </Text>
+                                    </Box>
+                                  ))}
+                                </Grid>
+
+                                {/* Calendar grid */}
+                                <Grid templateColumns="repeat(7, 1fr)" gap={2}>
+                                  {/* Empty cells for days before month starts */}
+                                  {Array.from({ length: firstDayOfMonth }).map(
+                                    (_, i) => (
+                                      <Box key={`empty-${i}`} />
+                                    )
+                                  )}
+
+                                  {/* Calendar days */}
+                                  {days.map((day) => {
+                                    const record = attendanceMap.get(day);
+                                    const isToday =
+                                      day === new Date().getDate() &&
+                                      selectedMonth ===
+                                        new Date().getMonth() + 1 &&
+                                      selectedYear === new Date().getFullYear();
+
+                                    return (
+                                      <Box
+                                        key={day}
+                                        p={3}
+                                        borderRadius="md"
+                                        border="2px solid"
+                                        borderColor={
+                                          isToday
+                                            ? 'purple.500'
+                                            : record
+                                              ? getAttendanceTypeColor(
+                                                  record.attendanceType
+                                                ) + '.200'
+                                              : 'gray.200'
+                                        }
+                                        bg={
+                                          record
+                                            ? getAttendanceTypeColor(
+                                                record.attendanceType
+                                              ) + '.50'
+                                            : 'white'
+                                        }
+                                        cursor={record ? 'pointer' : 'default'}
+                                        _hover={
+                                          record
+                                            ? {
+                                                shadow: 'md',
+                                                transform: 'translateY(-2px)',
+                                              }
+                                            : {}
+                                        }
+                                        transition="all 0.2s"
+                                        onClick={() =>
+                                          record && openEditModal(record)
+                                        }
+                                        position="relative"
+                                      >
+                                        <VStack align="stretch" gap={1}>
+                                          <HStack justify="space-between">
+                                            <Text
+                                              fontSize="sm"
+                                              fontWeight={
+                                                isToday ? 'bold' : 'semibold'
+                                              }
+                                              color={
+                                                isToday
+                                                  ? 'purple.700'
+                                                  : 'gray.700'
+                                              }
+                                            >
+                                              {day}
+                                            </Text>
+                                            {record && isCurrentMonth() && (
+                                              <HStack gap={0}>
+                                                <Button
+                                                  size="xs"
+                                                  variant="ghost"
+                                                  p={0}
+                                                  minW="auto"
+                                                  h="auto"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    openEditModal(record);
+                                                  }}
+                                                  title="Edit"
+                                                >
+                                                  ✏️
+                                                </Button>
+                                                <Button
+                                                  size="xs"
+                                                  variant="ghost"
+                                                  p={0}
+                                                  minW="auto"
+                                                  h="auto"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteAttendance(
+                                                      record.id
+                                                    );
+                                                  }}
+                                                  title="Delete"
+                                                >
+                                                  🗑️
+                                                </Button>
+                                              </HStack>
+                                            )}
+                                          </HStack>
+
+                                          {record && (
+                                            <VStack align="start" gap={0}>
+                                              <Badge
+                                                colorScheme={getAttendanceTypeColor(
+                                                  record.attendanceType
+                                                )}
+                                                fontSize="2xs"
+                                                px={1}
+                                              >
+                                                {getAttendanceTypeLabel(
+                                                  record.attendanceType
+                                                )}
+                                              </Badge>
+                                              {record.startTime &&
+                                                record.endTime && (
+                                                  <Text
+                                                    fontSize="2xs"
+                                                    color="gray.600"
+                                                  >
+                                                    {formatTime(
+                                                      record.startTime
+                                                    )}
+                                                    -
+                                                    {formatTime(record.endTime)}
+                                                  </Text>
+                                                )}
+                                              {record.workLocation && (
+                                                <Text
+                                                  fontSize="2xs"
+                                                  color="gray.600"
+                                                  truncate
+                                                >
+                                                  📍 {record.workLocation}
+                                                </Text>
+                                              )}
+                                            </VStack>
+                                          )}
+                                        </VStack>
+                                      </Box>
+                                    );
+                                  })}
+                                </Grid>
+                              </Box>
+                            );
+                          })()}
                       </VStack>
+                    </Card.Root>
+
+                    {/* Attendance List (below calendar) */}
+                    {!loadingAttendance && attendanceRecords.length > 0 && (
+                      <Card.Root p={5}>
+                        <VStack align="stretch" gap={4}>
+                          <Text fontSize="lg" fontWeight="bold">
+                            📋 Detailed Records
+                          </Text>
+                          <VStack
+                            align="stretch"
+                            gap={2}
+                            maxH="400px"
+                            overflowY="auto"
+                          >
+                            {attendanceRecords.map((record) => (
+                              <Card.Root key={record.id} p={4} bg="gray.50">
+                                <HStack justify="space-between" align="start">
+                                  <VStack align="start" gap={1} flex={1}>
+                                    <HStack>
+                                      <Text fontSize="sm" fontWeight="bold">
+                                        {new Date(
+                                          record.workDate
+                                        ).toLocaleDateString()}
+                                      </Text>
+                                      <Badge
+                                        colorScheme={getAttendanceTypeColor(
+                                          record.attendanceType
+                                        )}
+                                        fontSize="xs"
+                                      >
+                                        {getAttendanceTypeLabel(
+                                          record.attendanceType
+                                        )}
+                                      </Badge>
+                                    </HStack>
+                                    {record.workLocation && (
+                                      <Text fontSize="xs" color="gray.600">
+                                        📍 {record.workLocation}
+                                      </Text>
+                                    )}
+                                    {record.startTime && record.endTime && (
+                                      <Text fontSize="xs" color="gray.600">
+                                        🕐 {formatTime(record.startTime)} -{' '}
+                                        {formatTime(record.endTime)}
+                                      </Text>
+                                    )}
+                                    {record.workDescription && (
+                                      <Text
+                                        fontSize="xs"
+                                        color="gray.700"
+                                        mt={1}
+                                      >
+                                        {record.workDescription}
+                                      </Text>
+                                    )}
+                                  </VStack>
+
+                                  {/* Edit/Delete Actions - Only for current month */}
+                                  {isCurrentMonth() && (
+                                    <VStack gap={2} align="stretch">
+                                      <Button
+                                        size="sm"
+                                        colorScheme="blue"
+                                        variant="outline"
+                                        onClick={() => openEditModal(record)}
+                                        title="Edit attendance record"
+                                        fontSize="xs"
+                                        fontWeight="medium"
+                                        _hover={{
+                                          bg: 'blue.50',
+                                          borderColor: 'blue.500',
+                                          transform: 'translateY(-1px)',
+                                          shadow: 'sm',
+                                        }}
+                                        transition="all 0.2s"
+                                      >
+                                        ✏️ Edit
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        colorScheme="red"
+                                        variant="ghost"
+                                        onClick={() =>
+                                          handleDeleteAttendance(record.id)
+                                        }
+                                        title="Delete attendance record"
+                                        fontSize="xs"
+                                        fontWeight="medium"
+                                        _hover={{
+                                          bg: 'red.50',
+                                          color: 'red.600',
+                                          transform: 'translateY(-1px)',
+                                        }}
+                                        transition="all 0.2s"
+                                      >
+                                        🗑️ Delete
+                                      </Button>
+                                    </VStack>
+                                  )}
+                                </HStack>
+                              </Card.Root>
+                            ))}
+                          </VStack>
+                        </VStack>
+                      </Card.Root>
                     )}
                   </VStack>
-                </Card.Root>
-              </>
-            )}
-          </VStack>
-        </Grid>
+                </Box>
+              </VStack>
+            </Box>
+          </>
+        )}
 
         {/* Edit Attendance Modal */}
         {isEditModalOpen && editingRecord && (
