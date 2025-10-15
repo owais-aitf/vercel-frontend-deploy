@@ -227,39 +227,45 @@ export default function ClientProjectsPage() {
             />
             <Box
               position="fixed"
-              top="50%"
-              left="50%"
-              transform="translate(-50%, -50%)"
+              top={{ base: '20px', md: '50%' }}
+              left={{ base: '20px', md: '50%' }}
+              right={{ base: '20px', md: 'auto' }}
+              transform={{ base: 'none', md: 'translate(-50%, -50%)' }}
               bg="white"
-              borderRadius="xl"
+              borderRadius={{ base: 'lg', md: 'xl' }}
               shadow="2xl"
               zIndex={1000}
-              p={8}
-              minW="400px"
+              p={{ base: 6, md: 8 }}
+              w={{ base: 'auto', md: '400px' }}
               maxW="90%"
             >
               <VStack gap={4}>
                 <Box
-                  w="60px"
-                  h="60px"
+                  w={{ base: '50px', md: '60px' }}
+                  h={{ base: '50px', md: '60px' }}
                   borderRadius="full"
                   bg="red.100"
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
                 >
-                  <Text fontSize="2xl">⚠️</Text>
+                  <Text fontSize={{ base: 'xl', md: '2xl' }}>⚠️</Text>
                 </Box>
-                <Text fontSize="lg" fontWeight="bold">
+                <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
                   Error
                 </Text>
-                <Text fontSize="sm" color="gray.600" textAlign="center">
+                <Text
+                  fontSize={{ base: 'xs', md: 'sm' }}
+                  color="gray.600"
+                  textAlign="center"
+                >
                   {error}
                 </Text>
                 <Button
                   colorScheme="blue"
                   onClick={() => setError('')}
                   w="full"
+                  size={{ base: 'md', md: 'lg' }}
                 >
                   Close
                 </Button>
@@ -582,7 +588,11 @@ export default function ClientProjectsPage() {
             </Card.Root>
 
             {/* Stats Cards - 3 cards only */}
-            <Grid templateColumns="repeat(3, 1fr)" gap={4} mb={6}>
+            <Grid
+              templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+              gap={4}
+              mb={6}
+            >
               <Card.Root p={5} bg="white" borderWidth="1px">
                 <VStack align="start" gap={2}>
                   <Text fontSize="sm" color="gray.600" fontWeight="medium">
@@ -680,7 +690,14 @@ export default function ClientProjectsPage() {
                 </VStack>
               </Card.Root>
             ) : (
-              <Grid templateColumns="repeat(3, 1fr)" gap={6}>
+              <Grid
+                templateColumns={{
+                  base: '1fr', // Mobile: 1 column
+                  md: 'repeat(2, 1fr)', // Tablet: 2 columns
+                  lg: 'repeat(3, 1fr)', // Desktop: 3 columns
+                }}
+                gap={{ base: 4, md: 6 }}
+              >
                 {filteredProjects.map((project) => (
                   <Card.Root
                     key={project.id}
