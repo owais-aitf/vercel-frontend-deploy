@@ -17,7 +17,10 @@ import { salesNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
-import { projectService, CreateProjectData } from '@/shared/service/projectService';
+import {
+  projectService,
+  CreateProjectData,
+} from '@/shared/service/projectService';
 import { clientService, Client } from '@/shared/service/clientService';
 
 const projectTabs = [
@@ -125,27 +128,41 @@ export default function AddProjectPage() {
       errors.startDate = 'Start date is required';
     }
 
-    if (!formData.monthlyUnitPrice || parseFloat(formData.monthlyUnitPrice) <= 0) {
+    if (
+      !formData.monthlyUnitPrice ||
+      parseFloat(formData.monthlyUnitPrice) <= 0
+    ) {
       errors.monthlyUnitPrice = 'Monthly unit price must be greater than 0';
     }
 
     if (formData.settlementMethod === 'UP_DOWN') {
-      if (!formData.settlementRangeMin || parseInt(formData.settlementRangeMin) < 0) {
+      if (
+        !formData.settlementRangeMin ||
+        parseInt(formData.settlementRangeMin) < 0
+      ) {
         errors.settlementRangeMin = 'Settlement range minimum is required';
       }
-      if (!formData.settlementRangeMax || parseInt(formData.settlementRangeMax) <= 0) {
+      if (
+        !formData.settlementRangeMax ||
+        parseInt(formData.settlementRangeMax) <= 0
+      ) {
         errors.settlementRangeMax = 'Settlement range maximum is required';
       }
       if (
         formData.settlementRangeMin &&
         formData.settlementRangeMax &&
-        parseInt(formData.settlementRangeMin) >= parseInt(formData.settlementRangeMax)
+        parseInt(formData.settlementRangeMin) >=
+          parseInt(formData.settlementRangeMax)
       ) {
         errors.settlementRangeMax = 'Maximum must be greater than minimum';
       }
     }
 
-    if (formData.endDate && formData.startDate && formData.endDate < formData.startDate) {
+    if (
+      formData.endDate &&
+      formData.startDate &&
+      formData.endDate < formData.startDate
+    ) {
       errors.endDate = 'End date must be after start date';
     }
 
@@ -421,7 +438,9 @@ export default function AddProjectPage() {
                   onChange={handleChange}
                   placeholder="Enter project name"
                   bg="white"
-                  borderColor={validationErrors.projectName ? 'red.500' : 'gray.300'}
+                  borderColor={
+                    validationErrors.projectName ? 'red.500' : 'gray.300'
+                  }
                 />
                 {validationErrors.projectName && (
                   <Text fontSize="xs" color="red.500" mt={1}>
@@ -475,7 +494,10 @@ export default function AddProjectPage() {
               </Box>
 
               {/* Start Date and End Date */}
-              <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+              <Grid
+                templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                gap={4}
+              >
                 <Box>
                   <HStack mb={2}>
                     <Text fontSize="sm" fontWeight="medium" color="gray.700">
@@ -491,7 +513,9 @@ export default function AddProjectPage() {
                     value={formData.startDate}
                     onChange={handleChange}
                     bg="white"
-                    borderColor={validationErrors.startDate ? 'red.500' : 'gray.300'}
+                    borderColor={
+                      validationErrors.startDate ? 'red.500' : 'gray.300'
+                    }
                   />
                   {validationErrors.startDate && (
                     <Text fontSize="xs" color="red.500" mt={1}>
@@ -501,7 +525,12 @@ export default function AddProjectPage() {
                 </Box>
 
                 <Box>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
+                  <Text
+                    fontSize="sm"
+                    fontWeight="medium"
+                    color="gray.700"
+                    mb={2}
+                  >
                     End Date
                   </Text>
                   <Input
@@ -510,7 +539,9 @@ export default function AddProjectPage() {
                     value={formData.endDate}
                     onChange={handleChange}
                     bg="white"
-                    borderColor={validationErrors.endDate ? 'red.500' : 'gray.300'}
+                    borderColor={
+                      validationErrors.endDate ? 'red.500' : 'gray.300'
+                    }
                   />
                   {validationErrors.endDate && (
                     <Text fontSize="xs" color="red.500" mt={1}>
@@ -521,7 +552,10 @@ export default function AddProjectPage() {
               </Grid>
 
               {/* Monthly Unit Price and Hourly Unit Price */}
-              <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+              <Grid
+                templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                gap={4}
+              >
                 <Box>
                   <HStack mb={2}>
                     <Text fontSize="sm" fontWeight="medium" color="gray.700">
@@ -556,7 +590,12 @@ export default function AddProjectPage() {
                 </Box>
 
                 <Box>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
+                  <Text
+                    fontSize="sm"
+                    fontWeight="medium"
+                    color="gray.700"
+                    mb={2}
+                  >
                     Hourly Unit Price (¥)
                   </Text>
                   <Input
@@ -590,12 +629,19 @@ export default function AddProjectPage() {
                   <Button
                     type="button"
                     size="md"
-                    variant={formData.settlementMethod === 'FIXED' ? 'solid' : 'outline'}
+                    variant={
+                      formData.settlementMethod === 'FIXED'
+                        ? 'solid'
+                        : 'outline'
+                    }
                     colorScheme={
                       formData.settlementMethod === 'FIXED' ? 'blue' : 'gray'
                     }
                     onClick={() =>
-                      setFormData((prev) => ({ ...prev, settlementMethod: 'FIXED' }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        settlementMethod: 'FIXED',
+                      }))
                     }
                     borderWidth="2px"
                   >
@@ -605,13 +651,20 @@ export default function AddProjectPage() {
                     type="button"
                     size="md"
                     variant={
-                      formData.settlementMethod === 'UP_DOWN' ? 'solid' : 'outline'
+                      formData.settlementMethod === 'UP_DOWN'
+                        ? 'solid'
+                        : 'outline'
                     }
                     colorScheme={
-                      formData.settlementMethod === 'UP_DOWN' ? 'purple' : 'gray'
+                      formData.settlementMethod === 'UP_DOWN'
+                        ? 'purple'
+                        : 'gray'
                     }
                     onClick={() =>
-                      setFormData((prev) => ({ ...prev, settlementMethod: 'UP_DOWN' }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        settlementMethod: 'UP_DOWN',
+                      }))
                     }
                     borderWidth="2px"
                   >
@@ -622,7 +675,10 @@ export default function AddProjectPage() {
 
               {/* Settlement Range (only if UP_DOWN) */}
               {formData.settlementMethod === 'UP_DOWN' && (
-                <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+                <Grid
+                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                  gap={4}
+                >
                   <Box>
                     <HStack mb={2}>
                       <Text fontSize="sm" fontWeight="medium" color="gray.700">
@@ -640,7 +696,9 @@ export default function AddProjectPage() {
                       placeholder="0"
                       bg="white"
                       borderColor={
-                        validationErrors.settlementRangeMin ? 'red.500' : 'gray.300'
+                        validationErrors.settlementRangeMin
+                          ? 'red.500'
+                          : 'gray.300'
                       }
                     />
                     {validationErrors.settlementRangeMin && (
@@ -667,7 +725,9 @@ export default function AddProjectPage() {
                       placeholder="0"
                       bg="white"
                       borderColor={
-                        validationErrors.settlementRangeMax ? 'red.500' : 'gray.300'
+                        validationErrors.settlementRangeMax
+                          ? 'red.500'
+                          : 'gray.300'
                       }
                     />
                     {validationErrors.settlementRangeMax && (
@@ -694,7 +754,8 @@ export default function AddProjectPage() {
                   </Text>
                 </HStack>
                 <Text fontSize="xs" color="gray.500" mt={1} ml={7}>
-                  Check this if paid leave should be included in settlement calculations
+                  Check this if paid leave should be included in settlement
+                  calculations
                 </Text>
               </Box>
 

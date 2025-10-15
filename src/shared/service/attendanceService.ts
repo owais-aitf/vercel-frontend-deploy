@@ -27,6 +27,7 @@ export interface AttendanceFilters {
   month?: string;
   attendanceType?: string;
   projectAssignmentId?: string;
+  engineerId?: string;
 }
 
 export interface AttendanceData {
@@ -48,6 +49,7 @@ export const attendanceService = {
       params.append('attendanceType', filters.attendanceType);
     if (filters?.projectAssignmentId)
       params.append('projectAssignmentId', filters.projectAssignmentId);
+    if (filters?.engineerId) params.append('engineerId', filters.engineerId);
 
     const response = await apiClient.get(`/attendance?${params.toString()}`);
     return response.data;

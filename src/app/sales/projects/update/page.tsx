@@ -99,7 +99,8 @@ export default function EditProjectPage() {
 
     if (isDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isDropdownOpen]);
 
@@ -208,7 +209,8 @@ export default function EditProjectPage() {
       settlementMethod: project.settlementMethod || 'FIXED',
       settlementRangeMin: project.settlementRangeMin?.toString() || '',
       settlementRangeMax: project.settlementRangeMax?.toString() || '',
-      includePaidLeaveInSettlement: project.includePaidLeaveInSettlement || false,
+      includePaidLeaveInSettlement:
+        project.includePaidLeaveInSettlement || false,
       isActive: project.isActive,
     });
 
@@ -474,18 +476,27 @@ export default function EditProjectPage() {
                   {filterClient === 'all'
                     ? `All Companies (${projects.length})`
                     : (() => {
-                        const client = clients.find((c) => c.id === filterClient);
+                        const client = clients.find(
+                          (c) => c.id === filterClient
+                        );
                         const count = projects.filter(
                           (p) => p.clientId === filterClient
                         ).length;
-                        return client ? `${client.name} (${count})` : 'Select Company';
+                        return client
+                          ? `${client.name} (${count})`
+                          : 'Select Company';
                       })()}
                 </Text>
                 <Box
                   transform={isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}
                   transition="transform 0.2s"
                 >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -522,7 +533,10 @@ export default function EditProjectPage() {
                     }}
                     borderBottom="1px solid #E2E8F0"
                   >
-                    <Text fontSize="sm" fontWeight={filterClient === 'all' ? '600' : '500'}>
+                    <Text
+                      fontSize="sm"
+                      fontWeight={filterClient === 'all' ? '600' : '500'}
+                    >
                       All Companies ({projects.length})
                     </Text>
                   </Box>
@@ -532,7 +546,9 @@ export default function EditProjectPage() {
                     .filter((c) => c.isActive)
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((client) => {
-                      const count = projects.filter((p) => p.clientId === client.id).length;
+                      const count = projects.filter(
+                        (p) => p.clientId === client.id
+                      ).length;
                       return (
                         <Box
                           key={client.id}
@@ -546,7 +562,12 @@ export default function EditProjectPage() {
                           }}
                           borderBottom="1px solid #E2E8F0"
                         >
-                          <Text fontSize="sm" fontWeight={filterClient === client.id ? '600' : '500'}>
+                          <Text
+                            fontSize="sm"
+                            fontWeight={
+                              filterClient === client.id ? '600' : '500'
+                            }
+                          >
                             {client.name} ({count})
                           </Text>
                         </Box>
@@ -798,12 +819,7 @@ export default function EditProjectPage() {
         {/* Success Popup Modal */}
         {success && (
           <>
-            <Box
-              position="fixed"
-              inset={0}
-              bg="blackAlpha.600"
-              zIndex={1999}
-            />
+            <Box position="fixed" inset={0} bg="blackAlpha.600" zIndex={1999} />
             <Box
               position="fixed"
               top="50%"
@@ -916,7 +932,13 @@ export default function EditProjectPage() {
                 <VStack align="stretch" gap={4} p={6}>
                   {/* Error Message in Modal */}
                   {error && (
-                    <Box p={4} bg="red.50" borderRadius="md" borderWidth="1px" borderColor="red.300">
+                    <Box
+                      p={4}
+                      bg="red.50"
+                      borderRadius="md"
+                      borderWidth="1px"
+                      borderColor="red.300"
+                    >
                       <HStack gap={2}>
                         <Text fontSize="lg">❌</Text>
                         <Text fontSize="sm" fontWeight="bold" color="red.700">
@@ -952,7 +974,10 @@ export default function EditProjectPage() {
                   </Box>
 
                   {/* Dates */}
-                  <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+                  <Grid
+                    templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                    gap={4}
+                  >
                     <Box>
                       <HStack mb={2}>
                         <Text fontSize="sm" fontWeight="medium">
@@ -992,7 +1017,10 @@ export default function EditProjectPage() {
                   </Grid>
 
                   {/* Prices */}
-                  <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+                  <Grid
+                    templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                    gap={4}
+                  >
                     <Box>
                       <HStack mb={2}>
                         <Text fontSize="sm" fontWeight="medium">
@@ -1009,7 +1037,9 @@ export default function EditProjectPage() {
                         value={formData.monthlyUnitPrice}
                         onChange={handleChange}
                         borderColor={
-                          validationErrors.monthlyUnitPrice ? 'red.500' : 'gray.300'
+                          validationErrors.monthlyUnitPrice
+                            ? 'red.500'
+                            : 'gray.300'
                         }
                       />
                       {formData.monthlyUnitPrice && (
@@ -1047,10 +1077,21 @@ export default function EditProjectPage() {
                       <Button
                         type="button"
                         size="sm"
-                        variant={formData.settlementMethod === 'FIXED' ? 'solid' : 'outline'}
-                        colorScheme={formData.settlementMethod === 'FIXED' ? 'blue' : 'gray'}
+                        variant={
+                          formData.settlementMethod === 'FIXED'
+                            ? 'solid'
+                            : 'outline'
+                        }
+                        colorScheme={
+                          formData.settlementMethod === 'FIXED'
+                            ? 'blue'
+                            : 'gray'
+                        }
                         onClick={() =>
-                          setFormData((prev) => ({ ...prev, settlementMethod: 'FIXED' }))
+                          setFormData((prev) => ({
+                            ...prev,
+                            settlementMethod: 'FIXED',
+                          }))
                         }
                       >
                         Fixed
@@ -1058,10 +1099,21 @@ export default function EditProjectPage() {
                       <Button
                         type="button"
                         size="sm"
-                        variant={formData.settlementMethod === 'UP_DOWN' ? 'solid' : 'outline'}
-                        colorScheme={formData.settlementMethod === 'UP_DOWN' ? 'blue' : 'gray'}
+                        variant={
+                          formData.settlementMethod === 'UP_DOWN'
+                            ? 'solid'
+                            : 'outline'
+                        }
+                        colorScheme={
+                          formData.settlementMethod === 'UP_DOWN'
+                            ? 'blue'
+                            : 'gray'
+                        }
                         onClick={() =>
-                          setFormData((prev) => ({ ...prev, settlementMethod: 'UP_DOWN' }))
+                          setFormData((prev) => ({
+                            ...prev,
+                            settlementMethod: 'UP_DOWN',
+                          }))
                         }
                       >
                         Up/Down
@@ -1071,7 +1123,10 @@ export default function EditProjectPage() {
 
                   {/* Settlement Range */}
                   {formData.settlementMethod === 'UP_DOWN' && (
-                    <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+                    <Grid
+                      templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                      gap={4}
+                    >
                       <Box>
                         <Text fontSize="sm" fontWeight="medium" mb={2}>
                           Min (hours) *
@@ -1082,7 +1137,9 @@ export default function EditProjectPage() {
                           value={formData.settlementRangeMin}
                           onChange={handleChange}
                           borderColor={
-                            validationErrors.settlementRangeMin ? 'red.500' : 'gray.300'
+                            validationErrors.settlementRangeMin
+                              ? 'red.500'
+                              : 'gray.300'
                           }
                         />
                       </Box>
@@ -1096,7 +1153,9 @@ export default function EditProjectPage() {
                           value={formData.settlementRangeMax}
                           onChange={handleChange}
                           borderColor={
-                            validationErrors.settlementRangeMax ? 'red.500' : 'gray.300'
+                            validationErrors.settlementRangeMax
+                              ? 'red.500'
+                              : 'gray.300'
                           }
                         />
                       </Box>
@@ -1145,11 +1204,7 @@ export default function EditProjectPage() {
                   >
                     Cancel
                   </Button>
-                  <Button
-                    type="submit"
-                    colorScheme="blue"
-                    disabled={loading}
-                  >
+                  <Button type="submit" colorScheme="blue" disabled={loading}>
                     {loading ? 'Updating...' : 'Update Project'}
                   </Button>
                 </HStack>
