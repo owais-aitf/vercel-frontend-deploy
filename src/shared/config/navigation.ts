@@ -13,13 +13,21 @@ export interface NavigationConfig {
 export const engineerNavigation: NavigationConfig = {
   portalName: 'Engineer Portal',
   items: [
-    { label: 'Dashboard', icon: '📊', path: '/engineer/dashboard' },
-    { label: 'Attendance', icon: '📅', path: '/engineer/attendance' },
-    { label: 'View Assigned Projects', icon: '💼', path: '/engineer/projects' },
-    { label: 'View Daily Report', icon: '📄', path: '/engineer/reports/view' },
+    { label: 'Dashboard', icon: 'Activity', path: '/engineer/dashboard' },
+    { label: 'Attendance', icon: 'Calendar', path: '/engineer/attendance' },
+    {
+      label: 'View Assigned Projects',
+      icon: 'Briefcase',
+      path: '/engineer/projects',
+    },
+    {
+      label: 'View Daily Report',
+      icon: 'FileText',
+      path: '/engineer/reports/view',
+    },
     {
       label: 'Update Daily Report',
-      icon: '✏️',
+      icon: 'PenTool',
       path: '/engineer/reports/update',
     },
   ],
@@ -29,12 +37,12 @@ export const engineerNavigation: NavigationConfig = {
 export const salesNavigation: NavigationConfig = {
   portalName: 'Sales Portal',
   items: [
-    { label: 'Dashboard', icon: '📊', path: '/sales/dashboard' },
-    { label: 'Projects', icon: '📁', path: '/sales/projects' },
-    { label: 'Clients', icon: '👥', path: '/sales/clients' },
-    { label: 'Engineers', icon: '👨‍💼', path: '/sales/engineers' },
-    { label: 'Assignments', icon: '🔗', path: '/sales/assignments' },
-    { label: 'Reports', icon: '📈', path: '/sales/reports' },
+    { label: 'Dashboard', icon: 'Activity', path: '/sales/dashboard' },
+    { label: 'Projects', icon: 'FolderOpen', path: '/sales/projects' },
+    { label: 'Clients', icon: 'Users', path: '/sales/clients' },
+    { label: 'Engineers', icon: 'UserCheck', path: '/sales/engineers' },
+    { label: 'Assignments', icon: 'Link', path: '/sales/assignments' },
+    { label: 'Reports', icon: 'TrendingUp', path: '/sales/reports' },
   ],
 };
 
@@ -42,10 +50,10 @@ export const salesNavigation: NavigationConfig = {
 export const adminNavigation: NavigationConfig = {
   portalName: 'Admin Portal',
   items: [
-    { label: 'Dashboard', icon: '📊', path: '/admin/dashboard' },
-    { label: 'Users', icon: '👤', path: '/admin/users' },
-    { label: 'Projects', icon: '📁', path: '/admin/projects' },
-    { label: 'Reports', icon: '📈', path: '/admin/reports' },
-    { label: 'Settings', icon: '⚙️', path: '/admin/settings' },
+    { label: 'Dashboard', icon: 'Activity', path: '/admin/dashboard' },
+    { label: 'Users', icon: 'User', path: '/admin/users' },
+    { label: 'Projects', icon: 'FolderOpen', path: '/admin/projects' },
+    { label: 'Reports', icon: 'TrendingUp', path: '/admin/reports' },
+    { label: 'Settings', icon: 'Settings', path: '/admin/settings' },
   ],
 };

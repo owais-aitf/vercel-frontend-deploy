@@ -4,6 +4,21 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Box, Text, VStack, HStack, Button } from '@chakra-ui/react';
+import {
+  LuActivity,
+  LuCalendar,
+  LuBriefcase,
+  LuFileText,
+  LuPenTool,
+  LuFolderOpen,
+  LuUsers,
+  LuUserCheck,
+  LuLink,
+  LuTrendingUp,
+  LuUser,
+  LuSettings,
+  LuLogOut,
+} from 'react-icons/lu';
 import { NavigationConfig } from '@/shared/config/navigation';
 
 interface SidebarProps {
@@ -16,6 +31,25 @@ interface SidebarProps {
 
 // Define role type
 type UserRole = 'ENGINEER' | 'ADMIN' | 'SALES' | 'MANAGER';
+
+// Icon mapping
+const iconMap: Record<
+  string,
+  React.ComponentType<{ size?: number; className?: string }>
+> = {
+  Activity: LuActivity,
+  Calendar: LuCalendar,
+  Briefcase: LuBriefcase,
+  FileText: LuFileText,
+  PenTool: LuPenTool,
+  FolderOpen: LuFolderOpen,
+  Users: LuUsers,
+  UserCheck: LuUserCheck,
+  Link: LuLink,
+  TrendingUp: LuTrendingUp,
+  User: LuUser,
+  Settings: LuSettings,
+};
 
 export const Sidebar = ({
   navigation,
@@ -126,7 +160,12 @@ export const Sidebar = ({
               border="none"
             >
               <HStack gap={3}>
-                <Text fontSize="20px">{item.icon}</Text>
+                <Box fontSize="20px">
+                  {(() => {
+                    const IconComponent = iconMap[item.icon];
+                    return IconComponent ? <IconComponent size={20} /> : null;
+                  })()}
+                </Box>
                 <Text
                   fontWeight={isActive ? 'semibold' : 'normal'}
                   fontSize="sm"
@@ -192,7 +231,7 @@ export const Sidebar = ({
             w="full"
           >
             <HStack gap={2}>
-              <Text fontSize="16px">🚪</Text>
+              <LuLogOut size={16} />
               <Text>Logout</Text>
             </HStack>
           </Button>

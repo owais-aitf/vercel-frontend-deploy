@@ -4,12 +4,24 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Box } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
+import { LuUsers, LuUserPlus, LuPenTool, LuCalendar } from 'react-icons/lu';
 
 interface Tab {
   label: string;
   href: string;
   icon?: string;
 }
+
+// Icon mapping for tabs
+const tabIconMap: Record<
+  string,
+  React.ComponentType<{ size?: number; className?: string }>
+> = {
+  Users: LuUsers,
+  UserPlus: LuUserPlus,
+  PenTool: LuPenTool,
+  Calendar: LuCalendar,
+};
 
 interface TabNavigationProps {
   tabs: Tab[];
@@ -160,7 +172,14 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
                     transform: 'scale(1.1)',
                   }}
                 >
-                  {tab.icon}
+                  {(() => {
+                    const IconComponent = tabIconMap[tab.icon!];
+                    return IconComponent ? (
+                      <IconComponent size={16} />
+                    ) : (
+                      tab.icon
+                    );
+                  })()}
                 </Box>
               )}
 

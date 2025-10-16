@@ -23,17 +23,7 @@ import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
 import { engineerService, Engineer } from '@/shared/service/engineerService';
 import { toaster } from '@/components/ui/toaster';
-
-const engineerTabs = [
-  { label: 'View All Engineers', href: '/sales/engineers', icon: '👥' },
-  { label: 'Create New Engineer', href: '/sales/engineers/create', icon: '➕' },
-  { label: 'Update Engineer', href: '/sales/engineers/update', icon: '✏️' },
-  {
-    label: 'Manage Attendance',
-    href: '/sales/engineers/attendance',
-    icon: '📅',
-  },
-];
+import { engineerTabs } from '@/shared/config/engineerTabs';
 
 export default function EngineersPage() {
   const { user } = useContext(AuthContext);
