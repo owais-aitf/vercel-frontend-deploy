@@ -462,6 +462,7 @@ export default function LoginPage() {
                     {/* FIXED PASSWORD TOGGLE */}
                     <Box
                       as="button"
+                      type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       position="absolute"
                       right="12px"
