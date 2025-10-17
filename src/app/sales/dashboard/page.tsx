@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useContext, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Grid,
@@ -32,6 +33,7 @@ import {
 } from 'react-icons/lu';
 
 export default function SalesDashboard() {
+  const router = useRouter();
   const { user } = useContext(AuthContext);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [pendingReports, setPendingReports] = useState<PendingReport[]>([]);
@@ -40,6 +42,7 @@ export default function SalesDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const isFetching = useRef(false);
   const hasFetched = useRef(false);
+  
 
   useEffect(() => {
     // Only fetch once when component mounts and user is available
@@ -48,6 +51,10 @@ export default function SalesDashboard() {
       fetchDashboardData();
     }
   }, [user]);
+   const handleNewClient = () => router.push('/sales/clients');
+  const handleNewProject = () => router.push('/sales/projects');
+  const handleAssignEngineer = () => router.push('/sales/assignments');
+  const handleGenerateReport = () => router.push('/sales/reports');
 
   const fetchDashboardData = async () => {
     // Prevent multiple simultaneous fetches
@@ -405,29 +412,45 @@ export default function SalesDashboard() {
         </Card.Root>
 
         {/* Quick Actions */}
-        <Card.Root>
-          <Card.Body p={6}>
-            <VStack align="start" gap={4}>
-              <Text fontSize="lg" fontWeight="bold">
-                Quick Actions
-              </Text>
-              <HStack gap={3} flexWrap="wrap">
-                <Button colorScheme="blue" size="sm">
-                  + New Client
-                </Button>
-                <Button colorScheme="blue" size="sm">
-                  + New Project
-                </Button>
-                <Button colorScheme="blue" size="sm">
-                  Assign Engineer
-                </Button>
-                <Button colorScheme="blue" size="sm">
-                  Generate Report
-                </Button>
-              </HStack>
-            </VStack>
-          </Card.Body>
-        </Card.Root>
+    <Card.Root>
+      <Card.Body p={6}>
+        <VStack alignItems="start" gap={4}>
+          <Text fontSize="lg" fontWeight="bold">
+            Quick Actions
+          </Text>
+          <HStack gap={3} flexWrap="wrap">
+            <Button 
+              colorScheme="blue" 
+              size="sm"
+              onClick={handleNewClient} // ADD THIS
+            >
+              New Client
+            </Button>
+            <Button 
+              colorScheme="blue" 
+              size="sm"
+              onClick={handleNewProject} // ADD THIS
+            >
+              New Project
+            </Button>
+            <Button 
+              colorScheme="blue" 
+              size="sm"
+              onClick={handleAssignEngineer} // ADD THIS
+            >
+              Assign Engineer
+            </Button>
+            <Button 
+              colorScheme="blue" 
+              size="sm"
+              onClick={handleGenerateReport} // ADD THIS
+            >
+              Generate Report
+            </Button>
+          </HStack>
+        </VStack>
+      </Card.Body>
+    </Card.Root>
       </DashboardLayout>
     </FeatureErrorBoundary>
   );
