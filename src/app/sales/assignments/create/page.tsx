@@ -21,16 +21,8 @@ import { engineerService, Engineer } from '@/shared/service/engineerService';
 import { projectService, Project } from '@/shared/service/projectService';
 import { toaster } from '@/components/ui/toaster';
 import { useRouter } from 'next/navigation';
+import { assignmentTabs } from '@/shared/config/assignmentTabs';
 
-const assignmentTabs = [
-  { label: 'View All Assignments', href: '/sales/assignments', icon: '📋' },
-  { label: 'Create Assignment', href: '/sales/assignments/create', icon: '➕' },
-  {
-    label: 'Manage Assignments',
-    href: '/sales/assignments/manage',
-    icon: '⚙️',
-  },
-];
 
 export default function CreateAssignmentPage() {
   const { user } = useContext(AuthContext);

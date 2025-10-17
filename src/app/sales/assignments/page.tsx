@@ -13,6 +13,16 @@ import {
   Input,
   Table,
 } from '@chakra-ui/react';
+import {
+  LuClipboard,
+  LuCheck,
+  LuUsers,
+  LuFolderOpen,
+  LuSearch,
+  LuRefreshCw,
+  LuTrash2,
+  LuCircleAlert,
+} from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
@@ -23,16 +33,7 @@ import {
   ProjectAssignment,
 } from '@/shared/service/assignmentService';
 import { toaster } from '@/components/ui/toaster';
-
-const assignmentTabs = [
-  { label: 'View All Assignments', href: '/sales/assignments', icon: '📋' },
-  { label: 'Create Assignment', href: '/sales/assignments/create', icon: '➕' },
-  {
-    label: 'Manage Assignments',
-    href: '/sales/assignments/manage',
-    icon: '⚙️',
-  },
-];
+import { assignmentTabs } from '@/shared/config/assignmentTabs';
 
 export default function AssignmentsPage() {
   const { user } = useContext(AuthContext);
@@ -77,14 +78,12 @@ export default function AssignmentsPage() {
   useEffect(() => {
     let filtered = [...assignments];
 
-    // Status filter
     if (statusFilter === 'active') {
       filtered = filtered.filter((assignment) => assignment.isActive);
     } else if (statusFilter === 'inactive') {
       filtered = filtered.filter((assignment) => !assignment.isActive);
     }
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(
         (assignment) =>
@@ -104,6 +103,7 @@ export default function AssignmentsPage() {
     }
 
     setFilteredAssignments(filtered);
+    setCurrentPage(1);
   }, [searchTerm, statusFilter, assignments]);
 
   const handleEndAssignment = async (id: string, engineerName: string) => {
@@ -180,23 +180,16 @@ export default function AssignmentsPage() {
   };
 
   const activeCount = assignments.filter((a) => a.isActive).length;
-
-  // Get unique engineers and projects
   const uniqueEngineers = new Set(assignments.map((a) => a.engineer.fullName))
     .size;
   const uniqueProjects = new Set(assignments.map((a) => a.project.projectName))
     .size;
 
-  // Pagination calculations
+  // Pagination
   const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedAssignments = filteredAssignments.slice(startIndex, endIndex);
-
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter]);
 
   return (
     <FeatureErrorBoundary featureName="Assignments">
@@ -217,107 +210,194 @@ export default function AssignmentsPage() {
         {/* Tab Navigation */}
         <TabNavigation tabs={assignmentTabs} />
 
-        {/* Compact Stats Bar with Boxes */}
-        <HStack
-          p={4}
-          bg="white"
-          borderRadius="lg"
-          shadow="sm"
-          mb={4}
-          flexWrap="wrap"
-          gap={3}
+        {/* Stats Cards - Clean Horizontal Layout with React Icons */}
+        <Grid
+          templateColumns={{
+            base: 'repeat(2, 1fr)', // Mobile: 2x2 grid
+            md: 'repeat(4, 1fr)', // Desktop: 4 columns in a row
+          }}
+          gap={{ base: 3, md: 4 }}
+          mb={{ base: 4, md: 6 }}
         >
-          {/* Total */}
-          <Box
-            p={3}
-            bg="blue.50"
-            borderRadius="md"
-            border="1px solid"
-            borderColor="blue.100"
-            minW="100px"
-          >
-            <VStack align="start" gap={0}>
-              <Text fontSize="xs" color="blue.700" fontWeight="medium">
-                Total
-              </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="blue.600">
-                {assignments.length}
-              </Text>
-            </VStack>
-          </Box>
+          {/* Total Assignments */}
+          <Card.Root bg="blue.50" borderRadius="lg">
+            <Card.Body p={{ base: 3, md: 4 }}>
+              <VStack align="start" gap={1} position="relative">
+                <Text
+                  fontSize={{ base: '2xs', md: 'xs' }}
+                  color="blue.700"
+                  fontWeight="medium"
+                >
+                  Total
+                </Text>
+                <Text
+                  fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
+                  fontWeight="bold"
+                  color="blue.600"
+                >
+                  {assignments.length}
+                </Text>
+                {/* Optional: Icon in corner */}
+                <Box
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  color="blue.400"
+                  opacity={0.3}
+                >
+                  <LuClipboard size={24} />
+                </Box>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
 
-          {/* Active */}
-          <Box
-            p={3}
-            bg="green.50"
-            borderRadius="md"
-            border="1px solid"
-            borderColor="green.100"
-            minW="100px"
-          >
-            <VStack align="start" gap={0}>
-              <Text fontSize="xs" color="green.700" fontWeight="medium">
-                Active
-              </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="green.600">
-                {activeCount}
-              </Text>
-            </VStack>
-          </Box>
+          {/* Active Assignments */}
+          <Card.Root bg="green.50" borderRadius="lg">
+            <Card.Body p={{ base: 3, md: 4 }}>
+              <VStack align="start" gap={1} position="relative">
+                <Text
+                  fontSize={{ base: '2xs', md: 'xs' }}
+                  color="green.700"
+                  fontWeight="medium"
+                >
+                  Active
+                </Text>
+                <Text
+                  fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
+                  fontWeight="bold"
+                  color="green.600"
+                >
+                  {activeCount}
+                </Text>
+                <Box
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  color="green.400"
+                  opacity={0.3}
+                >
+                  <LuCheck size={24} />
+                </Box>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
 
           {/* Engineers */}
-          <Box
-            p={3}
-            bg="purple.50"
-            borderRadius="md"
-            border="1px solid"
-            borderColor="purple.100"
-            minW="100px"
-          >
-            <VStack align="start" gap={0}>
-              <Text fontSize="xs" color="purple.700" fontWeight="medium">
-                Engineers
-              </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="purple.600">
-                {uniqueEngineers}
-              </Text>
-            </VStack>
-          </Box>
+          <Card.Root bg="purple.50" borderRadius="lg">
+            <Card.Body p={{ base: 3, md: 4 }}>
+              <VStack align="start" gap={1} position="relative">
+                <Text
+                  fontSize={{ base: '2xs', md: 'xs' }}
+                  color="purple.700"
+                  fontWeight="medium"
+                >
+                  Engineers
+                </Text>
+                <Text
+                  fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
+                  fontWeight="bold"
+                  color="purple.600"
+                >
+                  {uniqueEngineers}
+                </Text>
+                <Box
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  color="purple.400"
+                  opacity={0.3}
+                >
+                  <LuUsers size={24} />
+                </Box>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
 
           {/* Projects */}
-          <Box
-            p={3}
-            bg="orange.50"
-            borderRadius="md"
-            border="1px solid"
-            borderColor="orange.100"
-            minW="100px"
-          >
-            <VStack align="start" gap={0}>
-              <Text fontSize="xs" color="orange.700" fontWeight="medium">
-                Projects
-              </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="orange.600">
-                {uniqueProjects}
-              </Text>
-            </VStack>
-          </Box>
-        </HStack>
+          <Card.Root bg="orange.50" borderRadius="lg">
+            <Card.Body p={{ base: 3, md: 4 }}>
+              <VStack align="start" gap={1} position="relative">
+                <Text
+                  fontSize={{ base: '2xs', md: 'xs' }}
+                  color="orange.700"
+                  fontWeight="medium"
+                >
+                  Projects
+                </Text>
+                <Text
+                  fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
+                  fontWeight="bold"
+                  color="orange.600"
+                >
+                  {uniqueProjects}
+                </Text>
+                <Box
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  color="orange.400"
+                  opacity={0.3}
+                >
+                  <LuFolderOpen size={24} />
+                </Box>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        </Grid>
 
-        {/* Loading/Error/Empty States */}
+        {/* Loading/Error States */}
         {loading && (
           <Card.Root p={8}>
             <VStack gap={4}>
-              <Text fontSize="2xl">⏳</Text>
+              <HStack gap={2}>
+                <Box
+                  w="12px"
+                  h="12px"
+                  borderRadius="full"
+                  bg="blue.500"
+                  animation="bounce 1.4s infinite ease-in-out"
+                  style={{ animationDelay: '0s' }}
+                />
+                <Box
+                  w="12px"
+                  h="12px"
+                  borderRadius="full"
+                  bg="blue.500"
+                  animation="bounce 1.4s infinite ease-in-out"
+                  style={{ animationDelay: '0.2s' }}
+                />
+                <Box
+                  w="12px"
+                  h="12px"
+                  borderRadius="full"
+                  bg="blue.500"
+                  animation="bounce 1.4s infinite ease-in-out"
+                  style={{ animationDelay: '0.4s' }}
+                />
+              </HStack>
               <Text color="gray.600">Loading assignments...</Text>
             </VStack>
+
+            {/* Add CSS */}
+            <style jsx>{`
+              @keyframes bounce {
+                0%,
+                80%,
+                100% {
+                  transform: translateY(0);
+                }
+                40% {
+                  transform: translateY(-20px);
+                }
+              }
+            `}</style>
           </Card.Root>
         )}
 
         {error && !loading && (
           <Card.Root p={6} bg="red.50">
             <HStack gap={3}>
-              <Text fontSize="2xl">⚠️</Text>
+              <LuCircleAlert size={24} color="red" />
               <VStack align="start" gap={1}>
                 <Text fontWeight="bold" color="red.700">
                   Error
@@ -333,11 +413,11 @@ export default function AssignmentsPage() {
         {!loading && !error && filteredAssignments.length === 0 && (
           <Card.Root p={8}>
             <VStack gap={4}>
-              <Text fontSize="4xl">📋</Text>
+              <LuClipboard size={48} color="gray" />
               <Text fontSize="lg" fontWeight="bold">
                 No Assignments Found
               </Text>
-              <Text color="gray.600">
+              <Text color="gray.600" textAlign="center">
                 {assignments.length === 0
                   ? 'No assignments have been created yet. Create your first assignment to link engineers to projects.'
                   : 'No assignments match your filters.'}
@@ -346,32 +426,37 @@ export default function AssignmentsPage() {
           </Card.Root>
         )}
 
-        {/* Assignments Table */}
+        {/* Assignments Table/Cards */}
         {!loading && !error && filteredAssignments.length > 0 && (
           <Card.Root>
-            {/* Integrated Filters in Table Header */}
+            {/* Filters Header */}
             <Box
-              p={4}
+              p={{ base: 3, md: 4 }}
               borderBottom="1px solid"
               borderColor="gray.200"
               bg="gray.50"
             >
-              <HStack justify="space-between" flexWrap="wrap" gap={4}>
-                <HStack gap={3} flex={1} flexWrap="wrap">
-                  {/* Search */}
+              <VStack gap={3} align="stretch">
+                {/* Search with Icon */}
+                <HStack gap={2} w="full">
+                  <Box color="gray.400">
+                    <LuSearch size={18} />
+                  </Box>
                   <Input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="🔍 Search by engineer, project, or client..."
-                    size="sm"
+                    placeholder="Search by engineer, project, or client..."
+                    size={{ base: 'sm', md: 'md' }}
                     bg="white"
-                    maxW={{ base: '100%', md: '300px' }}
-                    fontSize="sm"
+                    flex={1}
+                    fontSize={{ base: 'xs', md: 'sm' }}
                   />
+                </HStack>
 
-                  {/* Status Filter */}
-                  <Box minW="150px">
+                {/* Status Filter and Refresh */}
+                <HStack justify="space-between" flexWrap="wrap" gap={2}>
+                  <Box minW={{ base: '140px', md: '160px' }}>
                     <select
                       value={statusFilter}
                       onChange={(e) =>
@@ -387,7 +472,6 @@ export default function AssignmentsPage() {
                         backgroundColor: 'white',
                         fontSize: '13px',
                         cursor: 'pointer',
-                        outline: 'none',
                       }}
                     >
                       <option value="all">All Assignments</option>
@@ -395,23 +479,22 @@ export default function AssignmentsPage() {
                       <option value="inactive">Inactive Only</option>
                     </select>
                   </Box>
-                </HStack>
 
-                <HStack gap={3}>
-                  <Text fontSize="xs" color="gray.600">
-                    {filteredAssignments.length} results
-                  </Text>
-                  <Button
-                    onClick={fetchAssignments}
-                    size="sm"
-                    variant="ghost"
-                    colorScheme="blue"
-                    fontSize="xs"
-                  >
-                    🔄 Refresh
-                  </Button>
+                  <HStack gap={2}>
+                    <Text fontSize={{ base: '2xs', md: 'xs' }} color="gray.600">
+                      {filteredAssignments.length} results
+                    </Text>
+                    <Button
+                      onClick={fetchAssignments}
+                      size={{ base: 'xs', md: 'sm' }}
+                      variant="ghost"
+                      colorScheme="blue"
+                    >
+                      <LuRefreshCw size={14} />
+                    </Button>
+                  </HStack>
                 </HStack>
-              </HStack>
+              </VStack>
             </Box>
 
             {/* Desktop Table View */}
@@ -517,7 +600,7 @@ export default function AssignmentsPage() {
                               )
                             }
                           >
-                            🗑️
+                            <LuTrash2 size={14} />
                           </Button>
                         </HStack>
                       </Table.Cell>
@@ -532,107 +615,102 @@ export default function AssignmentsPage() {
               display={{ base: 'flex', lg: 'none' }}
               align="stretch"
               gap={3}
-              p={4}
+              p={{ base: 3, md: 4 }}
             >
               {paginatedAssignments.map((assignment) => (
-                <Box
-                  key={assignment.id}
-                  p={4}
-                  bg="white"
-                  borderRadius="md"
-                  border="1px solid"
-                  borderColor="gray.200"
-                  shadow="sm"
-                >
-                  <VStack align="stretch" gap={3}>
-                    {/* Engineer */}
-                    <VStack align="start" gap={0}>
-                      <Text fontSize="sm" fontWeight="bold">
-                        {assignment.engineer.fullName}
-                      </Text>
-                      <Text fontSize="xs" color="gray.600">
-                        {assignment.engineer.email}
-                      </Text>
-                    </VStack>
-
-                    {/* Project & Client */}
-                    <VStack align="stretch" gap={1}>
-                      <HStack justify="space-between">
-                        <Text fontSize="xs" color="gray.600">
-                          Project:
-                        </Text>
-                        <Text fontSize="sm" fontWeight="medium">
-                          {assignment.project.projectName}
-                        </Text>
+                <Card.Root key={assignment.id} borderWidth="1px">
+                  <Card.Body p={3}>
+                    <VStack align="stretch" gap={2}>
+                      {/* Engineer & Status */}
+                      <HStack justify="space-between" align="start">
+                        <VStack align="start" gap={0} flex={1}>
+                          <Text fontSize="sm" fontWeight="bold">
+                            {assignment.engineer.fullName}
+                          </Text>
+                          <Text fontSize="2xs" color="gray.600">
+                            {assignment.engineer.email}
+                          </Text>
+                        </VStack>
+                        <Badge
+                          colorScheme={assignment.isActive ? 'green' : 'gray'}
+                          fontSize="2xs"
+                        >
+                          {assignment.isActive ? 'Active' : 'Ended'}
+                        </Badge>
                       </HStack>
-                      <HStack justify="space-between">
-                        <Text fontSize="xs" color="gray.600">
-                          Client:
-                        </Text>
-                        <Text fontSize="sm">
-                          {assignment.project.client.name}
-                        </Text>
-                      </HStack>
-                    </VStack>
 
-                    {/* Dates */}
-                    <HStack justify="space-between" gap={4}>
-                      <VStack align="start" gap={0} flex={1}>
-                        <Text fontSize="xs" color="gray.600">
-                          Start Date
-                        </Text>
-                        <Text fontSize="sm">
-                          {new Date(
-                            assignment.assignmentStart
-                          ).toLocaleDateString()}
-                        </Text>
+                      {/* Project & Client */}
+                      <VStack align="stretch" gap={1}>
+                        <HStack justify="space-between">
+                          <Text fontSize="2xs" color="gray.500">
+                            Project:
+                          </Text>
+                          <Text fontSize="xs" fontWeight="medium">
+                            {assignment.project.projectName}
+                          </Text>
+                        </HStack>
+                        <HStack justify="space-between">
+                          <Text fontSize="2xs" color="gray.500">
+                            Client:
+                          </Text>
+                          <Text fontSize="xs">
+                            {assignment.project.client.name}
+                          </Text>
+                        </HStack>
                       </VStack>
-                      <VStack align="start" gap={0} flex={1}>
-                        <Text fontSize="xs" color="gray.600">
-                          End Date
-                        </Text>
-                        <Text fontSize="sm">
-                          {assignment.assignmentEnd
-                            ? new Date(
-                                assignment.assignmentEnd
-                              ).toLocaleDateString()
-                            : '-'}
-                        </Text>
-                      </VStack>
-                    </HStack>
 
-                    {/* Status & Actions */}
-                    <HStack
-                      justify="space-between"
-                      pt={2}
-                      borderTop="1px solid"
-                      borderColor="gray.100"
-                    >
-                      <Badge
-                        colorScheme={assignment.isActive ? 'green' : 'gray'}
-                        fontSize="xs"
-                      >
-                        {assignment.isActive ? 'Active' : 'Ended'}
-                      </Badge>
-                      <HStack gap={2}>
+                      {/* Dates */}
+                      <Grid templateColumns="repeat(2, 1fr)" gap={2}>
+                        <VStack align="start" gap={0}>
+                          <Text fontSize="2xs" color="gray.500">
+                            Start
+                          </Text>
+                          <Text fontSize="xs" fontWeight="medium">
+                            {new Date(
+                              assignment.assignmentStart
+                            ).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </Text>
+                        </VStack>
+                        <VStack align="start" gap={0}>
+                          <Text fontSize="2xs" color="gray.500">
+                            End
+                          </Text>
+                          <Text fontSize="xs" fontWeight="medium">
+                            {assignment.assignmentEnd
+                              ? new Date(
+                                  assignment.assignmentEnd
+                                ).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                })
+                              : '-'}
+                          </Text>
+                        </VStack>
+                      </Grid>
+
+                      {/* Actions */}
+                      <HStack gap={2} mt={1}>
                         {assignment.isActive && (
                           <Button
-                            size="sm"
+                            size="xs"
                             colorScheme="orange"
                             variant="outline"
+                            flex={1}
                             onClick={() =>
                               handleEndAssignment(
                                 assignment.id,
                                 assignment.engineer.fullName
                               )
                             }
-                            fontSize="xs"
                           >
                             End
                           </Button>
                         )}
                         <Button
-                          size="sm"
+                          size="xs"
                           colorScheme="red"
                           variant="ghost"
                           onClick={() =>
@@ -642,87 +720,96 @@ export default function AssignmentsPage() {
                             )
                           }
                         >
-                          🗑️
+                          <LuTrash2 size={14} />
                         </Button>
                       </HStack>
-                    </HStack>
-                  </VStack>
-                </Box>
+                    </VStack>
+                  </Card.Body>
+                </Card.Root>
               ))}
             </VStack>
 
             {/* Pagination */}
-            {filteredAssignments.length > 0 && (
-              <HStack
-                justify="space-between"
-                mt={6}
+            {totalPages > 1 && (
+              <Box
                 p={4}
-                bg="white"
-                borderRadius="lg"
-                border="1px solid"
+                borderTop="1px solid"
                 borderColor="gray.200"
+                bg="white"
               >
-                {/* Results Info */}
-                <Text fontSize="sm" color="gray.600">
-                  Showing {startIndex + 1} to{' '}
-                  {Math.min(endIndex, filteredAssignments.length)} of{' '}
-                  {filteredAssignments.length} assignments
-                </Text>
+                <HStack justify="space-between" flexWrap="wrap" gap={3}>
+                  <Text fontSize={{ base: '2xs', md: 'xs' }} color="gray.600">
+                    Showing {startIndex + 1}-
+                    {Math.min(endIndex, filteredAssignments.length)} of{' '}
+                    {filteredAssignments.length}
+                  </Text>
 
-                {/* Pagination Controls */}
-                <HStack gap={2}>
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                    variant="ghost"
-                    fontSize="sm"
-                    color="gray.600"
-                    _hover={{ bg: 'gray.100' }}
-                  >
-                    ← Previous
-                  </Button>
+                  <HStack gap={2}>
+                    <Button
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={currentPage === 1}
+                      variant="outline"
+                      fontSize={{ base: '2xs', md: 'xs' }}
+                    >
+                      Previous
+                    </Button>
 
-                  <HStack gap={1}>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (page) => (
-                        <Button
-                          key={page}
-                          size="sm"
-                          onClick={() => setCurrentPage(page)}
-                          bg={currentPage === page ? 'gray.900' : 'white'}
-                          color={currentPage === page ? 'white' : 'gray.700'}
-                          border="1px solid"
-                          borderColor="gray.200"
-                          _hover={{
-                            bg: currentPage === page ? 'gray.800' : 'gray.50',
-                          }}
-                          minW="40px"
-                          fontWeight={currentPage === page ? 'bold' : 'normal'}
-                        >
-                          {page}
-                        </Button>
-                      )
-                    )}
+                    <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
+                      {Array.from(
+                        { length: Math.min(totalPages, 5) },
+                        (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+
+                          return (
+                            <Button
+                              key={pageNum}
+                              size="sm"
+                              onClick={() => setCurrentPage(pageNum)}
+                              variant={
+                                currentPage === pageNum ? 'solid' : 'outline'
+                              }
+                              colorScheme={
+                                currentPage === pageNum ? 'blue' : 'gray'
+                              }
+                              minW="32px"
+                            >
+                              {pageNum}
+                            </Button>
+                          );
+                        }
+                      )}
+                    </HStack>
+
+                    <Text fontSize="xs" display={{ base: 'block', md: 'none' }}>
+                      {currentPage}/{totalPages}
+                    </Text>
+
+                    <Button
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                      variant="outline"
+                      fontSize={{ base: '2xs', md: 'xs' }}
+                    >
+                      Next
+                    </Button>
                   </HStack>
-
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    variant="ghost"
-                    fontSize="sm"
-                    color="gray.600"
-                    _hover={{ bg: 'gray.100' }}
-                  >
-                    Next →
-                  </Button>
                 </HStack>
-              </HStack>
+              </Box>
             )}
           </Card.Root>
         )}

@@ -22,16 +22,8 @@ import {
   ProjectAssignment,
 } from '@/shared/service/assignmentService';
 import { toaster } from '@/components/ui/toaster';
+import { assignmentTabs } from '@/shared/config/assignmentTabs';
 
-const assignmentTabs = [
-  { label: 'View All Assignments', href: '/sales/assignments', icon: '📋' },
-  { label: 'Create Assignment', href: '/sales/assignments/create', icon: '➕' },
-  {
-    label: 'Manage Assignments',
-    href: '/sales/assignments/manage',
-    icon: '⚙️',
-  },
-];
 
 export default function ManageAssignmentsPage() {
   const { user } = useContext(AuthContext);
