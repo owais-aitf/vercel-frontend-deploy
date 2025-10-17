@@ -63,26 +63,40 @@ export const Sidebar = ({
   const [userRole, setUserRole] = useState('User');
 
   useEffect(() => {
+    // Only run in browser environment
+    if (typeof window === 'undefined') return;
+
     // Get user role from localStorage
     const userDataString = localStorage.getItem('user');
     if (userDataString) {
       try {
         const userData = JSON.parse(userDataString);
-        const role = userData.role as UserRole;
 
-        // Format role to display name
-        const roleMap: Record<UserRole, string> = {
-          ENGINEER: 'Engineer',
-          ADMIN: 'Admin',
-          SALES: 'Sales',
-          MANAGER: 'Manager',
-        };
+        // Check if userData exists and has role property
+        if (userData && userData.role) {
+          const role = userData.role as UserRole;
 
-        const roleDisplayName = roleMap[role] || 'User';
-        setUserRole(roleDisplayName);
+          // Format role to display name
+          const roleMap: Record<UserRole, string> = {
+            ENGINEER: 'Engineer',
+            ADMIN: 'Admin',
+            SALES: 'Sales',
+            MANAGER: 'Manager',
+          };
+
+          const roleDisplayName = roleMap[role] || 'User';
+          setUserRole(roleDisplayName);
+        } else {
+          console.warn('User data exists but role is missing');
+          setUserRole('User');
+        }
       } catch (error) {
         console.error('Error parsing user role:', error);
+        setUserRole('User');
       }
+    } else {
+      // No user data in localStorage
+      setUserRole('User');
     }
   }, []);
 

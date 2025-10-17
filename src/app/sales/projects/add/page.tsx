@@ -24,7 +24,6 @@ import {
 import { clientService, Client } from '@/shared/service/clientService';
 import { projectTabs } from '@/shared/config/projectTabs';
 
-
 export default function AddProjectPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();

@@ -20,7 +20,6 @@ import { AuthContext } from '@/context/AuthContext';
 import { clientService, Client } from '@/shared/service/clientService';
 import { clientTabs } from '@/shared/config/clientTabs';
 
-
 interface Project {
   id: string;
   name: string;

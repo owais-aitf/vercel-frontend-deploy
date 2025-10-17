@@ -21,7 +21,6 @@ import { AuthContext } from '@/context/AuthContext';
 import { clientService, Client } from '@/shared/service/clientService';
 import { clientTabs } from '@/shared/config/clientTabs';
 
-
 export default function UpdateClientPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();

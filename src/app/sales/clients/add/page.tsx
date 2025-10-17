@@ -20,7 +20,6 @@ import { AuthContext } from '@/context/AuthContext';
 import { clientService } from '@/shared/service/clientService';
 import { clientTabs } from '@/shared/config/clientTabs';
 
-
 export default function AddClientPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();

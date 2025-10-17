@@ -176,8 +176,8 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
                 </Box>
               )}
 
-              <Box 
-                opacity={isActive ? 1 : 0.8} 
+              <Box
+                opacity={isActive ? 1 : 0.8}
                 transition="all 0.3s ease"
                 className="tab-text"
               >
