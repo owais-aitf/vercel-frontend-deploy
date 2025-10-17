@@ -12,6 +12,7 @@ import {
   Input,
   Badge,
 } from '@chakra-ui/react';
+import { LuClipboardList, LuPlus, LuPencil } from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
@@ -19,12 +20,7 @@ import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
 import { projectService, Project } from '@/shared/service/projectService';
 import { clientService, Client } from '@/shared/service/clientService';
-
-const projectTabs = [
-  { label: 'View All Projects', href: '/sales/projects', icon: '📋' },
-  { label: 'Create New Project', href: '/sales/projects/add', icon: '➕' },
-  { label: 'Edit Project', href: '/sales/projects/update', icon: '✏️' },
-];
+import { projectTabs } from '@/shared/config/projectTabs';
 
 export default function ViewAllProjectsPage() {
   const { user } = useContext(AuthContext);

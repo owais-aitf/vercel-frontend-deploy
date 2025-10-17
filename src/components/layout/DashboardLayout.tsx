@@ -33,7 +33,7 @@ export const DashboardLayout = ({
   }, []);
 
   return (
-    <Flex h="100vh" overflow="hidden">
+    <Flex h="100vh" overflow="hidden" suppressHydrationWarning>
       {/* Fixed Sidebar */}
       <Sidebar
         navigation={navigation}

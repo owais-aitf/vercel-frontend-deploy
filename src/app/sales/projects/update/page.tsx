@@ -13,6 +13,7 @@ import {
   Grid,
   Badge,
 } from '@chakra-ui/react';
+
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
@@ -24,12 +25,8 @@ import {
   UpdateProjectData,
 } from '@/shared/service/projectService';
 import { clientService, Client } from '@/shared/service/clientService';
+import { projectTabs } from '@/shared/config/projectTabs';
 
-const projectTabs = [
-  { label: 'View All Projects', href: '/sales/projects', icon: '📋' },
-  { label: 'Create New Project', href: '/sales/projects/add', icon: '➕' },
-  { label: 'Edit Project', href: '/sales/projects/update', icon: '✏️' },
-];
 
 export default function EditProjectPage() {
   const { user } = useContext(AuthContext);

@@ -19,13 +19,8 @@ import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
 import { clientService, Client } from '@/shared/service/clientService';
+import { clientTabs } from '@/shared/config/clientTabs';
 
-const clientTabs = [
-  { label: 'View All Clients', href: '/sales/clients', icon: '👥' },
-  { label: 'Add New Client', href: '/sales/clients/add', icon: '➕' },
-  { label: 'Update Client', href: '/sales/clients/update', icon: '✏️' },
-  { label: 'Client Projects', href: '/sales/clients/projects', icon: '📁' },
-];
 
 export default function UpdateClientPage() {
   const { user } = useContext(AuthContext);

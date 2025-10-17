@@ -4,24 +4,14 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Box } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import { LuUsers, LuUserPlus, LuPenTool, LuCalendar } from 'react-icons/lu';
+import { IconType } from 'react-icons';
 
+// UPDATED: Accept both string and React Icon component
 interface Tab {
   label: string;
   href: string;
-  icon?: string;
+  icon?: string | IconType; // Can be string (emoji) or React Icon component
 }
-
-// Icon mapping for tabs
-const tabIconMap: Record<
-  string,
-  React.ComponentType<{ size?: number; className?: string }>
-> = {
-  Users: LuUsers,
-  UserPlus: LuUserPlus,
-  PenTool: LuPenTool,
-  Calendar: LuCalendar,
-};
 
 interface TabNavigationProps {
   tabs: Tab[];
@@ -63,6 +53,17 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
       // Reset navigation state after a short delay
       setTimeout(() => setIsNavigating(false), 300);
     }
+  };
+
+  // UPDATED: Helper function to render icon (string or React component)
+  const renderIcon = (icon: string | IconType, isActive: boolean) => {
+    // Check if it's a React component (function)
+    if (typeof icon === 'function') {
+      const IconComponent = icon as IconType;
+      return <IconComponent size={16} />;
+    }
+    // Otherwise it's a string (emoji)
+    return icon;
   };
 
   return (
@@ -161,6 +162,7 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
                 />
               )}
 
+              {/* UPDATED: Render icon using helper function */}
               {tab.icon && (
                 <Box
                   fontSize="16px"
@@ -168,22 +170,17 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
                   alignItems="center"
                   opacity={isActive ? 1 : 0.7}
                   transition="all 0.3s ease"
-                  _groupHover={{
-                    transform: 'scale(1.1)',
-                  }}
+                  className="tab-icon"
                 >
-                  {(() => {
-                    const IconComponent = tabIconMap[tab.icon!];
-                    return IconComponent ? (
-                      <IconComponent size={16} />
-                    ) : (
-                      tab.icon
-                    );
-                  })()}
+                  {renderIcon(tab.icon, isActive)}
                 </Box>
               )}
 
-              <Box opacity={isActive ? 1 : 0.8} transition="all 0.3s ease">
+              <Box 
+                opacity={isActive ? 1 : 0.8} 
+                transition="all 0.3s ease"
+                className="tab-text"
+              >
                 {tab.label}
               </Box>
             </Link>
