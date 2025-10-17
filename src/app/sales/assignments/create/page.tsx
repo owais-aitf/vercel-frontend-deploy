@@ -23,7 +23,6 @@ import { toaster } from '@/components/ui/toaster';
 import { useRouter } from 'next/navigation';
 import { assignmentTabs } from '@/shared/config/assignmentTabs';
 
-
 export default function CreateAssignmentPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();

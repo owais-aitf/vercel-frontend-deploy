@@ -24,7 +24,6 @@ import {
 import { toaster } from '@/components/ui/toaster';
 import { assignmentTabs } from '@/shared/config/assignmentTabs';
 
-
 export default function ManageAssignmentsPage() {
   const { user } = useContext(AuthContext);
   const [assignments, setAssignments] = useState<ProjectAssignment[]>([]);

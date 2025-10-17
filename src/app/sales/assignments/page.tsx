@@ -19,9 +19,8 @@ import {
   LuUsers,
   LuFolderOpen,
   LuSearch,
-  LuRefreshCw,
   LuTrash2,
-  LuCircleAlert,
+  LuPencil,
 } from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
@@ -49,6 +48,15 @@ export default function AssignmentsPage() {
   >('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Edit modal state
+  const [selectedAssignment, setSelectedAssignment] =
+    useState<ProjectAssignment | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [formData, setFormData] = useState({
+    assignmentStart: '',
+    assignmentEnd: '',
+  });
 
   useEffect(() => {
     fetchAssignments();
@@ -176,6 +184,55 @@ export default function AssignmentsPage() {
         type: 'error',
         duration: 4000,
       });
+    }
+  };
+
+  const handleEditAssignment = (assignment: ProjectAssignment) => {
+    setSelectedAssignment(assignment);
+    setFormData({
+      assignmentStart: assignment.assignmentStart.split('T')[0],
+      assignmentEnd: assignment.assignmentEnd
+        ? assignment.assignmentEnd.split('T')[0]
+        : '',
+    });
+  };
+
+  const handleUpdateAssignment = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedAssignment) return;
+
+    try {
+      setUpdating(true);
+      await assignmentService.updateAssignment(selectedAssignment.id, {
+        assignmentStart: formData.assignmentStart,
+        assignmentEnd: formData.assignmentEnd || undefined,
+      });
+
+      toaster.create({
+        title: 'Assignment updated successfully!',
+        description: `Updated assignment for ${selectedAssignment.engineer.fullName}`,
+        type: 'success',
+        duration: 3000,
+      });
+
+      // Refresh assignments list
+      await fetchAssignments();
+      setSelectedAssignment(null);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error && 'response' in error
+          ? (error as { response?: { data?: { error?: string } } }).response
+              ?.data?.error
+          : undefined;
+      toaster.create({
+        title: 'Error',
+        description: errorMessage || 'Failed to update assignment',
+        type: 'error',
+        duration: 4000,
+      });
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -375,6 +432,9 @@ export default function AssignmentsPage() {
                   style={{ animationDelay: '0.4s' }}
                 />
               </HStack>
+              <Text fontSize="lg" fontWeight="bold">
+                Loading...
+              </Text>
               <Text color="gray.600">Loading assignments...</Text>
             </VStack>
 
@@ -397,7 +457,9 @@ export default function AssignmentsPage() {
         {error && !loading && (
           <Card.Root p={6} bg="red.50">
             <HStack gap={3}>
-              <LuCircleAlert size={24} color="red" />
+              <Text fontSize="lg" fontWeight="bold" color="red.600">
+                Error
+              </Text>
               <VStack align="start" gap={1}>
                 <Text fontWeight="bold" color="red.700">
                   Error
@@ -414,6 +476,9 @@ export default function AssignmentsPage() {
           <Card.Root p={8}>
             <VStack gap={4}>
               <LuClipboard size={48} color="gray" />
+              <Text fontSize="lg" fontWeight="bold" color="gray.500">
+                No Data
+              </Text>
               <Text fontSize="lg" fontWeight="bold">
                 No Assignments Found
               </Text>
@@ -447,7 +512,7 @@ export default function AssignmentsPage() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search by engineer, project, or client..."
-                    size={{ base: 'sm', md: 'md' }}
+                    size="sm"
                     bg="white"
                     flex={1}
                     fontSize={{ base: 'xs', md: 'sm' }}
@@ -480,17 +545,18 @@ export default function AssignmentsPage() {
                     </select>
                   </Box>
 
-                  <HStack gap={2}>
-                    <Text fontSize={{ base: '2xs', md: 'xs' }} color="gray.600">
+                  <HStack gap={3}>
+                    <Text fontSize="xs" color="gray.600">
                       {filteredAssignments.length} results
                     </Text>
                     <Button
                       onClick={fetchAssignments}
-                      size={{ base: 'xs', md: 'sm' }}
+                      size="sm"
                       variant="ghost"
                       colorScheme="blue"
+                      fontSize="xs"
                     >
-                      <LuRefreshCw size={14} />
+                      Refresh
                     </Button>
                   </HStack>
                 </HStack>
@@ -574,6 +640,19 @@ export default function AssignmentsPage() {
                       </Table.Cell>
                       <Table.Cell>
                         <HStack gap={2}>
+                          <Button
+                            size="xs"
+                            colorScheme="blue"
+                            variant="outline"
+                            onClick={() => handleEditAssignment(assignment)}
+                            title="Edit assignment dates"
+                          >
+                            <LuPencil
+                              size={14}
+                              style={{ marginRight: '6px' }}
+                            />
+                            Edit
+                          </Button>
                           {assignment.isActive && (
                             <Button
                               size="xs"
@@ -585,6 +664,7 @@ export default function AssignmentsPage() {
                                   assignment.engineer.fullName
                                 )
                               }
+                              title="End this assignment"
                             >
                               End
                             </Button>
@@ -592,13 +672,14 @@ export default function AssignmentsPage() {
                           <Button
                             size="xs"
                             colorScheme="red"
-                            variant="ghost"
+                            variant="outline"
                             onClick={() =>
                               handleDeleteAssignment(
                                 assignment.id,
                                 assignment.engineer.fullName
                               )
                             }
+                            title="Delete"
                           >
                             <LuTrash2 size={14} />
                           </Button>
@@ -659,69 +740,67 @@ export default function AssignmentsPage() {
                         </HStack>
                       </VStack>
 
-                      {/* Dates */}
-                      <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                        <VStack align="start" gap={0}>
-                          <Text fontSize="2xs" color="gray.500">
-                            Start
-                          </Text>
-                          <Text fontSize="xs" fontWeight="medium">
-                            {new Date(
-                              assignment.assignmentStart
-                            ).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                            })}
-                          </Text>
-                        </VStack>
-                        <VStack align="start" gap={0}>
-                          <Text fontSize="2xs" color="gray.500">
-                            End
-                          </Text>
-                          <Text fontSize="xs" fontWeight="medium">
-                            {assignment.assignmentEnd
-                              ? new Date(
-                                  assignment.assignmentEnd
-                                ).toLocaleDateString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                })
-                              : '-'}
-                          </Text>
-                        </VStack>
-                      </Grid>
-
-                      {/* Actions */}
-                      <HStack gap={2} mt={1}>
-                        {assignment.isActive && (
+                      {/* Status & Actions */}
+                      <HStack
+                        justify="space-between"
+                        pt={2}
+                        borderTop="1px solid"
+                        borderColor="gray.100"
+                      >
+                        <Badge
+                          colorScheme={assignment.isActive ? 'green' : 'gray'}
+                          fontSize="xs"
+                        >
+                          {assignment.isActive ? 'Active' : 'Ended'}
+                        </Badge>
+                        <HStack gap={2}>
+                          <Button
+                            size="sm"
+                            colorScheme="blue"
+                            variant="outline"
+                            onClick={() => handleEditAssignment(assignment)}
+                            fontSize="xs"
+                            title="Edit assignment dates"
+                          >
+                            <LuPencil
+                              size={14}
+                              style={{ marginRight: '6px' }}
+                            />
+                            Edit
+                          </Button>
+                          {assignment.isActive && (
+                            <Button
+                              size="xs"
+                              colorScheme="orange"
+                              variant="outline"
+                              flex={1}
+                              onClick={() =>
+                                handleEndAssignment(
+                                  assignment.id,
+                                  assignment.engineer.fullName
+                                )
+                              }
+                              fontSize="xs"
+                              title="End this assignment"
+                            >
+                              End
+                            </Button>
+                          )}
                           <Button
                             size="xs"
-                            colorScheme="orange"
+                            colorScheme="red"
                             variant="outline"
-                            flex={1}
                             onClick={() =>
-                              handleEndAssignment(
+                              handleDeleteAssignment(
                                 assignment.id,
                                 assignment.engineer.fullName
                               )
                             }
+                            title="Delete"
                           >
-                            End
+                            <LuTrash2 size={16} />
                           </Button>
-                        )}
-                        <Button
-                          size="xs"
-                          colorScheme="red"
-                          variant="ghost"
-                          onClick={() =>
-                            handleDeleteAssignment(
-                              assignment.id,
-                              assignment.engineer.fullName
-                            )
-                          }
-                        >
-                          <LuTrash2 size={14} />
-                        </Button>
+                        </HStack>
                       </HStack>
                     </VStack>
                   </Card.Body>
@@ -812,6 +891,247 @@ export default function AssignmentsPage() {
               </Box>
             )}
           </Card.Root>
+        )}
+
+        {/* Edit Assignment Modal */}
+        {selectedAssignment && (
+          <>
+            {/* Backdrop */}
+            <Box
+              position="fixed"
+              inset={0}
+              bg="blackAlpha.600"
+              zIndex={999}
+              onClick={() => setSelectedAssignment(null)}
+            />
+
+            {/* Modal */}
+            <Box
+              position="fixed"
+              top="50%"
+              left="50%"
+              transform="translate(-50%, -50%)"
+              bg="white"
+              borderRadius="xl"
+              shadow="2xl"
+              zIndex={1000}
+              w={{ base: '95%', md: '90%', lg: '800px' }}
+              maxH="90vh"
+              overflowY="auto"
+            >
+              <VStack align="stretch" gap={0}>
+                {/* Modal Header */}
+                <HStack
+                  justify="space-between"
+                  p={6}
+                  borderBottom="1px solid"
+                  borderColor="gray.200"
+                  bg="blue.50"
+                >
+                  <VStack align="start" gap={1}>
+                    <Text fontSize="xl" fontWeight="bold">
+                      Edit Assignment
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      Update assignment dates or end the assignment
+                    </Text>
+                  </VStack>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setSelectedAssignment(null)}
+                  >
+                    ✕
+                  </Button>
+                </HStack>
+
+                {/* Modal Content */}
+                <Box p={6}>
+                  <VStack align="stretch" gap={6}>
+                    {/* Current Info Display */}
+                    <Card.Root p={4} bg="gray.50">
+                      <VStack align="stretch" gap={2}>
+                        <HStack>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="bold"
+                            color="gray.700"
+                          >
+                            Engineer:
+                          </Text>
+                          <Text fontSize="sm" color="gray.600">
+                            {selectedAssignment.engineer.fullName}
+                          </Text>
+                        </HStack>
+                        <HStack>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="bold"
+                            color="gray.700"
+                          >
+                            Project:
+                          </Text>
+                          <Text fontSize="sm" color="gray.600">
+                            {selectedAssignment.project.projectName}
+                          </Text>
+                        </HStack>
+                        <HStack>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="bold"
+                            color="gray.700"
+                          >
+                            Client:
+                          </Text>
+                          <Text fontSize="sm" color="gray.600">
+                            {selectedAssignment.project.client.name}
+                          </Text>
+                        </HStack>
+                        <HStack>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="bold"
+                            color="gray.700"
+                          >
+                            Status:
+                          </Text>
+                          <Badge
+                            colorScheme={
+                              selectedAssignment.isActive ? 'green' : 'gray'
+                            }
+                          >
+                            {selectedAssignment.isActive ? 'Active' : 'Ended'}
+                          </Badge>
+                        </HStack>
+                      </VStack>
+                    </Card.Root>
+
+                    <form onSubmit={handleUpdateAssignment}>
+                      <VStack align="stretch" gap={5}>
+                        {/* Assignment Start Date */}
+                        <Box>
+                          <Text
+                            fontSize="sm"
+                            mb={2}
+                            fontWeight="medium"
+                            color="gray.700"
+                          >
+                            Assignment Start Date{' '}
+                            <Text as="span" color="red.500">
+                              *
+                            </Text>
+                          </Text>
+                          <Input
+                            type="date"
+                            value={formData.assignmentStart}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                assignmentStart: e.target.value,
+                              })
+                            }
+                            required
+                            size="lg"
+                          />
+                        </Box>
+
+                        {/* Assignment End Date */}
+                        <Box>
+                          <Text
+                            fontSize="sm"
+                            mb={2}
+                            fontWeight="medium"
+                            color="gray.700"
+                          >
+                            Assignment End Date (Optional)
+                          </Text>
+                          <Input
+                            type="date"
+                            value={formData.assignmentEnd}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                assignmentEnd: e.target.value,
+                              })
+                            }
+                            size="lg"
+                            min={formData.assignmentStart}
+                          />
+                          <Text fontSize="xs" color="gray.500" mt={1}>
+                            Leave empty if the assignment is ongoing
+                          </Text>
+                        </Box>
+
+                        {/* Action Buttons */}
+                        <HStack gap={3} pt={2}>
+                          <Button
+                            type="submit"
+                            colorScheme="blue"
+                            size="lg"
+                            loading={updating}
+                            loadingText="Updating..."
+                            flex={1}
+                          >
+                            Update Assignment
+                          </Button>
+                          {selectedAssignment.isActive && (
+                            <Button
+                              type="button"
+                              colorScheme="orange"
+                              variant="outline"
+                              size="lg"
+                              onClick={() => {
+                                handleEndAssignment(
+                                  selectedAssignment.id,
+                                  selectedAssignment.engineer.fullName
+                                );
+                                setSelectedAssignment(null);
+                              }}
+                            >
+                              End Assignment
+                            </Button>
+                          )}
+                        </HStack>
+                      </VStack>
+                    </form>
+
+                    {/* Warning */}
+                    <Card.Root
+                      p={4}
+                      bg="yellow.50"
+                      borderColor="yellow.300"
+                      borderWidth={1}
+                    >
+                      <HStack gap={2}>
+                        <Text
+                          fontSize="sm"
+                          fontWeight="bold"
+                          color="yellow.700"
+                        >
+                          Warning:
+                        </Text>
+                        <VStack align="start" gap={1}>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="bold"
+                            color="yellow.900"
+                          >
+                            Important
+                          </Text>
+                          <Text fontSize="xs" color="yellow.800">
+                            • Changing dates affects billing calculations
+                            <br />
+                            • Ending assignment sets end date to today
+                            <br />• Ended assignments cannot be reactivated
+                          </Text>
+                        </VStack>
+                      </HStack>
+                    </Card.Root>
+                  </VStack>
+                </Box>
+              </VStack>
+            </Box>
+          </>
         )}
       </DashboardLayout>
     </FeatureErrorBoundary>
