@@ -1,5 +1,5 @@
 import { IconType } from 'react-icons';
-import { LuUsers, LuUserPlus, LuPencil, LuCalendar } from 'react-icons/lu';
+import { LuUsers, LuUserPlus, LuCalendar } from 'react-icons/lu';
 
 export interface EngineerTab {
   label: string;
@@ -13,11 +13,6 @@ export const engineerTabs: EngineerTab[] = [
     label: 'Create New Engineer',
     href: '/sales/engineers/create',
     icon: LuUserPlus,
-  },
-  {
-    label: 'Update Engineer',
-    href: '/sales/engineers/update',
-    icon: LuPencil,
   },
   {
     label: 'Manage Attendance',

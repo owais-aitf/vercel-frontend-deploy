@@ -45,8 +45,8 @@ export default function ManageAttendancePage() {
   const [loading, setLoading] = useState(true);
   const [loadingAttendance, setLoadingAttendance] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState<number>(0);
+  const [selectedYear, setSelectedYear] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9; // 3x3 grid
   const [editingRecord, setEditingRecord] = useState<AttendanceRecord | null>(
@@ -61,6 +61,12 @@ export default function ManageAttendancePage() {
     breakHours: 0,
     workDescription: '',
   });
+
+  useEffect(() => {
+    const now = new Date();
+    setSelectedMonth(now.getMonth() + 1);
+    setSelectedYear(now.getFullYear());
+  }, []);
 
   useEffect(() => {
     fetchEngineers();
@@ -800,6 +806,8 @@ export default function ManageAttendancePage() {
                         )}
 
                         {!loadingAttendance &&
+                          selectedMonth > 0 &&
+                          selectedYear > 0 &&
                           (() => {
                             // Get calendar data
                             const daysInMonth = new Date(
