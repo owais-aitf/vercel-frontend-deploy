@@ -246,7 +246,7 @@ export default function ManageAttendancePage() {
         minute: '2-digit',
         hour12: false,
       });
-    } catch (error) {
+    } catch {
       // If it's already in HH:MM format, return as is
       return timeString;
     }

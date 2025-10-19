@@ -36,7 +36,6 @@ export default function EditProjectPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [loadingProjects, setLoadingProjects] = useState(true);
-  const [loadingClients, setLoadingClients] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -103,7 +102,6 @@ export default function EditProjectPage() {
   const fetchData = async () => {
     try {
       setLoadingProjects(true);
-      setLoadingClients(true);
       const [projectsRes, clientsRes] = await Promise.all([
         projectService.getProjects(),
         clientService.getClients(),
@@ -114,7 +112,6 @@ export default function EditProjectPage() {
       setError('Failed to load data');
     } finally {
       setLoadingProjects(false);
-      setLoadingClients(false);
     }
   };
 

@@ -1,12 +1,4 @@
-import {
-  LuUsers,
-  LuUserPlus,
-  LuPencil,
-  LuFolderOpen,
-  LuClipboardList,
-  LuPlus,
-  LuCalendar,
-} from 'react-icons/lu';
+import { LuClipboardList, LuPlus } from 'react-icons/lu';
 import { IconType } from 'react-icons';
 interface Tab {
   label: string;
@@ -20,5 +12,4 @@ export const projectTabs: Tab[] = [
     icon: LuClipboardList,
   },
   { label: 'Create New Project', href: '/sales/projects/add', icon: LuPlus },
-  { label: 'Edit Project', href: '/sales/projects/update', icon: LuPencil },
 ];

@@ -56,7 +56,7 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
   };
 
   // UPDATED: Helper function to render icon (string or React component)
-  const renderIcon = (icon: string | IconType, isActive: boolean) => {
+  const renderIcon = (icon: string | IconType) => {
     // Check if it's a React component (function)
     if (typeof icon === 'function') {
       const IconComponent = icon as IconType;
@@ -76,7 +76,7 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
         borderColor="gray.200"
         position="relative"
       >
-        {tabs.map((tab, index) => {
+        {tabs.map((tab) => {
           const isActive = pathname === tab.href;
 
           return (
@@ -172,7 +172,7 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
                   transition="all 0.3s ease"
                   className="tab-icon"
                 >
-                  {renderIcon(tab.icon, isActive)}
+                  {renderIcon(tab.icon)}
                 </Box>
               )}
 

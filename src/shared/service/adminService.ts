@@ -19,11 +19,20 @@ export interface AdminDashboardStats {
 
 const adminService = {
   // Get comprehensive dashboard statistics
-  getDashboardStats: async (): Promise<{ success: boolean; data: AdminDashboardStats }> => {
+  getDashboardStats: async (): Promise<{
+    success: boolean;
+    data: AdminDashboardStats;
+  }> => {
     try {
       // Fetch all required data in parallel
-      const [usersStatsRes, clientsRes, projectsRes, assignmentsRes, reportsRes] = await Promise.all([
-        apiClient.get('/users/stats'),  // ✅ CORRECT ENDPOINT
+      const [
+        usersStatsRes,
+        clientsRes,
+        projectsRes,
+        assignmentsRes,
+        reportsRes,
+      ] = await Promise.all([
+        apiClient.get('/users/stats'), // ✅ CORRECT ENDPOINT
         apiClient.get('/clients'),
         apiClient.get('/projects'),
         apiClient.get('/assignments'),
@@ -36,24 +45,34 @@ const adminService = {
       const totalEngineers = userStats.byRole?.ENGINEER || 0;
       const totalSalesReps = userStats.byRole?.SALES || 0;
       const totalAdmins = userStats.byRole?.ADMIN || 0;
-      
+
       // Process clients data
       const clients = clientsRes.data.data || [];
-      const activeClients = clients.filter((c: any) => c.isActive).length;
-      
+      const activeClients = clients.filter(
+        (c: { isActive: boolean }) => c.isActive
+      ).length;
+
       // Process projects data
       const projects = projectsRes.data.data || [];
-      const activeProjects = projects.filter((p: any) => p.isActive).length;
+      const activeProjects = projects.filter(
+        (p: { isActive: boolean }) => p.isActive
+      ).length;
       const inactiveProjects = projects.length - activeProjects;
-      
+
       // Process assignments data
       const assignments = assignmentsRes.data.data || [];
-      const activeAssignments = assignments.filter((a: any) => a.isActive).length;
-      
+      const activeAssignments = assignments.filter(
+        (a: { isActive: boolean }) => a.isActive
+      ).length;
+
       // Process reports data
       const reports = reportsRes.data.data || [];
-      const pendingReports = reports.filter((r: any) => r.status === 'SUBMITTED').length;
-      const approvedReports = reports.filter((r: any) => r.status === 'APPROVED').length;
+      const pendingReports = reports.filter(
+        (r: { status: string }) => r.status === 'SUBMITTED'
+      ).length;
+      const approvedReports = reports.filter(
+        (r: { status: string }) => r.status === 'APPROVED'
+      ).length;
 
       const stats: AdminDashboardStats = {
         totalUsers,
@@ -78,7 +97,7 @@ const adminService = {
         success: true,
         data: stats,
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error('❌ Error fetching dashboard stats:', error);
       throw error;
     }

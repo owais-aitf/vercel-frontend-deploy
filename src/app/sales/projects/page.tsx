@@ -12,13 +12,17 @@ import {
   Input,
   Badge,
 } from '@chakra-ui/react';
-import { LuClipboardList, LuPlus, LuPencil } from 'react-icons/lu';
+import { LuPencil } from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
-import { projectService, Project } from '@/shared/service/projectService';
+import {
+  projectService,
+  Project,
+  UpdateProjectData,
+} from '@/shared/service/projectService';
 import { clientService, Client } from '@/shared/service/clientService';
 import { projectTabs } from '@/shared/config/projectTabs';
 
@@ -35,10 +39,32 @@ export default function ViewAllProjectsPage() {
     'all' | 'active' | 'inactive'
   >('all');
   const [filterClient, setFilterClient] = useState<string>('all');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState('');
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9; // 3x3 grid
+
+  // Form state for editing
+  const [formData, setFormData] = useState({
+    projectName: '',
+    startDate: '',
+    endDate: '',
+    monthlyUnitPrice: '',
+    hourlyUnitPrice: '',
+    settlementMethod: 'FIXED' as 'UP_DOWN' | 'FIXED',
+    settlementRangeMin: '',
+    settlementRangeMax: '',
+    includePaidLeaveInSettlement: false,
+    isActive: true,
+  });
 
   const getUserInitials = () => {
     if (!user?.fullName) return 'SR';
@@ -180,6 +206,181 @@ export default function ViewAllProjectsPage() {
     return pages;
   };
 
+  // Handle edit button click
+  const handleEditClick = (project: Project, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedProject(project);
+    setUpdateError('');
+    setUpdateSuccess(false);
+    setValidationErrors({});
+
+    // Format dates for input fields (YYYY-MM-DD)
+    const formatDateForInput = (dateString: string) => {
+      return dateString ? dateString.split('T')[0] : '';
+    };
+
+    setFormData({
+      projectName: project.projectName || '',
+      startDate: formatDateForInput(project.startDate),
+      endDate: project.endDate ? formatDateForInput(project.endDate) : '',
+      monthlyUnitPrice: project.monthlyUnitPrice?.toString() || '',
+      hourlyUnitPrice: project.hourlyUnitPrice?.toString() || '',
+      settlementMethod: project.settlementMethod || 'FIXED',
+      settlementRangeMin: project.settlementRangeMin?.toString() || '',
+      settlementRangeMax: project.settlementRangeMax?.toString() || '',
+      includePaidLeaveInSettlement:
+        project.includePaidLeaveInSettlement || false,
+      isActive: project.isActive,
+    });
+
+    setIsModalOpen(true);
+  };
+
+  // Handle input changes
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+
+    // Clear validation error for this field
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+
+    if (!formData.projectName.trim()) {
+      errors.projectName = 'Project name is required';
+    }
+
+    if (!formData.startDate) {
+      errors.startDate = 'Start date is required';
+    }
+
+    if (
+      !formData.monthlyUnitPrice ||
+      parseFloat(formData.monthlyUnitPrice) <= 0
+    ) {
+      errors.monthlyUnitPrice = 'Monthly unit price must be greater than 0';
+    }
+
+    if (formData.settlementMethod === 'UP_DOWN') {
+      if (
+        !formData.settlementRangeMin ||
+        parseInt(formData.settlementRangeMin) < 0
+      ) {
+        errors.settlementRangeMin = 'Settlement range minimum is required';
+      }
+      if (
+        !formData.settlementRangeMax ||
+        parseInt(formData.settlementRangeMax) <= 0
+      ) {
+        errors.settlementRangeMax = 'Settlement range maximum is required';
+      }
+      if (
+        formData.settlementRangeMin &&
+        formData.settlementRangeMax &&
+        parseInt(formData.settlementRangeMin) >=
+          parseInt(formData.settlementRangeMax)
+      ) {
+        errors.settlementRangeMax = 'Maximum must be greater than minimum';
+      }
+    }
+
+    if (
+      formData.endDate &&
+      formData.startDate &&
+      formData.endDate < formData.startDate
+    ) {
+      errors.endDate = 'End date must be after start date';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm() || !selectedProject) {
+      return;
+    }
+
+    try {
+      setUpdateLoading(true);
+      setUpdateError('');
+      setUpdateSuccess(false);
+
+      const dataToSubmit: UpdateProjectData = {
+        projectName: formData.projectName.trim(),
+        startDate: formData.startDate,
+        monthlyUnitPrice: parseFloat(formData.monthlyUnitPrice),
+        settlementMethod: formData.settlementMethod,
+        includePaidLeaveInSettlement: formData.includePaidLeaveInSettlement,
+        isActive: formData.isActive,
+      };
+
+      if (formData.endDate) {
+        dataToSubmit.endDate = formData.endDate;
+      }
+
+      if (formData.hourlyUnitPrice) {
+        dataToSubmit.hourlyUnitPrice = parseFloat(formData.hourlyUnitPrice);
+      }
+
+      if (formData.settlementMethod === 'UP_DOWN') {
+        dataToSubmit.settlementRangeMin = parseInt(formData.settlementRangeMin);
+        dataToSubmit.settlementRangeMax = parseInt(formData.settlementRangeMax);
+      }
+
+      const response = await projectService.updateProject(
+        selectedProject.id,
+        dataToSubmit
+      );
+
+      if (response.success) {
+        setUpdateSuccess(true);
+        setIsModalOpen(false);
+        // Refresh the projects list
+        await fetchData();
+        // Reset success message after 3 seconds
+        setTimeout(() => {
+          setUpdateSuccess(false);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('❌ Error updating project:', error);
+      const err = error as { response?: { data?: { message?: string } } };
+      setUpdateError(
+        err.response?.data?.message ||
+          'Failed to update project. Please try again.'
+      );
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
   return (
     <FeatureErrorBoundary featureName="View All Projects">
       <DashboardLayout
@@ -191,6 +392,29 @@ export default function ViewAllProjectsPage() {
         notificationCount={0}
       >
         <TabNavigation tabs={projectTabs} />
+
+        {/* Success Message */}
+        {updateSuccess && (
+          <Card.Root
+            p={4}
+            mb={6}
+            bg="green.50"
+            borderColor="green.300"
+            borderWidth="2px"
+          >
+            <HStack gap={3}>
+              <Text fontSize="xl">✅</Text>
+              <VStack align="start" gap={0}>
+                <Text fontWeight="bold" color="green.800" fontSize="sm">
+                  Success
+                </Text>
+                <Text fontSize="xs" color="green.600">
+                  Project updated successfully
+                </Text>
+              </VStack>
+            </HStack>
+          </Card.Root>
+        )}
 
         {/* Error Message */}
         {error && (
@@ -535,15 +759,42 @@ export default function ViewAllProjectsPage() {
                       )}
                     </VStack>
 
-                    {/* Footer */}
-                    <Text
-                      fontSize="xs"
-                      color="gray.400"
-                      textAlign="center"
-                      pt={2}
+                    {/* Footer with Edit Button */}
+                    <HStack
+                      justify="space-between"
+                      align="center"
+                      pt={3}
+                      mt={2}
+                      borderTop="1px solid"
+                      borderColor="gray.100"
                     >
-                      Created {formatDate(project.createdAt)}
-                    </Text>
+                      <Text fontSize="xs" color="gray.400" flexShrink={0}>
+                        Created {formatDate(project.createdAt)}
+                      </Text>
+                      <Button
+                        size="md"
+                        variant="outline"
+                        colorScheme="blue"
+                        onClick={(e) => handleEditClick(project, e)}
+                        borderWidth="1px"
+                        _hover={{
+                          bg: 'blue.50',
+                          borderColor: 'blue.400',
+                          transform: 'translateY(-1px)',
+                        }}
+                        transition="all 0.2s"
+                        px={5}
+                        h="36px"
+                        flexShrink={0}
+                      >
+                        <HStack gap={2}>
+                          <LuPencil size={16} />
+                          <Text fontSize="sm" fontWeight="medium">
+                            Edit
+                          </Text>
+                        </HStack>
+                      </Button>
+                    </HStack>
                   </VStack>
                 </Card.Root>
               ))}
@@ -617,6 +868,350 @@ export default function ViewAllProjectsPage() {
                 </VStack>
               </Card.Root>
             )}
+          </>
+        )}
+
+        {/* Edit Modal */}
+        {isModalOpen && selectedProject && (
+          <>
+            {/* Modal Backdrop */}
+            <Box
+              position="fixed"
+              inset={0}
+              bg="blackAlpha.600"
+              zIndex={999}
+              onClick={() => !updateLoading && setIsModalOpen(false)}
+            />
+
+            {/* Modal Content */}
+            <Box
+              position="fixed"
+              top="50%"
+              left="50%"
+              transform="translate(-50%, -50%)"
+              bg="white"
+              borderRadius="xl"
+              shadow="2xl"
+              zIndex={1000}
+              w={{ base: '95%', md: '90%', lg: '800px' }}
+              maxH="90vh"
+              overflowY="auto"
+            >
+              <form onSubmit={handleSubmit}>
+                {/* Modal Header */}
+                <HStack
+                  justify="space-between"
+                  p={6}
+                  borderBottom="1px solid"
+                  borderColor="gray.200"
+                  bg="blue.50"
+                >
+                  <VStack align="start" gap={1}>
+                    <Text fontSize="xl" fontWeight="bold">
+                      Edit Project
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      {selectedProject.projectName}
+                    </Text>
+                  </VStack>
+                  <Button
+                    onClick={() => setIsModalOpen(false)}
+                    variant="ghost"
+                    size="sm"
+                    disabled={updateLoading}
+                  >
+                    ✕
+                  </Button>
+                </HStack>
+
+                {/* Modal Body */}
+                <VStack align="stretch" gap={4} p={6}>
+                  {/* Error Message in Modal */}
+                  {updateError && (
+                    <Box
+                      p={4}
+                      bg="red.50"
+                      borderRadius="md"
+                      borderWidth="1px"
+                      borderColor="red.300"
+                    >
+                      <HStack gap={2}>
+                        <Text fontSize="lg">❌</Text>
+                        <Text fontSize="sm" fontWeight="bold" color="red.700">
+                          {updateError}
+                        </Text>
+                      </HStack>
+                    </Box>
+                  )}
+
+                  {/* Project Name */}
+                  <Box>
+                    <HStack mb={2}>
+                      <Text fontSize="sm" fontWeight="medium">
+                        Project Name
+                      </Text>
+                      <Text fontSize="sm" color="red.500">
+                        *
+                      </Text>
+                    </HStack>
+                    <Input
+                      name="projectName"
+                      value={formData.projectName}
+                      onChange={handleChange}
+                      borderColor={
+                        validationErrors.projectName ? 'red.500' : 'gray.300'
+                      }
+                    />
+                    {validationErrors.projectName && (
+                      <Text fontSize="xs" color="red.500" mt={1}>
+                        {validationErrors.projectName}
+                      </Text>
+                    )}
+                  </Box>
+
+                  {/* Dates */}
+                  <Grid
+                    templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                    gap={4}
+                  >
+                    <Box>
+                      <HStack mb={2}>
+                        <Text fontSize="sm" fontWeight="medium">
+                          Start Date
+                        </Text>
+                        <Text fontSize="sm" color="red.500">
+                          *
+                        </Text>
+                      </HStack>
+                      <Input
+                        name="startDate"
+                        type="date"
+                        value={formData.startDate}
+                        onChange={handleChange}
+                        borderColor={
+                          validationErrors.startDate ? 'red.500' : 'gray.300'
+                        }
+                      />
+                      {validationErrors.startDate && (
+                        <Text fontSize="xs" color="red.500" mt={1}>
+                          {validationErrors.startDate}
+                        </Text>
+                      )}
+                    </Box>
+
+                    <Box>
+                      <Text fontSize="sm" fontWeight="medium" mb={2}>
+                        End Date
+                      </Text>
+                      <Input
+                        name="endDate"
+                        type="date"
+                        value={formData.endDate}
+                        onChange={handleChange}
+                      />
+                    </Box>
+                  </Grid>
+
+                  {/* Prices */}
+                  <Grid
+                    templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                    gap={4}
+                  >
+                    <Box>
+                      <HStack mb={2}>
+                        <Text fontSize="sm" fontWeight="medium">
+                          Monthly Price (¥)
+                        </Text>
+                        <Text fontSize="sm" color="red.500">
+                          *
+                        </Text>
+                      </HStack>
+                      <Input
+                        name="monthlyUnitPrice"
+                        type="number"
+                        step="0.01"
+                        value={formData.monthlyUnitPrice}
+                        onChange={handleChange}
+                        borderColor={
+                          validationErrors.monthlyUnitPrice
+                            ? 'red.500'
+                            : 'gray.300'
+                        }
+                      />
+                      {formData.monthlyUnitPrice && (
+                        <Text fontSize="xs" color="gray.600" mt={1}>
+                          {formatCurrency(
+                            parseFloat(formData.monthlyUnitPrice)
+                          )}
+                        </Text>
+                      )}
+                    </Box>
+
+                    <Box>
+                      <Text fontSize="sm" fontWeight="medium" mb={2}>
+                        Hourly Price (¥)
+                      </Text>
+                      <Input
+                        name="hourlyUnitPrice"
+                        type="number"
+                        step="0.01"
+                        value={formData.hourlyUnitPrice}
+                        onChange={handleChange}
+                      />
+                      {formData.hourlyUnitPrice && (
+                        <Text fontSize="xs" color="gray.600" mt={1}>
+                          {formatCurrency(parseFloat(formData.hourlyUnitPrice))}
+                        </Text>
+                      )}
+                    </Box>
+                  </Grid>
+
+                  {/* Settlement Method */}
+                  <Box>
+                    <Text fontSize="sm" fontWeight="medium" mb={2}>
+                      Settlement Method
+                    </Text>
+                    <HStack gap={3}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={
+                          formData.settlementMethod === 'FIXED'
+                            ? 'solid'
+                            : 'outline'
+                        }
+                        colorScheme={
+                          formData.settlementMethod === 'FIXED'
+                            ? 'blue'
+                            : 'gray'
+                        }
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            settlementMethod: 'FIXED',
+                          }))
+                        }
+                      >
+                        Fixed
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={
+                          formData.settlementMethod === 'UP_DOWN'
+                            ? 'solid'
+                            : 'outline'
+                        }
+                        colorScheme={
+                          formData.settlementMethod === 'UP_DOWN'
+                            ? 'blue'
+                            : 'gray'
+                        }
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            settlementMethod: 'UP_DOWN',
+                          }))
+                        }
+                      >
+                        Up/Down
+                      </Button>
+                    </HStack>
+                  </Box>
+
+                  {/* Settlement Range */}
+                  {formData.settlementMethod === 'UP_DOWN' && (
+                    <Grid
+                      templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                      gap={4}
+                    >
+                      <Box>
+                        <Text fontSize="sm" fontWeight="medium" mb={2}>
+                          Min (hours) *
+                        </Text>
+                        <Input
+                          name="settlementRangeMin"
+                          type="number"
+                          value={formData.settlementRangeMin}
+                          onChange={handleChange}
+                          borderColor={
+                            validationErrors.settlementRangeMin
+                              ? 'red.500'
+                              : 'gray.300'
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <Text fontSize="sm" fontWeight="medium" mb={2}>
+                          Max (hours) *
+                        </Text>
+                        <Input
+                          name="settlementRangeMax"
+                          type="number"
+                          value={formData.settlementRangeMax}
+                          onChange={handleChange}
+                          borderColor={
+                            validationErrors.settlementRangeMax
+                              ? 'red.500'
+                              : 'gray.300'
+                          }
+                        />
+                      </Box>
+                    </Grid>
+                  )}
+
+                  {/* Checkboxes */}
+                  <HStack gap={6}>
+                    <HStack gap={2}>
+                      <input
+                        type="checkbox"
+                        name="includePaidLeaveInSettlement"
+                        checked={formData.includePaidLeaveInSettlement}
+                        onChange={handleChange}
+                        style={{ width: '16px', height: '16px' }}
+                      />
+                      <Text fontSize="sm">Include Paid Leave</Text>
+                    </HStack>
+
+                    <HStack gap={2}>
+                      <input
+                        type="checkbox"
+                        name="isActive"
+                        checked={formData.isActive}
+                        onChange={handleChange}
+                        style={{ width: '16px', height: '16px' }}
+                      />
+                      <Text fontSize="sm">Active</Text>
+                    </HStack>
+                  </HStack>
+                </VStack>
+
+                {/* Modal Footer */}
+                <HStack
+                  justify="flex-end"
+                  p={6}
+                  borderTop="1px solid"
+                  borderColor="gray.200"
+                  gap={3}
+                >
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsModalOpen(false)}
+                    disabled={updateLoading}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    colorScheme="blue"
+                    disabled={updateLoading}
+                  >
+                    {updateLoading ? 'Updating...' : 'Update Project'}
+                  </Button>
+                </HStack>
+              </form>
+            </Box>
           </>
         )}
 

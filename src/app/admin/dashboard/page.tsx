@@ -30,7 +30,9 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { adminNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { AuthContext } from '@/context/AuthContext';
-import adminService, { AdminDashboardStats } from '@/shared/service/adminService';
+import adminService, {
+  AdminDashboardStats,
+} from '@/shared/service/adminService';
 import { toaster } from '@/components/ui/toaster';
 
 export default function AdminDashboard() {
@@ -56,16 +58,18 @@ export default function AdminDashboard() {
       setLoading(true);
 
       const response = await adminService.getDashboardStats();
-      
+
       if (response.success) {
         setStats(response.data);
         console.log('✅ Dashboard stats loaded:', response.data);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('❌ Dashboard fetch error:', error);
+      const err = error as { response?: { data?: { error?: string } } };
       toaster.create({
         title: 'Error',
-        description: error?.response?.data?.error || 'Failed to load dashboard data',
+        description:
+          err?.response?.data?.error || 'Failed to load dashboard data',
         type: 'error',
       });
     } finally {
@@ -379,8 +383,11 @@ export default function AdminDashboard() {
                       color="blue.600"
                     >
                       {stats?.totalProjects && stats.totalProjects > 0
-                        ? Math.round((stats.activeProjects / stats.totalProjects) * 100)
-                        : 0}%
+                        ? Math.round(
+                            (stats.activeProjects / stats.totalProjects) * 100
+                          )
+                        : 0}
+                      %
                     </Text>
                   </VStack>
                 </Card.Body>
@@ -419,7 +426,11 @@ export default function AdminDashboard() {
                             Pending Approval
                           </Text>
                         </HStack>
-                        <Text fontSize="lg" fontWeight="bold" color="orange.600">
+                        <Text
+                          fontSize="lg"
+                          fontWeight="bold"
+                          color="orange.600"
+                        >
                           {stats?.pendingReports || 0}
                         </Text>
                       </HStack>
@@ -434,11 +445,20 @@ export default function AdminDashboard() {
                           {stats?.approvedReports || 0}
                         </Text>
                       </HStack>
-                      <HStack justify="space-between" pt={2} borderTop="1px" borderColor="yellow.200">
+                      <HStack
+                        justify="space-between"
+                        pt={2}
+                        borderTop="1px"
+                        borderColor="yellow.200"
+                      >
                         <Text fontSize="xs" color="gray.700" fontWeight="bold">
                           Total Reports
                         </Text>
-                        <Text fontSize="md" fontWeight="bold" color="yellow.700">
+                        <Text
+                          fontSize="md"
+                          fontWeight="bold"
+                          color="yellow.700"
+                        >
                           {stats?.totalReports || 0}
                         </Text>
                       </HStack>
@@ -479,12 +499,19 @@ export default function AdminDashboard() {
                           {stats?.activeProjects || 0}
                         </Text>
                       </HStack>
-                      <HStack justify="space-between" pt={2} borderTop="1px" borderColor="gray.200">
+                      <HStack
+                        justify="space-between"
+                        pt={2}
+                        borderTop="1px"
+                        borderColor="gray.200"
+                      >
                         <Text fontSize="xs" color="gray.700" fontWeight="bold">
                           System Health
                         </Text>
                         <Text fontSize="md" fontWeight="bold" color="green.600">
-                          {stats?.activeProjects && stats.activeProjects > 0 ? 'Healthy' : 'Idle'}
+                          {stats?.activeProjects && stats.activeProjects > 0
+                            ? 'Healthy'
+                            : 'Idle'}
                         </Text>
                       </HStack>
                     </VStack>

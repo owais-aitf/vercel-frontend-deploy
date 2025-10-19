@@ -1,12 +1,4 @@
-import {
-  LuUsers,
-  LuUserPlus,
-  LuPencil,
-  LuFolderOpen,
-  LuClipboardList,
-  LuPlus,
-  LuCalendar,
-} from 'react-icons/lu';
+import { LuUsers, LuUserPlus, LuPencil, LuFolderOpen } from 'react-icons/lu';
 import { IconType } from 'react-icons';
 interface Tab {
   label: string;

@@ -11,10 +11,6 @@ import {
   Button,
   Badge,
   Input,
-  MenuRoot,
-  MenuTrigger,
-  MenuContent,
-  MenuItem,
 } from '@chakra-ui/react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';

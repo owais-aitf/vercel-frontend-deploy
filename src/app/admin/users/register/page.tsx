@@ -110,7 +110,7 @@ export default function RegisterUserPage() {
         duration: 2000,
       });
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch {
       toaster.create({
         title: 'Failed to copy',
         description: 'Please copy manually',
@@ -164,10 +164,13 @@ export default function RegisterUserPage() {
           duration: 5000,
         });
       }
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as {
+        response?: { data?: { error?: string; message?: string } };
+      };
       const errorMessage =
-        error?.response?.data?.error ||
-        error?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
         'Failed to register user';
 
       toaster.create({
@@ -441,7 +444,7 @@ export default function RegisterUserPage() {
                       _focus={{ borderColor: 'blue.500' }}
                     />
                     <Text fontSize="2xs" color="gray.500" mt={0.5}>
-                      Leave empty if user doesn't use Slack
+                      Leave empty if user doesn&apos;t use Slack
                     </Text>
                   </Fieldset.Root>
 

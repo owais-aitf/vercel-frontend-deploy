@@ -68,16 +68,6 @@ export default function ManageAssignmentsPage() {
     }
   };
 
-  const handleSelectAssignment = (assignment: ProjectAssignment) => {
-    setSelectedAssignment(assignment);
-    setFormData({
-      assignmentStart: assignment.assignmentStart.split('T')[0],
-      assignmentEnd: assignment.assignmentEnd
-        ? assignment.assignmentEnd.split('T')[0]
-        : '',
-    });
-  };
-
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 

@@ -39,7 +39,9 @@ export interface User {
 
 const userService = {
   // Register new user (Admin only)
-  registerUser: async (userData: CreateUserData): Promise<CreateUserResponse> => {
+  registerUser: async (
+    userData: CreateUserData
+  ): Promise<CreateUserResponse> => {
     const response = await apiClient.post('/users', userData);
     return response.data;
   },
