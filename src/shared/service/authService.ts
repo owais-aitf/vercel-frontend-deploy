@@ -18,6 +18,11 @@ interface ResetPasswordResponse {
   message: string;
 }
 
+interface FirstLoginResetResponse {
+  success: boolean;
+  message: string;
+}
+
 const authService = {
   /**
    * Request password reset OTP
@@ -59,6 +64,24 @@ const authService = {
     const response = await apiClient.post('/auth/reset-password', {
       email,
       otp,
+      newPassword,
+    });
+    return response.data;
+  },
+
+  /**
+   * Reset password on the first login
+   * POST /api/auth/first-login-reset
+   */
+
+  firstLoginPasswordReset: async (
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<FirstLoginResetResponse> => {
+    const response = await apiClient.post('/auth/first-login-reset', {
+      userId,
+      currentPassword,
       newPassword,
     });
     return response.data;

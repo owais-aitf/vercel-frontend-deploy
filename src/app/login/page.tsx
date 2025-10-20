@@ -109,7 +109,23 @@ export default function LoginPage() {
     try {
       const userData = await login(email, password);
 
-      // Get role from returned user data (available immediately)
+      if (userData) {
+    const tokenFromStorage = localStorage.getItem('token');
+    if (!tokenFromStorage) {
+      // AuthContext hasn't saved yet, save manually
+      // console.log('⚠️ Manually saving to localStorage');
+      localStorage.setItem('user', JSON.stringify(userData));
+    }
+  }
+
+      //  CHECK FOR FIRST LOGIN
+      if (userData?.isFirstLogin) {
+        // User needs to reset password on first login
+        router.push('/first-login-reset');
+        return;
+      }
+
+      // Get role from returned user data
       const role = userData?.role || null;
 
       // Redirect based on role

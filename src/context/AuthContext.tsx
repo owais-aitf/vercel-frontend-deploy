@@ -11,6 +11,8 @@ type User = {
   email: string;
   role: string;
   fullName?: string;
+  isFirstLogin?: boolean;  
+  mustResetPassword?: boolean;
 };
 
 type AuthContextType = {
@@ -41,21 +43,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const t = localStorage.getItem('authToken');
-      if (t) {
+      const userDataString = localStorage.getItem('user');
+      
+      if (t && userDataString) {
+        setTokenState(t);
+        const userData = JSON.parse(userDataString);
+        setUser(userData);
+      } else if (t) {
+        // Fallback to JWT decode if user data is missing
         setTokenState(t);
         const decoded = jwtDecode(t);
         if (decoded) {
           setUser(decoded);
         } else {
-          // Token is invalid, clear it
           localStorage.removeItem('authToken');
           setTokenState(null);
         }
       }
     } catch (error) {
       console.error('Error loading auth token:', error);
-      // Clear potentially corrupted data
       localStorage.removeItem('authToken');
+      localStorage.removeItem('user'); // ✅ ADDED
       setTokenState(null);
       setUser(null);
     }
@@ -76,20 +84,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const res = await api.post('/auth/login', { email, password });
     const tokenFromRes = res.data?.data?.token;
     const userFromRes = res.data?.data?.user;
+    
     if (!tokenFromRes) throw new Error('Token missing from response');
+    
     const userData = userFromRes || jwtDecode(tokenFromRes);
+    
+    // ✅ CRITICAL FIX - Save user data to localStorage
+    localStorage.setItem('user', JSON.stringify(userData));
+    
     setToken(tokenFromRes);
     setUser(userData);
-    // Return user data so caller can use it immediately
+    
     return userData;
   };
 
   const logout = () => {
-    // Clear all cached data before logging out
     clearAllCaches();
     setToken(null);
     setUser(null);
-    // optionally call backend logout endpoint if available
+    localStorage.removeItem('user'); // ✅ ADDED
   };
 
   return (
