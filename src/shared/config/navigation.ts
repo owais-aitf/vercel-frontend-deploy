@@ -52,8 +52,8 @@ export const adminNavigation: NavigationConfig = {
   items: [
     { label: 'Dashboard', icon: 'Activity', path: '/admin/dashboard' },
     { label: 'Register Users', icon: 'User', path: '/admin/users/register' },
-    { label: 'Projects', icon: 'FolderOpen', path: '/admin/projects' },
-    { label: 'Reports', icon: 'TrendingUp', path: '/admin/reports' },
-    { label: 'Settings', icon: 'Settings', path: '/admin/settings' },
+    // { label: 'Projects', icon: 'FolderOpen', path: '/admin/projects' },
+    // { label: 'Reports', icon: 'TrendingUp', path: '/admin/reports' },
+    // { label: 'Settings', icon: 'Settings', path: '/admin/settings' },
   ],
 };

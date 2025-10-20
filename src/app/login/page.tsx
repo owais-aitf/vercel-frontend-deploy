@@ -460,35 +460,30 @@ export default function LoginPage() {
                       transition="all 0.2s"
                     />
                     {/* FIXED PASSWORD TOGGLE */}
-                    <Box
-                      as="button"
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
+                    <Button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowPassword(!showPassword);
+                      }}
                       position="absolute"
-                      right="12px"
+                      right="8px"
                       top="50%"
                       transform="translateY(-50%)"
-                      cursor="pointer"
+                      size="sm"
+                      variant="ghost"
                       color="gray.400"
-                      bg="transparent"
-                      border="none"
-                      p={2}
                       zIndex={2}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      borderRadius="md"
-                      transition="all 0.2s ease"
+                      minW="auto"
+                      h="auto"
+                      p={2}
                       _hover={{
                         color: 'blue.500',
                         bg: 'blue.50',
                       }}
-                      _active={{
-                        transform: 'translateY(-50%) scale(0.95)',
-                      }}
                     >
                       {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                    </Box>
+                    </Button>
                   </Box>
                   {passwordError && (
                     <Text
@@ -521,6 +516,19 @@ export default function LoginPage() {
                     </HStack>
                   </Box>
                 )}
+
+                {/* Forgot Password Link */}
+                <HStack justify="flex-end" w="full">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    color="blue.600"
+                    onClick={() => router.push('/forgot-password')}
+                    _hover={{ textDecoration: 'underline' }}
+                  >
+                    Forgot Password?
+                  </Button>
+                </HStack>
 
                 {/* Submit Button */}
                 <Button
