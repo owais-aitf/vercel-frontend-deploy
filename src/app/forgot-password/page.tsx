@@ -74,15 +74,26 @@ export default function ForgotPasswordPage() {
       });
 
       router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage =
-        error?.response?.data?.error ||
-        error?.response?.data?.message ||
-        'Failed to send OTP. Please try again.';
+        error instanceof Error && 'response' in error
+          ? (
+              error as {
+                response?: { data?: { error?: string; message?: string } };
+              }
+            ).response?.data?.error ||
+            (
+              error as {
+                response?: { data?: { error?: string; message?: string } };
+              }
+            ).response?.data?.message
+          : undefined;
+      const finalMessage =
+        errorMessage || 'Failed to send OTP. Please try again.';
 
       toaster.create({
         title: 'Error',
-        description: errorMessage,
+        description: finalMessage,
         type: 'error',
         duration: 5000,
       });
@@ -156,18 +167,29 @@ export default function ForgotPasswordPage() {
                   priority
                 />
               </Box>
-              <Heading size="xl" textAlign="center" color="blue.700" fontWeight="bold">
+              <Heading
+                size="xl"
+                textAlign="center"
+                color="blue.700"
+                fontWeight="bold"
+              >
                 Forgot Password?
               </Heading>
               <Text color="gray.600" textAlign="center" fontSize="sm">
-                Enter your email address and we'll send you an OTP to reset your password
+                Enter your email address and we&apos;ll send you an OTP to reset
+                your password
               </Text>
             </VStack>
 
             <form onSubmit={handleSubmit}>
               <VStack gap={4}>
                 <Box w="full">
-                  <Text mb={3} fontWeight="semibold" fontSize="sm" color="gray.700">
+                  <Text
+                    mb={3}
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="gray.700"
+                  >
                     Email Address
                   </Text>
                   <Box position="relative">
@@ -186,15 +208,13 @@ export default function ForgotPasswordPage() {
                     </Box>
                     <Input
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder="Enter your email address"
                       value={email}
-                      onChange={handleEmailChange}
-                      onBlur={() => {
-                        setTouched(true);
-                        setEmailError(validateEmail(email));
-                      }}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      size="lg"
+                      bg="white"
                       pl="40px"
-                      bg="gray.50"
                       border="2px solid"
                       borderColor={emailError ? 'red.500' : 'gray.200'}
                       borderRadius="lg"
@@ -214,7 +234,12 @@ export default function ForgotPasswordPage() {
                     />
                   </Box>
                   {emailError && (
-                    <Text color="red.500" fontSize="sm" mt={1} fontWeight="medium">
+                    <Text
+                      color="red.500"
+                      fontSize="sm"
+                      mt={1}
+                      fontWeight="medium"
+                    >
                       {emailError}
                     </Text>
                   )}

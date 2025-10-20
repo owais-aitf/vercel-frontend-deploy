@@ -1080,7 +1080,6 @@ export default function EngineersPage() {
                     </Text>
                     <Box
                       as="button"
-                      type="button"
                       onClick={() => {
                         setIsEditModalOpen(false);
                         setEditingEngineer(null);

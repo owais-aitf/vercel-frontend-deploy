@@ -110,13 +110,13 @@ export default function LoginPage() {
       const userData = await login(email, password);
 
       if (userData) {
-    const tokenFromStorage = localStorage.getItem('token');
-    if (!tokenFromStorage) {
-      // AuthContext hasn't saved yet, save manually
-      // console.log('⚠️ Manually saving to localStorage');
-      localStorage.setItem('user', JSON.stringify(userData));
-    }
-  }
+        const tokenFromStorage = localStorage.getItem('token');
+        if (!tokenFromStorage) {
+          // AuthContext hasn't saved yet, save manually
+          // console.log('⚠️ Manually saving to localStorage');
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+      }
 
       //  CHECK FOR FIRST LOGIN
       if (userData?.isFirstLogin) {

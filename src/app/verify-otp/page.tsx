@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import {
   Box,
   Heading,
@@ -68,7 +67,7 @@ function VerifyOTPContent() {
       setTimeLeft(90);
       setIsExpired(false);
       setOtp(['', '', '', '', '', '']);
-    } catch (error: any) {
+    } catch {
       toaster.create({
         title: 'Error',
         description: 'Failed to resend OTP. Please try again.',
@@ -146,15 +145,25 @@ function VerifyOTPContent() {
 
       // Navigate to reset password page
       router.push('/reset-password');
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage =
-        error?.response?.data?.error ||
-        error?.response?.data?.message ||
-        'Invalid OTP. Please try again.';
+        error instanceof Error && 'response' in error
+          ? (
+              error as {
+                response?: { data?: { error?: string; message?: string } };
+              }
+            ).response?.data?.error ||
+            (
+              error as {
+                response?: { data?: { error?: string; message?: string } };
+              }
+            ).response?.data?.message
+          : undefined;
+      const finalMessage = errorMessage || 'Invalid OTP. Please try again.';
 
       toaster.create({
         title: 'Verification Failed',
-        description: errorMessage,
+        description: finalMessage,
         type: 'error',
         duration: 3000,
       });
@@ -309,7 +318,7 @@ function VerifyOTPContent() {
               {/* Resend */}
               <VStack gap={2}>
                 <Text fontSize="sm" color="gray.600">
-                  Didn't receive the code?
+                  Didn&apos;t receive the code?
                 </Text>
                 <Button
                   variant="ghost"

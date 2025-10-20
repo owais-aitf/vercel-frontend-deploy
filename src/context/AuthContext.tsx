@@ -11,7 +11,7 @@ type User = {
   email: string;
   role: string;
   fullName?: string;
-  isFirstLogin?: boolean;  
+  isFirstLogin?: boolean;
   mustResetPassword?: boolean;
 };
 
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const t = localStorage.getItem('authToken');
       const userDataString = localStorage.getItem('user');
-      
+
       if (t && userDataString) {
         setTokenState(t);
         const userData = JSON.parse(userDataString);
@@ -84,17 +84,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const res = await api.post('/auth/login', { email, password });
     const tokenFromRes = res.data?.data?.token;
     const userFromRes = res.data?.data?.user;
-    
+
     if (!tokenFromRes) throw new Error('Token missing from response');
-    
+
     const userData = userFromRes || jwtDecode(tokenFromRes);
-    
+
     // ✅ CRITICAL FIX - Save user data to localStorage
     localStorage.setItem('user', JSON.stringify(userData));
-    
+
     setToken(tokenFromRes);
     setUser(userData);
-    
+
     return userData;
   };
 

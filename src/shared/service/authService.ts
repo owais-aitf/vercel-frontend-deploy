@@ -42,12 +42,12 @@ const authService = {
     try {
       // We'll call a backend verification endpoint
       // For now, we can use the reset password endpoint with a dummy check
-      const response = await apiClient.post('/auth/verify-otp', { 
-        email, 
-        otp 
+      const response = await apiClient.post('/auth/verify-otp', {
+        email,
+        otp,
       });
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   },

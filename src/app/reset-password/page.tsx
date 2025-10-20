@@ -45,7 +45,10 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  const [touched, setTouched] = useState({ password: false, confirmPassword: false });
+  const [touched, setTouched] = useState({
+    password: false,
+    confirmPassword: false,
+  });
 
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -73,14 +76,21 @@ export default function ResetPasswordPage() {
   const validatePassword = (password: string) => {
     if (!password) return 'Password is required';
     if (password.length < 8) return 'Password must be at least 8 characters';
-    if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter';
-    if (!/[a-z]/.test(password)) return 'Password must contain at least one lowercase letter';
-    if (!/[0-9]/.test(password)) return 'Password must contain at least one number';
-    if (!/[!@#$%^&*]/.test(password)) return 'Password must contain at least one special character';
+    if (!/[A-Z]/.test(password))
+      return 'Password must contain at least one uppercase letter';
+    if (!/[a-z]/.test(password))
+      return 'Password must contain at least one lowercase letter';
+    if (!/[0-9]/.test(password))
+      return 'Password must contain at least one number';
+    if (!/[!@#$%^&*]/.test(password))
+      return 'Password must contain at least one special character';
     return '';
   };
 
-  const validateConfirmPassword = (password: string, confirmPassword: string) => {
+  const validateConfirmPassword = (
+    password: string,
+    confirmPassword: string
+  ) => {
     if (!confirmPassword) return 'Please confirm your password';
     if (password !== confirmPassword) return 'Passwords do not match';
     return '';
@@ -97,7 +107,9 @@ export default function ResetPasswordPage() {
     }
   };
 
-  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConfirmPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = e.target.value;
     setConfirmPassword(value);
     if (touched.confirmPassword) {
@@ -110,7 +122,10 @@ export default function ResetPasswordPage() {
     setTouched({ password: true, confirmPassword: true });
 
     const passwordErr = validatePassword(password);
-    const confirmPasswordErr = validateConfirmPassword(password, confirmPassword);
+    const confirmPasswordErr = validateConfirmPassword(
+      password,
+      confirmPassword
+    );
 
     setPasswordError(passwordErr);
     setConfirmPasswordError(confirmPasswordErr);
@@ -120,7 +135,7 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      const response = await authService.resetPassword(email, otp, password);
+      await authService.resetPassword(email, otp, password);
 
       // Clear session storage
       sessionStorage.removeItem('resetEmail');
@@ -128,22 +143,34 @@ export default function ResetPasswordPage() {
 
       toaster.create({
         title: 'Password Reset Successful',
-        description: 'Your password has been changed. Please login with your new password.',
+        description:
+          'Your password has been changed. Please login with your new password.',
         type: 'success',
         duration: 5000,
       });
 
       // Redirect to login page
       router.push('/login');
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage =
-        error?.response?.data?.error ||
-        error?.response?.data?.message ||
-        'Failed to reset password. Please try again.';
+        error instanceof Error && 'response' in error
+          ? (
+              error as {
+                response?: { data?: { error?: string; message?: string } };
+              }
+            ).response?.data?.error ||
+            (
+              error as {
+                response?: { data?: { error?: string; message?: string } };
+              }
+            ).response?.data?.message
+          : undefined;
+      const finalMessage =
+        errorMessage || 'Failed to reset password. Please try again.';
 
       toaster.create({
-        title: 'Reset Failed',
-        description: errorMessage,
+        title: 'Error',
+        description: finalMessage,
         type: 'error',
         duration: 5000,
       });
@@ -197,7 +224,12 @@ export default function ResetPasswordPage() {
                   priority
                 />
               </Box>
-              <Heading size="xl" textAlign="center" color="blue.700" fontWeight="bold">
+              <Heading
+                size="xl"
+                textAlign="center"
+                color="blue.700"
+                fontWeight="bold"
+              >
                 Reset Password
               </Heading>
               <Text color="gray.600" textAlign="center" fontSize="sm">
@@ -210,7 +242,12 @@ export default function ResetPasswordPage() {
               <VStack gap={4}>
                 {/* New Password Field */}
                 <Box w="full">
-                  <Text mb={3} fontWeight="semibold" fontSize="sm" color="gray.700">
+                  <Text
+                    mb={3}
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="gray.700"
+                  >
                     New Password
                   </Text>
                   <Box position="relative">
@@ -281,7 +318,12 @@ export default function ResetPasswordPage() {
                     </button>
                   </Box>
                   {passwordError && (
-                    <Text color="red.500" fontSize="sm" mt={1} fontWeight="medium">
+                    <Text
+                      color="red.500"
+                      fontSize="sm"
+                      mt={1}
+                      fontWeight="medium"
+                    >
                       {passwordError}
                     </Text>
                   )}
@@ -289,7 +331,12 @@ export default function ResetPasswordPage() {
 
                 {/* Confirm Password Field */}
                 <Box w="full">
-                  <Text mb={3} fontWeight="semibold" fontSize="sm" color="gray.700">
+                  <Text
+                    mb={3}
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="gray.700"
+                  >
                     Confirm Password
                   </Text>
                   <Box position="relative">
@@ -313,18 +360,24 @@ export default function ResetPasswordPage() {
                       onChange={handleConfirmPasswordChange}
                       onBlur={() => {
                         setTouched({ ...touched, confirmPassword: true });
-                        setConfirmPasswordError(validateConfirmPassword(password, confirmPassword));
+                        setConfirmPasswordError(
+                          validateConfirmPassword(password, confirmPassword)
+                        );
                       }}
                       pl="40px"
                       pr="45px"
                       bg="gray.50"
                       border="2px solid"
-                      borderColor={confirmPasswordError ? 'red.500' : 'gray.200'}
+                      borderColor={
+                        confirmPasswordError ? 'red.500' : 'gray.200'
+                      }
                       borderRadius="lg"
                       height="48px"
                       fontSize="md"
                       _hover={{
-                        borderColor: confirmPasswordError ? 'red.500' : 'blue.300',
+                        borderColor: confirmPasswordError
+                          ? 'red.500'
+                          : 'blue.300',
                         bg: 'white',
                       }}
                       _focus={{
@@ -337,7 +390,9 @@ export default function ResetPasswordPage() {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       style={{
                         position: 'absolute',
                         right: '12px',
@@ -360,14 +415,26 @@ export default function ResetPasswordPage() {
                     </button>
                   </Box>
                   {confirmPasswordError && (
-                    <Text color="red.500" fontSize="sm" mt={1} fontWeight="medium">
+                    <Text
+                      color="red.500"
+                      fontSize="sm"
+                      mt={1}
+                      fontWeight="medium"
+                    >
                       {confirmPasswordError}
                     </Text>
                   )}
                 </Box>
 
                 {/* Password Requirements */}
-                <Box w="full" bg="blue.50" p={4} borderRadius="lg" border="1px solid" borderColor="blue.200">
+                <Box
+                  w="full"
+                  bg="blue.50"
+                  p={4}
+                  borderRadius="lg"
+                  border="1px solid"
+                  borderColor="blue.200"
+                >
                   <Text fontSize="xs" fontWeight="bold" color="blue.700" mb={2}>
                     Password Requirements:
                   </Text>

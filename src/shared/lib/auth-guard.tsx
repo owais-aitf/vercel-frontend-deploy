@@ -5,12 +5,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import { AuthContext } from '@/context/AuthContext';
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { token,user } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-
     //PUBLIC ROUTES - Allow access without redirecting
     const publicRoutes = ['/first-login-reset'];
     if (publicRoutes.includes(pathname)) {
@@ -22,13 +21,12 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
       return;
     }
 
-
     // If user has first login flag, redirect to reset password
     if (user?.isFirstLogin && pathname !== '/first-login-reset') {
       // console.log(' NO TOKEN - Redirecting to login');
       router.replace('/first-login-reset');
     }
-  }, [token, router,user,pathname]);
+  }, [token, router, user, pathname]);
 
   //Allow public routes to render without token check
   const publicRoutes = ['/first-login-reset'];
@@ -59,7 +57,6 @@ export function RoleGuard({
   const pathname = usePathname();
 
   useEffect(() => {
-
     // Allow first-login-reset page
     if (pathname === '/first-login-reset') {
       return;
@@ -73,7 +70,7 @@ export function RoleGuard({
     if (user && role && !allowed.includes(role)) {
       router.replace(redirectByRole(user.role));
     }
-  }, [token, user, allowed, router,pathname]);
+  }, [token, user, allowed, router, pathname]);
 
   //Allow first-login-reset page  to render
   if (pathname === '/first-login-reset') {

@@ -45,7 +45,7 @@ export default function FirstLoginResetPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ current: '', new: '', confirm: '' });
   const [userId, setUserId] = useState('');
-  
+
   // ✅ FIXED - Separate state for each password field
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -53,7 +53,7 @@ export default function FirstLoginResetPage() {
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
-    
+
     if (!userData) {
       router.push('/login');
       return;
@@ -65,8 +65,10 @@ export default function FirstLoginResetPage() {
 
   const validatePassword = (password: string): string => {
     if (password.length < 8) return 'Password must be at least 8 characters';
-    if (!/[A-Z]/.test(password)) return 'Password must contain an uppercase letter';
-    if (!/[a-z]/.test(password)) return 'Password must contain a lowercase letter';
+    if (!/[A-Z]/.test(password))
+      return 'Password must contain an uppercase letter';
+    if (!/[a-z]/.test(password))
+      return 'Password must contain a lowercase letter';
     if (!/[0-9]/.test(password)) return 'Password must contain a number';
     return '';
   };
@@ -79,7 +81,10 @@ export default function FirstLoginResetPage() {
     let hasError = false;
 
     if (!currentPassword) {
-      setErrors((prev) => ({ ...prev, current: 'Current password is required' }));
+      setErrors((prev) => ({
+        ...prev,
+        current: 'Current password is required',
+      }));
       hasError = true;
     }
 
@@ -99,7 +104,11 @@ export default function FirstLoginResetPage() {
     setLoading(true);
 
     try {
-      await authService.firstLoginPasswordReset(userId, currentPassword, newPassword);
+      await authService.firstLoginPasswordReset(
+        userId,
+        currentPassword,
+        newPassword
+      );
 
       toaster.create({
         title: 'Password Updated',
@@ -126,15 +135,25 @@ export default function FirstLoginResetPage() {
       setTimeout(() => {
         router.push(dashboards[user.role] || '/');
       }, 1000);
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage =
-        error?.response?.data?.error ||
-        error?.response?.data?.message ||
-        'Failed to update password';
+        error instanceof Error && 'response' in error
+          ? (
+              error as {
+                response?: { data?: { error?: string; message?: string } };
+              }
+            ).response?.data?.error ||
+            (
+              error as {
+                response?: { data?: { error?: string; message?: string } };
+              }
+            ).response?.data?.message
+          : undefined;
+      const finalMessage = errorMessage || 'Failed to update password';
 
       toaster.create({
         title: 'Error',
-        description: errorMessage,
+        description: finalMessage,
         type: 'error',
         duration: 5000,
       });
@@ -192,7 +211,12 @@ export default function FirstLoginResetPage() {
               <VStack gap={4}>
                 {/* Current Password */}
                 <Box w="full">
-                  <Text mb={2} fontWeight="semibold" fontSize="sm" color="gray.700">
+                  <Text
+                    mb={2}
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="gray.700"
+                  >
                     Current Password
                   </Text>
                   <Box position="relative">
@@ -222,7 +246,9 @@ export default function FirstLoginResetPage() {
                       }}
                     />
                     <Button
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      onClick={() =>
+                        setShowCurrentPassword(!showCurrentPassword)
+                      }
                       position="absolute"
                       right="8px"
                       top="50%"
@@ -247,7 +273,12 @@ export default function FirstLoginResetPage() {
 
                 {/* New Password */}
                 <Box w="full">
-                  <Text mb={2} fontWeight="semibold" fontSize="sm" color="gray.700">
+                  <Text
+                    mb={2}
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="gray.700"
+                  >
                     New Password
                   </Text>
                   <Box position="relative">
@@ -302,7 +333,12 @@ export default function FirstLoginResetPage() {
 
                 {/* Confirm Password */}
                 <Box w="full">
-                  <Text mb={2} fontWeight="semibold" fontSize="sm" color="gray.700">
+                  <Text
+                    mb={2}
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="gray.700"
+                  >
                     Confirm New Password
                   </Text>
                   <Box position="relative">
@@ -332,7 +368,9 @@ export default function FirstLoginResetPage() {
                       }}
                     />
                     <Button
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       position="absolute"
                       right="8px"
                       top="50%"
@@ -364,7 +402,12 @@ export default function FirstLoginResetPage() {
                   border="1px solid"
                   borderColor="blue.100"
                 >
-                  <Text fontWeight="semibold" fontSize="sm" color="blue.700" mb={2}>
+                  <Text
+                    fontWeight="semibold"
+                    fontSize="sm"
+                    color="blue.700"
+                    mb={2}
+                  >
                     Password Requirements:
                   </Text>
                   <VStack align="start" gap={1}>

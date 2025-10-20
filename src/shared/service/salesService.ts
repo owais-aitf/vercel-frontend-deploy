@@ -325,4 +325,88 @@ export const salesService = {
     );
     return response.data;
   },
+
+  // ===== MONTHLY REPORTS API =====
+
+  // Generate monthly report
+  generateReport: async (assignmentId: string, year: number, month: number) => {
+    const response = await apiClient.post('/monthly-reports/generate', {
+      assignmentId,
+      year,
+      month,
+    });
+    return response.data;
+  },
+
+  // Get all monthly reports with filters
+  getAllReports: async (filters?: {
+    engineerId?: string;
+    projectId?: string;
+    status?: string;
+    year?: number;
+    month?: number;
+    last12Months?: boolean;
+  }) => {
+    const params = new URLSearchParams();
+    if (filters?.engineerId) params.append('engineerId', filters.engineerId);
+    if (filters?.projectId) params.append('projectId', filters.projectId);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.year) params.append('year', filters.year.toString());
+    if (filters?.month) params.append('month', filters.month.toString());
+    if (filters?.last12Months) params.append('last12Months', 'true');
+
+    const response = await apiClient.get(
+      `/monthly-reports${params.toString() ? `?${params.toString()}` : ''}`
+    );
+    return response.data;
+  },
+
+  // Get report by ID
+  getReportById: async (reportId: string) => {
+    const response = await apiClient.get(`/monthly-reports/${reportId}`);
+    return response.data;
+  },
+
+  // Update report status
+  updateReportStatus: async (reportId: string, status: string) => {
+    const response = await apiClient.put(
+      `/monthly-reports/${reportId}/status`,
+      { status }
+    );
+    return response.data;
+  },
+
+  // Get engineer total hours
+  getEngineerTotalHours: async (
+    engineerId: string,
+    year: number,
+    month: number
+  ) => {
+    const response = await apiClient.get(
+      `/monthly-reports/engineer/${engineerId}/total-hours?year=${year}&month=${month}`
+    );
+    return response.data;
+  },
+
+  // Download Excel report
+  downloadReportExcel: async (reportId: string) => {
+    const response = await apiClient.get(
+      `/monthly-reports/${reportId}/download`,
+      {
+        responseType: 'blob',
+      }
+    );
+    return response.data;
+  },
+
+  // Download PDF report
+  downloadReportPDF: async (reportId: string) => {
+    const response = await apiClient.get(
+      `/monthly-reports/${reportId}/download-pdf`,
+      {
+        responseType: 'blob',
+      }
+    );
+    return response.data;
+  },
 };
