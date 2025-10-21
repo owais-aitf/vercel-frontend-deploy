@@ -90,6 +90,15 @@ export default function UpdateAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage] = useState(20);
 
+  const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(
+    null
+  );
+
+  const today = new Date().toISOString().split('T')[0];
+  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split('T')[0];
+
   useEffect(() => {
     const now = new Date();
     const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -140,8 +149,15 @@ export default function UpdateAttendance() {
   const fetchAttendanceRecords = async () => {
     try {
       setLoading(true);
+      // Calculate 90-day range
+      const endDate = new Date().toISOString().split('T')[0];
+      const startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0];
+
       const response = await attendanceService.getAttendance({
-        month: selectedMonth,
+        startDate,
+        endDate,
       });
       const fetchedRecords = response.data || [];
       setRecords(fetchedRecords);
@@ -1019,7 +1035,12 @@ export default function UpdateAttendance() {
                       onChange={(e) =>
                         setFormData({ ...formData, workDate: e.target.value })
                       }
+                      max={today}
+                      min={ninetyDaysAgo}
                     />
+                    <Text fontSize="xs" color="gray.500" mt={1}>
+                      You can update attendance for the past 90 days
+                    </Text>
                   </Box>
 
                   {/* Project */}

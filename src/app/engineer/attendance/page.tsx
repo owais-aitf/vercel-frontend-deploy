@@ -53,6 +53,11 @@ export default function EngineerAttendance() {
     setWorkDate(today);
   }, []);
 
+  const today = new Date().toISOString().split('T')[0];
+  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split('T')[0];
+
   // Fetch active projects
   useEffect(() => {
     const fetchProjects = async () => {
@@ -272,6 +277,8 @@ export default function EngineerAttendance() {
                         onChange={(e) => setWorkDate(e.target.value)}
                         required
                         size="lg"
+                        max={today}
+                        min={ninetyDaysAgo}
                         borderRadius="lg"
                         borderColor="gray.300"
                         _hover={{ borderColor: 'blue.400' }}
@@ -280,6 +287,9 @@ export default function EngineerAttendance() {
                           boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.15)',
                         }}
                       />
+                      <Text fontSize="xs" color="gray.500" mt={1}>
+                        You can mark attendance for the past 90 days
+                      </Text>
                     </VStack>
                   </GridItem>
 

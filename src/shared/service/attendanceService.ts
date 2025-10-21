@@ -25,6 +25,8 @@ export interface AttendanceRecord {
 
 export interface AttendanceFilters {
   month?: string;
+  startDate?: string;
+  endDate?: string;
   attendanceType?: string;
   projectAssignmentId?: string;
   engineerId?: string;
@@ -45,6 +47,8 @@ export const attendanceService = {
   getAttendance: async (filters?: AttendanceFilters) => {
     const params = new URLSearchParams();
     if (filters?.month) params.append('month', filters.month);
+    if (filters?.startDate) params.append('startDate', filters.startDate);
+    if (filters?.endDate) params.append('endDate', filters.endDate);
     if (filters?.attendanceType)
       params.append('attendanceType', filters.attendanceType);
     if (filters?.projectAssignmentId)
