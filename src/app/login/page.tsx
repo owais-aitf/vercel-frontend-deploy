@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
@@ -43,6 +43,12 @@ const EyeOffIcon = ({ color = 'currentColor' }: { color?: string }) => (
   </svg>
 );
 
+const CheckIcon = ({ color = '#10B981' }: { color?: string }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill={color}>
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+  </svg>
+);
+
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useContext(AuthContext);
@@ -51,12 +57,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isCardVisible, setIsCardVisible] = useState(false);
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState('');
   const [touched, setTouched] = useState({ email: false, password: false });
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
+  const emailInputRef = useRef<HTMLInputElement>(null);
+
+  // Validation functions - moved before they're used
   const validateEmail = (email: string) => {
     if (!email) return 'Email is required';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -69,6 +81,27 @@ export default function LoginPage() {
     if (password.length < 8) return 'Password must be at least 8 characters';
     return '';
   };
+
+  // Check if fields are valid for success tick
+  const isEmailValid = email && !validateEmail(email);
+  const isPasswordValid = password && !validatePassword(password);
+
+  // Trigger card entrance animation on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsCardVisible(true);
+    }, 100);
+
+    // Auto-focus email field after animations
+    const focusTimer = setTimeout(() => {
+      emailInputRef.current?.focus();
+    }, 800);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(focusTimer);
+    };
+  }, []);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -293,6 +326,7 @@ export default function LoginPage() {
 
       <Container maxW="md" position="relative" zIndex="1">
         <Card.Root
+          className={`login-card ${isCardVisible ? 'visible' : ''}`}
           bg="rgba(255,255,255,0.95)"
           shadow="0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 60px rgba(66, 153, 225, 0.15)"
           borderRadius="2xl"
@@ -301,6 +335,13 @@ export default function LoginPage() {
           borderColor="rgba(255,255,255,0.2)"
           backdropFilter="blur(20px)"
           position="relative"
+          transform={
+            isCardVisible
+              ? 'translateY(0) scale(1)'
+              : 'translateY(50px) scale(0.95)'
+          }
+          opacity={isCardVisible ? 1 : 0}
+          transition="all 0.6s cubic-bezier(0.4, 0, 0.2, 1)"
           _before={{
             content: '""',
             position: 'absolute',
@@ -318,9 +359,10 @@ export default function LoginPage() {
           }}
         >
           <VStack gap={6} align="stretch">
-            {/* Logo - UPDATED */}
-            <VStack gap={3}>
+            {/* Logo - Enhanced with animations */}
+            <VStack gap={3} className="heading-container">
               <Box
+                className="logo-container"
                 position="relative"
                 w="100px"
                 h="100px"
@@ -330,6 +372,17 @@ export default function LoginPage() {
                 borderRadius="full"
                 border="2px solid"
                 borderColor="blue.100"
+                transform={
+                  isCardVisible
+                    ? 'scale(1) rotate(0deg)'
+                    : 'scale(0.8) rotate(-5deg)'
+                }
+                opacity={isCardVisible ? 1 : 0}
+                transition="all 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s"
+                _hover={{
+                  transform: 'scale(1.05)',
+                  shadow: '0 8px 25px rgba(66, 153, 225, 0.2)',
+                }}
               >
                 <Image
                   src="/images/logo.png"
@@ -344,10 +397,20 @@ export default function LoginPage() {
                 textAlign="center"
                 color="blue.700"
                 fontWeight="bold"
+                transform={isCardVisible ? 'translateY(0)' : 'translateY(20px)'}
+                opacity={isCardVisible ? 1 : 0}
+                transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s"
               >
                 Welcome Back
               </Heading>
-              <Text color="gray.500" textAlign="center" fontSize="lg">
+              <Text
+                color="gray.500"
+                textAlign="center"
+                fontSize="lg"
+                transform={isCardVisible ? 'translateY(0)' : 'translateY(20px)'}
+                opacity={isCardVisible ? 1 : 0}
+                transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s"
+              >
                 Sign in to your account
               </Text>
             </VStack>
@@ -355,58 +418,128 @@ export default function LoginPage() {
             {/* Form */}
             <form onSubmit={handleSubmit}>
               <VStack gap={4}>
-                {/* Email Field */}
-                <Box w="full">
-                  <Text
-                    mb={3}
-                    fontWeight="semibold"
-                    fontSize="sm"
-                    color="gray.700"
+                {/* Email Field - Enhanced with Floating Label & Success Tick */}
+                <Box
+                  w="full"
+                  className="form-field"
+                  transform={
+                    isCardVisible ? 'translateX(0)' : 'translateX(-20px)'
+                  }
+                  opacity={isCardVisible ? 1 : 0}
+                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.6s"
+                >
+                  <Box
+                    position="relative"
+                    mt={emailFocused || email ? 4 : 0}
+                    transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                   >
-                    Email Address
-                  </Text>
-                  <Box position="relative">
+                    {/* Floating Label */}
+                    <Text
+                      position="absolute"
+                      left={emailFocused || email ? '12px' : '40px'}
+                      top={emailFocused || email ? '-10px' : '50%'}
+                      transform={
+                        emailFocused || email
+                          ? 'translateY(0) scale(0.85)'
+                          : 'translateY(-50%) scale(1)'
+                      }
+                      transformOrigin="left"
+                      fontWeight="semibold"
+                      fontSize="sm"
+                      color={
+                        emailFocused
+                          ? 'blue.600'
+                          : email && !emailError
+                            ? 'blue.600'
+                            : 'gray.500'
+                      }
+                      bg={emailFocused || email ? 'white' : 'transparent'}
+                      px={emailFocused || email ? 2 : 0}
+                      zIndex={2}
+                      pointerEvents="none"
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                    >
+                      Email Address
+                    </Text>
+
+                    {/* Left Icon */}
                     <Box
                       position="absolute"
                       left="12px"
                       top="50%"
                       transform="translateY(-50%)"
                       pointerEvents="none"
-                      color="blue.400"
+                      color={emailFocused || email ? 'blue.500' : 'blue.400'}
                       zIndex={1}
                       display="flex"
                       alignItems="center"
-                      transition="all 0.2s ease"
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                      opacity={emailFocused || email ? 0 : 1}
                     >
                       <EmailIcon />
                     </Box>
+
+                    {/* Success Tick */}
+                    {isEmailValid && (
+                      <Box
+                        position="absolute"
+                        right="12px"
+                        top="50%"
+                        transform="translateY(-50%)"
+                        zIndex={2}
+                        opacity={1}
+                        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                        animation="fadeInScale 0.3s ease-out"
+                      >
+                        <CheckIcon />
+                      </Box>
+                    )}
+
                     <Input
+                      ref={emailInputRef}
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder=""
                       value={email}
                       onChange={handleEmailChange}
+                      onFocus={() => setEmailFocused(true)}
                       onBlur={() => {
+                        setEmailFocused(false);
                         setTouched({ ...touched, email: true });
                         setEmailError(validateEmail(email));
                       }}
-                      pl="40px"
+                      pl={emailFocused || email ? '12px' : '40px'}
+                      pr={isEmailValid ? '40px' : '12px'}
                       bg="gray.50"
                       border="2px solid"
-                      borderColor={emailError ? 'red.500' : 'gray.200'}
+                      borderColor={
+                        emailError
+                          ? 'red.500'
+                          : isEmailValid
+                            ? 'green.300'
+                            : 'gray.200'
+                      }
                       borderRadius="lg"
                       height="48px"
                       fontSize="md"
+                      transform="translateY(0)"
                       _hover={{
-                        borderColor: emailError ? 'red.500' : 'blue.300',
+                        borderColor: emailError
+                          ? 'red.500'
+                          : isEmailValid
+                            ? 'green.400'
+                            : 'blue.300',
                         bg: 'white',
+                        transform: 'translateY(-1px)',
+                        shadow: '0 4px 12px rgba(66, 153, 225, 0.1)',
                       }}
                       _focus={{
                         borderColor: 'blue.500',
                         bg: 'white',
-                        boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                        boxShadow: '0 8px 25px rgba(66, 153, 225, 0.15)',
                         outline: 'none',
+                        transform: 'translateY(-2px)',
                       }}
-                      transition="all 0.2s"
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                     />
                   </Box>
                   {emailError && (
@@ -415,67 +548,147 @@ export default function LoginPage() {
                       fontSize="sm"
                       mt={1}
                       fontWeight="medium"
+                      transform="translateX(0)"
+                      opacity="1"
+                      transition="all 0.2s ease"
                     >
-                      {emailError}
+                      ⚠️ {emailError}
                     </Text>
                   )}
                 </Box>
 
-                {/* Password Field */}
-                <Box w="full">
-                  <Text
-                    mb={3}
-                    fontWeight="semibold"
-                    fontSize="sm"
-                    color="gray.700"
+                {/* Password Field - Enhanced with Floating Label & Success Tick */}
+                <Box
+                  w="full"
+                  className="form-field"
+                  transform={
+                    isCardVisible ? 'translateX(0)' : 'translateX(-20px)'
+                  }
+                  opacity={isCardVisible ? 1 : 0}
+                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.7s"
+                >
+                  <Box
+                    position="relative"
+                    mt={passwordFocused || password ? 4 : 0}
+                    transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                   >
-                    Password
-                  </Text>
-                  <Box position="relative">
+                    {/* Floating Label */}
+                    <Text
+                      position="absolute"
+                      left={passwordFocused || password ? '12px' : '40px'}
+                      top={passwordFocused || password ? '-10px' : '50%'}
+                      transform={
+                        passwordFocused || password
+                          ? 'translateY(0) scale(0.85)'
+                          : 'translateY(-50%) scale(1)'
+                      }
+                      transformOrigin="left"
+                      fontWeight="semibold"
+                      fontSize="sm"
+                      color={
+                        passwordFocused
+                          ? 'blue.600'
+                          : password && !passwordError
+                            ? 'blue.600'
+                            : 'gray.500'
+                      }
+                      bg={passwordFocused || password ? 'white' : 'transparent'}
+                      px={passwordFocused || password ? 2 : 0}
+                      zIndex={2}
+                      pointerEvents="none"
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                    >
+                      Password
+                    </Text>
+
+                    {/* Left Icon */}
                     <Box
                       position="absolute"
                       left="12px"
                       top="50%"
                       transform="translateY(-50%)"
                       pointerEvents="none"
-                      color="blue.400"
+                      color={
+                        passwordFocused || password ? 'blue.500' : 'blue.400'
+                      }
                       zIndex={1}
                       display="flex"
                       alignItems="center"
-                      transition="all 0.2s ease"
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                      opacity={passwordFocused || password ? 0 : 1}
                     >
                       <LockIcon />
                     </Box>
+
+                    {/* Success Tick */}
+                    {isPasswordValid && (
+                      <Box
+                        position="absolute"
+                        right={showPassword ? '45px' : '12px'}
+                        top="50%"
+                        transform="translateY(-50%)"
+                        zIndex={2}
+                        opacity={1}
+                        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                        animation="fadeInScale 0.3s ease-out"
+                      >
+                        <CheckIcon />
+                      </Box>
+                    )}
+
                     <Input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your password"
+                      placeholder=""
                       value={password}
                       onChange={handlePasswordChange}
+                      onFocus={() => setPasswordFocused(true)}
                       onBlur={() => {
+                        setPasswordFocused(false);
                         setTouched({ ...touched, password: true });
                         setPasswordError(validatePassword(password));
                       }}
-                      pl="40px"
-                      pr="45px"
+                      pl={passwordFocused || password ? '12px' : '40px'}
+                      pr={
+                        isPasswordValid
+                          ? showPassword
+                            ? '75px'
+                            : '45px'
+                          : '45px'
+                      }
                       bg="gray.50"
                       border="2px solid"
-                      borderColor={passwordError ? 'red.500' : 'gray.200'}
+                      borderColor={
+                        passwordError
+                          ? 'red.500'
+                          : isPasswordValid
+                            ? 'green.300'
+                            : 'gray.200'
+                      }
                       borderRadius="lg"
                       height="48px"
                       fontSize="md"
+                      transform="translateY(0)"
                       _hover={{
-                        borderColor: passwordError ? 'red.500' : 'blue.300',
+                        borderColor: passwordError
+                          ? 'red.500'
+                          : isPasswordValid
+                            ? 'green.400'
+                            : 'blue.300',
                         bg: 'white',
+                        transform: 'translateY(-1px)',
+                        shadow: '0 4px 12px rgba(66, 153, 225, 0.1)',
                       }}
                       _focus={{
                         borderColor: 'blue.500',
                         bg: 'white',
-                        boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                        boxShadow: '0 8px 25px rgba(66, 153, 225, 0.15)',
                         outline: 'none',
+                        transform: 'translateY(-2px)',
                       }}
-                      transition="all 0.2s"
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                     />
-                    {/* FIXED PASSWORD TOGGLE */}
+
+                    {/* Enhanced Password Toggle with Animation */}
                     <Button
                       onClick={(e) => {
                         e.preventDefault();
@@ -489,16 +702,24 @@ export default function LoginPage() {
                       size="sm"
                       variant="ghost"
                       color="gray.400"
-                      zIndex={2}
+                      zIndex={3}
                       minW="auto"
                       h="auto"
                       p={2}
+                      borderRadius="md"
                       _hover={{
                         color: 'blue.500',
                         bg: 'blue.50',
+                        transform: 'translateY(-50%) scale(1.1)',
                       }}
+                      _active={{
+                        transform: 'translateY(-50%) scale(0.95)',
+                      }}
+                      transition="all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
                     >
-                      {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                      <Box className="eye-icon">
+                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                      </Box>
                     </Button>
                   </Box>
                   {passwordError && (
@@ -507,13 +728,16 @@ export default function LoginPage() {
                       fontSize="sm"
                       mt={1}
                       fontWeight="medium"
+                      transform="translateX(0)"
+                      opacity="1"
+                      transition="all 0.2s ease"
                     >
-                      {passwordError}
+                      ⚠️ {passwordError}
                     </Text>
                   )}
                 </Box>
 
-                {/* Login Error Message */}
+                {/* Login Error Message - Enhanced */}
                 {loginError && (
                   <Box
                     bg="red.50"
@@ -523,9 +747,18 @@ export default function LoginPage() {
                     border="1px solid"
                     borderColor="red.200"
                     w="full"
+                    transform="scale(1)"
+                    opacity="1"
+                    transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                    _hover={{
+                      transform: 'scale(1.02)',
+                      shadow: 'md',
+                    }}
                   >
                     <HStack>
-                      <Box color="red.500">⚠️</Box>
+                      <Box color="red.500" animation="eyeBlink 2s infinite">
+                        ⚠️
+                      </Box>
                       <Text fontSize="sm" fontWeight="medium">
                         {loginError}
                       </Text>
@@ -533,20 +766,36 @@ export default function LoginPage() {
                   </Box>
                 )}
 
-                {/* Forgot Password Link */}
-                <HStack justify="flex-end" w="full">
+                {/* Forgot Password Link - Enhanced */}
+                <HStack
+                  justify="flex-end"
+                  w="full"
+                  transform={
+                    isCardVisible ? 'translateY(0)' : 'translateY(10px)'
+                  }
+                  opacity={isCardVisible ? 1 : 0}
+                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.8s"
+                >
                   <Button
                     variant="ghost"
                     size="sm"
                     color="blue.600"
                     onClick={() => router.push('/forgot-password')}
-                    _hover={{ textDecoration: 'underline' }}
+                    _hover={{
+                      textDecoration: 'underline',
+                      color: 'blue.700',
+                      transform: 'translateY(-1px)',
+                    }}
+                    _active={{
+                      transform: 'translateY(0)',
+                    }}
+                    transition="all 0.2s ease"
                   >
                     Forgot Password?
                   </Button>
                 </HStack>
 
-                {/* Submit Button */}
+                {/* Submit Button - Enhanced with Ripple Effect */}
                 <Button
                   type="submit"
                   size="lg"
@@ -556,40 +805,105 @@ export default function LoginPage() {
                   color="white"
                   fontWeight="semibold"
                   borderRadius="lg"
+                  className="submit-button ripple-button"
+                  position="relative"
+                  overflow="hidden"
+                  transform={
+                    isCardVisible ? 'translateY(0)' : 'translateY(20px)'
+                  }
+                  opacity={isCardVisible ? 1 : 0}
+                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.9s"
                   _hover={{
                     bg: loading ? 'blue.600' : 'blue.700',
-                    transform: loading ? 'none' : 'translateY(-1px)',
-                    shadow: loading ? 'md' : 'lg',
+                    transform: loading
+                      ? isCardVisible
+                        ? 'translateY(0)'
+                        : 'translateY(20px)'
+                      : isCardVisible
+                        ? 'translateY(-2px) scale(1.02)'
+                        : 'translateY(18px) scale(1.02)',
+                    shadow: loading
+                      ? 'md'
+                      : '0 10px 30px rgba(66, 153, 225, 0.3)',
                   }}
                   _active={{
-                    transform: loading ? 'none' : 'translateY(0)',
-                    shadow: 'md',
+                    transform: loading
+                      ? isCardVisible
+                        ? 'translateY(0)'
+                        : 'translateY(20px)'
+                      : isCardVisible
+                        ? 'translateY(0) scale(0.98)'
+                        : 'translateY(20px) scale(0.98)',
+                    shadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
                   }}
                   _loading={{
                     bg: 'blue.600',
                     _hover: { bg: 'blue.600' },
                     cursor: 'not-allowed',
                   }}
-                  transition="all 0.2s"
                   loading={loading}
                   loadingText="Signing in..."
                   disabled={loading}
                   mt={2}
+                  _before={{
+                    content: '""',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    width: '0',
+                    height: '0',
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.3)',
+                    transform: 'translate(-50%, -50%)',
+                    transition: 'width 0.6s, height 0.6s',
+                    pointerEvents: 'none',
+                  }}
                 >
-                  <HStack gap={2}>
-                    {loading && <Spinner size="sm" color="white" />}
+                  <HStack gap={2} position="relative" zIndex={1}>
+                    {loading && (
+                      <Spinner
+                        size="sm"
+                        color="white"
+                        css={{
+                          animation: 'spin 1s linear infinite',
+                        }}
+                      />
+                    )}
                     <Text>{loading ? 'Signing in...' : 'Sign In'}</Text>
                   </HStack>
                 </Button>
               </VStack>
             </form>
 
-            {/* Footer */}
-            <VStack gap={2} pt={6}>
-              <Text fontSize="xs" color="gray.400" textAlign="center">
+            {/* Footer - Enhanced */}
+            <VStack
+              gap={2}
+              pt={6}
+              className="footer-content"
+              transform={isCardVisible ? 'translateY(0)' : 'translateY(20px)'}
+              opacity={isCardVisible ? 1 : 0}
+              transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 1s"
+            >
+              <Text
+                fontSize="xs"
+                color="gray.400"
+                textAlign="center"
+                _hover={{
+                  color: 'gray.500',
+                }}
+                transition="color 0.2s ease"
+              >
                 ATF Attendance & Billing Management System
               </Text>
-              <Text fontSize="xs" color="gray.300" textAlign="center">
+              <Text
+                fontSize="xs"
+                color="gray.300"
+                textAlign="center"
+                _hover={{
+                  color: 'gray.400',
+                }}
+                transition="color 0.2s ease"
+              >
                 Secure • Reliable • Professional
               </Text>
             </VStack>

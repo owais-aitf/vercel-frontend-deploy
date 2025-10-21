@@ -106,8 +106,6 @@ export default function UpdateAttendance() {
       fetchAttendanceRecords();
       fetchActiveProjects();
     }
-    // Dependencies intentionally omitted - functions are defined below
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth]);
 
   // Apply filters whenever records or filter values change
