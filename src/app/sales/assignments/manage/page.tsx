@@ -610,9 +610,18 @@ export default function ManageAssignmentsPage() {
                             }
                             size="lg"
                             min={formData.assignmentStart}
+                            max={
+                              selectedAssignment?.project.endDate
+                                ? new Date(selectedAssignment.project.endDate)
+                                    .toISOString()
+                                    .split('T')[0]
+                                : undefined
+                            }
                           />
                           <Text fontSize="xs" color="gray.500" mt={1}>
-                            Leave empty if the assignment is ongoing
+                            {selectedAssignment?.project.endDate
+                              ? `Must be on or before project end date: ${new Date(selectedAssignment.project.endDate).toLocaleDateString()}`
+                              : 'Leave empty if the assignment is ongoing'}
                           </Text>
                         </Box>
 
