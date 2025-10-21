@@ -6,6 +6,10 @@ import { Box, Text } from '@chakra-ui/react';
 export const toaster = createToaster({
   placement: 'top-end',
   pauseOnPageIdle: true,
+  max: 3, // Limit to 3 toasts at a time
+  gap: 16, // Add spacing between toasts (16px)
+  duration: 4000, // Auto-dismiss after 4 seconds
+  overlap: false, // Prevent overlapping
 });
 
 export function Toaster() {
@@ -29,6 +33,20 @@ export function Toaster() {
           minW="300px"
           maxW="500px"
           position="relative"
+          mb={2}
+          animation="slideIn 0.3s ease-out"
+          css={{
+            '@keyframes slideIn': {
+              from: {
+                transform: 'translateX(100%)',
+                opacity: 0,
+              },
+              to: {
+                transform: 'translateX(0)',
+                opacity: 1,
+              },
+            },
+          }}
         >
           <Box pr={8}>
             <Text fontWeight="bold" fontSize="md">

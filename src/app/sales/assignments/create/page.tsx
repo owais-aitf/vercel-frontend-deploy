@@ -129,15 +129,26 @@ export default function CreateAssignmentPage() {
       } else {
         throw new Error(response.error || 'Failed to create assignment');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating assignment:', error);
 
       // Extract error information
-      const errorData = error?.response?.data;
+      const err = error as {
+        response?: {
+          data?: {
+            error?: string;
+            message?: string;
+            code?: string;
+            details?: { engineerName?: string; projectName?: string };
+          };
+        };
+        message?: string;
+      };
+      const errorData = err?.response?.data;
       const errorMessage =
         errorData?.error ||
         errorData?.message ||
-        error?.message ||
+        err?.message ||
         'Failed to create assignment';
 
       // Check if it's a duplicate assignment error

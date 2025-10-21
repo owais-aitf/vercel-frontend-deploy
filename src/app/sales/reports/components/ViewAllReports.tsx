@@ -827,12 +827,47 @@ export function ViewAllReports() {
                     <Text color="gray.600" minW="150px">
                       Final Billing Amount:
                     </Text>
-                    <Text fontWeight="bold" fontSize="md">
-                      {formatCurrency(selectedReport.finalBillingAmount)}
-                    </Text>
+                    <VStack align="start" gap={0}>
+                      <Text fontWeight="bold" fontSize="md">
+                        {formatCurrency(selectedReport.finalBillingAmount)}
+                      </Text>
+                      {parseFloat(selectedReport.finalBillingAmount) === 0 &&
+                        parseFloat(selectedReport.settlementAdjustment) < 0 && (
+                          <Text fontSize="xs" color="orange.600">
+                            (Capped at ¥0 - shortage exceeded base amount)
+                          </Text>
+                        )}
+                    </VStack>
                   </HStack>
                 </VStack>
               </VStack>
+
+              {/* Info Box */}
+              <Box
+                bg={selectedReport.status === 'DRAFT' ? 'blue.50' : 'gray.50'}
+                borderLeft="4px solid"
+                borderColor={
+                  selectedReport.status === 'DRAFT' ? 'blue.500' : 'gray.400'
+                }
+                p={3}
+                borderRadius="md"
+              >
+                <Text fontSize="sm" color="gray.700">
+                  {selectedReport.status === 'DRAFT' ? (
+                    <>
+                      <strong>Note:</strong> This report is in DRAFT status and
+                      can be deleted. Once submitted or approved, deletion will
+                      no longer be available.
+                    </>
+                  ) : (
+                    <>
+                      <strong>Info:</strong> This report has been{' '}
+                      {selectedReport.status.toLowerCase()} and cannot be
+                      deleted. Only DRAFT reports can be removed.
+                    </>
+                  )}
+                </Text>
+              </Box>
 
               {/* Footer */}
               <HStack justify="space-between" pt={3}>

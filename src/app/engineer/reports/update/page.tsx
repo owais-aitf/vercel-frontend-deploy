@@ -90,10 +90,6 @@ export default function UpdateAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage] = useState(20);
 
-  const [selectedRecord, setSelectedRecord] = useState<AttendanceRecord | null>(
-    null
-  );
-
   const today = new Date().toISOString().split('T')[0];
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
     .toISOString()
@@ -110,6 +106,7 @@ export default function UpdateAttendance() {
       fetchAttendanceRecords();
       fetchActiveProjects();
     }
+    // Dependencies intentionally omitted - functions are defined below
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth]);
 

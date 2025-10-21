@@ -32,8 +32,13 @@ export const DashboardLayout = ({
     setIsMounted(true);
   }, []);
 
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <Flex h="100vh" overflow="hidden" suppressHydrationWarning>
+    <Flex h="100vh" overflow="hidden">
       {/* Fixed Sidebar */}
       <Sidebar
         navigation={navigation}
@@ -43,8 +48,8 @@ export const DashboardLayout = ({
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      {/* Overlay for Mobile Sidebar - Only render after mount to avoid hydration mismatch */}
-      {isMounted && isSidebarOpen && (
+      {/* Overlay for Mobile Sidebar */}
+      {isSidebarOpen && (
         <Box
           position="fixed"
           inset={0}
