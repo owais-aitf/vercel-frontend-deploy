@@ -409,4 +409,10 @@ export const salesService = {
     );
     return response.data;
   },
+
+  // Delete report
+  deleteReport: async (reportId: string) => {
+    const response = await apiClient.delete(`/monthly-reports/${reportId}`);
+    return response.data;
+  },
 };

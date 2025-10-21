@@ -21,6 +21,7 @@ import {
   LuRefreshCw,
   LuFilter,
   LuFileSpreadsheet,
+  LuTrash2,
 } from 'react-icons/lu';
 import { toaster } from '@/components/ui/toaster';
 import { salesService } from '@/shared/service/salesService';
@@ -49,6 +50,7 @@ export function ViewAllReports() {
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [deletingReport, setDeletingReport] = useState(false);
 
   // Filters
   const [filterEngineer, setFilterEngineer] = useState('');
@@ -198,6 +200,46 @@ export function ViewAllReports() {
         description: errorMessage || 'Failed to download report',
         type: 'error',
       });
+    }
+  };
+
+  const handleDeleteReport = async () => {
+    if (!selectedReport) return;
+
+    if (
+      !confirm(
+        'Are you sure you want to delete this report? This action cannot be undone.'
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setDeletingReport(true);
+      await salesService.deleteReport(selectedReport.id);
+
+      toaster.create({
+        title: 'Success',
+        description: 'Report deleted successfully',
+        type: 'success',
+      });
+
+      setIsDetailModalOpen(false);
+      setSelectedReport(null);
+      fetchReports(); // Refresh the list
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error && 'response' in error
+          ? (error as { response?: { data?: { error?: string } } }).response
+              ?.data?.error
+          : undefined;
+      toaster.create({
+        title: 'Error',
+        description: errorMessage || 'Failed to delete report',
+        type: 'error',
+      });
+    } finally {
+      setDeletingReport(false);
     }
   };
 
@@ -793,7 +835,19 @@ export function ViewAllReports() {
               </VStack>
 
               {/* Footer */}
-              <HStack justify="flex-end" pt={3}>
+              <HStack justify="space-between" pt={3}>
+                {selectedReport.status === 'DRAFT' && (
+                  <Button
+                    colorPalette="red"
+                    variant="outline"
+                    onClick={handleDeleteReport}
+                    loading={deletingReport}
+                  >
+                    <LuTrash2 />
+                    Delete Report
+                  </Button>
+                )}
+                <Box flex={1} />
                 <Button
                   variant="outline"
                   onClick={() => setIsDetailModalOpen(false)}
