@@ -129,22 +129,35 @@ export default function CreateAssignmentPage() {
       } else {
         throw new Error(response.error || 'Failed to create assignment');
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error creating assignment:', error);
+
+      // Extract error information
+      const errorData = error?.response?.data;
       const errorMessage =
-        error instanceof Error && 'response' in error
-          ? (error as { response?: { data?: { error?: string } } }).response
-              ?.data?.error
-          : error instanceof Error
-            ? error.message
-            : undefined;
+        errorData?.error ||
+        errorData?.message ||
+        error?.message ||
+        'Failed to create assignment';
+
+      // Check if it's a duplicate assignment error
+      const isDuplicateError =
+        errorData?.code === 'DUPLICATE_ASSIGNMENT' ||
+        errorMessage.toLowerCase().includes('already has') ||
+        errorMessage.toLowerCase().includes('duplicate assignment');
+
+      // Show appropriate toast message
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to create assignment',
+        title: isDuplicateError ? '⚠️ Duplicate Assignment' : 'Error',
+        description: errorMessage,
         type: 'error',
-        duration: 5000,
+        duration: isDuplicateError ? 8000 : 5000,
       });
-    } finally {
-      setLoading(false);
+
+      // Log additional details if available
+      if (errorData?.details) {
+        console.log('Assignment conflict details:', errorData.details);
+      }
     }
   };
 
