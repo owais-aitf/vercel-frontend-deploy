@@ -1,19 +1,30 @@
 name: Mirror to Vercel Repo
+run-name: ${{ github.actor }} mirrors main branch to Vercel 🚀
+
+# Workflow permissions
+permissions:
+  contents: read # Needed to read repository content
+  packages: write # Needed if writing packages (optional for your workflow)
+  actions: write
+  checks: write
+  pull-requests: write
 
 on:
   push:
     branches:
-      - main # triggers on every push to main
+      - main # Trigger on pushes to main
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source repo
+      # 1️⃣ Checkout source repo
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2️⃣ Mirror to personal Vercel repo
       - name: Mirror to Vercel repo
         run: |
           git config user.name "github-actions[bot]"
