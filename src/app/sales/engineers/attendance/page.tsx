@@ -16,7 +16,6 @@ import { EngineerSidebar } from './components/EngineerSidebar';
 import { CalendarHeader } from './components/CalendarHeader';
 import { CalendarView } from './components/CalendarView';
 import { EditSlideOver } from './components/EditSlideOver';
-import { ResizableSplitter } from './components/ResizableSplitter';
 
 interface AttendanceRecord {
   id: string;
@@ -71,24 +70,6 @@ export default function ManageAttendancePage() {
     workDescription: '',
   });
   const [saving, setSaving] = useState(false);
-
-  // Resizable sidebar state
-  const [sidebarWidth, setSidebarWidth] = useState(() => {
-    // Load from localStorage or use default
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('attendance-sidebar-width');
-      return saved ? parseInt(saved, 10) : 350;
-    }
-    return 350;
-  });
-
-  // Save sidebar width to localStorage
-  const handleSidebarResize = (width: number) => {
-    setSidebarWidth(width);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('attendance-sidebar-width', width.toString());
-    }
-  };
 
   // Initialize month/year
   useEffect(() => {
@@ -348,16 +329,8 @@ export default function ManageAttendancePage() {
             onSearchChange={setSearchTerm}
             onSelectEngineer={handleSelectEngineer}
             loading={loading}
-            width={sidebarWidth}
+            width={350}
             stats={stats}
-          />
-
-          {/* Resizable Splitter */}
-          <ResizableSplitter
-            onResize={handleSidebarResize}
-            minWidth={280}
-            maxWidth={500}
-            defaultWidth={sidebarWidth}
           />
 
           {/* Right Panel - Calendar View */}

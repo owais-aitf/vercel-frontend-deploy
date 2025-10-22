@@ -79,11 +79,17 @@ export function EngineerSidebar({
         overflowY="auto"
         css={{
           '&::-webkit-scrollbar': {
-            width: '8px',
+            width: '6px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
           },
           '&::-webkit-scrollbar-thumb': {
             background: '#CBD5E0',
-            borderRadius: '4px',
+            borderRadius: '3px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: '#A0AEC0',
           },
         }}
       >
@@ -110,10 +116,18 @@ export function EngineerSidebar({
                 bg={isSelected ? 'blue.50' : 'transparent'}
                 borderLeft="3px solid"
                 borderColor={isSelected ? 'blue.500' : 'transparent'}
+                borderRadius="md"
+                mx={2}
                 _hover={{
                   bg: isSelected ? 'blue.100' : 'gray.50',
+                  transform: 'translateY(-2px)',
+                  shadow: 'md',
+                  borderColor: isSelected ? 'blue.600' : 'blue.200',
                 }}
-                transition="all 0.2s"
+                _active={{
+                  transform: 'translateY(0px)',
+                }}
+                transition="all 0.2s ease-out"
                 onClick={() => onSelectEngineer(engineer)}
               >
                 <VStack align="start" gap={1}>
