@@ -1,10 +1,9 @@
 name: Mirror to Vercel Repo
 run-name: ${{ github.actor }} mirrors main branch to Vercel 🚀
 
-# Workflow permissions
 permissions:
-  contents: read # Needed to read repository content
-  packages: write # Needed if writing packages (optional for your workflow)
+  contents: read # Needed to read repo content
+  packages: write # Needed if writing packages
   actions: write
   checks: write
   pull-requests: write
@@ -19,28 +18,34 @@ jobs:
   mirror:
     runs-on: ubuntu-latest
     steps:
-      # 1️⃣ Checkout source repo
+      # 1️⃣ Checkout source repo using PAT
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.VERCEL_PAT }}
 
-      # 2️⃣ Mirror to personal Vercel repo
-      - name: Mirror to Vercel repo
+      # 2️⃣ Setup Git and add Vercel remote using PAT
+      - name: Setup Git authentication
         run: |
           echo "Setting up git config..."
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           echo "Removing existing vercel remote if exists..."
-          git remote remove vercel || true
+          git remote remove vercel 2>$null || true
 
-          echo "Adding vercel remote..."
+          echo "Adding vercel remote with PAT..."
           git remote add vercel https://owais-aitf:${{ secrets.VERCEL_PAT }}@github.com/owais-aitf/vercel-frontend-deploy.git
 
-
-          echo "Verifying remote was added..."
+          echo "Verifying remote..."
           git remote -v
 
-          echo "Pushing to vercel repository..."
+          echo "Checking if we can access the remote..."
+          git ls-remote vercel
+
+      # 3️⃣ Push to Vercel repo
+      - name: Push to Vercel repo
+        run: |
+          echo "Pushing main branch to vercel..."
           git push vercel main --force
