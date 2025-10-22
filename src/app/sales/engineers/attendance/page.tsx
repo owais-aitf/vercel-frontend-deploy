@@ -288,17 +288,57 @@ export default function ManageAttendancePage() {
     }
   };
 
-  // Calculate stats
+  // Calculate stats - filter by selected month/year to ensure accuracy
+  const filteredRecords = attendanceRecords.filter((record) => {
+    const recordDate = new Date(record.workDate);
+    const recordMonth = recordDate.getMonth() + 1;
+    const recordYear = recordDate.getFullYear();
+
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        'Record date:',
+        record.workDate,
+        'Parsed:',
+        recordDate,
+        'Month:',
+        recordMonth,
+        'Year:',
+        recordYear
+      );
+      console.log(
+        'Selected month:',
+        selectedMonth,
+        'Selected year:',
+        selectedYear
+      );
+    }
+
+    return recordMonth === selectedMonth && recordYear === selectedYear;
+  });
+
+  // Remove duplicates based on workDate to prevent double counting
+  const uniqueRecords = filteredRecords.filter(
+    (record, index, self) =>
+      index === self.findIndex((r) => r.workDate === record.workDate)
+  );
+
   const stats = {
-    totalWorkDays: attendanceRecords.filter(
-      (r) => r.attendanceType === 'PRESENT'
-    ).length,
-    totalLeave: attendanceRecords.filter(
-      (r) => r.attendanceType === 'PAID_LEAVE'
-    ).length,
-    totalAbsent: attendanceRecords.filter((r) => r.attendanceType === 'ABSENT')
+    totalWorkDays: uniqueRecords.filter((r) => r.attendanceType === 'PRESENT')
+      .length,
+    totalLeave: uniqueRecords.filter((r) => r.attendanceType === 'PAID_LEAVE')
+      .length,
+    totalAbsent: uniqueRecords.filter((r) => r.attendanceType === 'ABSENT')
       .length,
   };
+
+  // Debug logging for stats
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Total attendance records:', attendanceRecords.length);
+    console.log('Filtered records:', filteredRecords.length);
+    console.log('Unique records:', uniqueRecords.length);
+    console.log('Stats:', stats);
+  }
 
   return (
     <FeatureErrorBoundary featureName="Manage Attendance">
