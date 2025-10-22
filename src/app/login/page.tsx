@@ -19,18 +19,6 @@ import { AuthContext } from '@/context/AuthContext';
 import { UserRole } from '@/shared/constants/roles';
 
 // SVG Icon Components
-const EmailIcon = ({ color = 'currentColor' }: { color?: string }) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill={color}>
-    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-  </svg>
-);
-
-const LockIcon = ({ color = 'currentColor' }: { color?: string }) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill={color}>
-    <path d="M18,8h-1V6c0-2.76-2.24-5-5-5S7,3.24,7,6v2H6c-1.1,0-2,0.9-2,2v10c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V10C20,8.9,19.1,8,18,8z M12,17c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2S13.1,17,12,17z M15.1,8H8.9V6c0-1.71,1.39-3.1,3.1-3.1s3.1,1.39,3.1,3.1V8z" />
-  </svg>
-);
-
 const EyeIcon = ({ color = 'currentColor' }: { color?: string }) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill={color}>
     <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" />
@@ -68,7 +56,7 @@ export default function LoginPage() {
 
   const emailInputRef = useRef<HTMLInputElement>(null);
 
-  // Validation functions - moved before they're used
+  // Validation functions
   const validateEmail = (email: string) => {
     if (!email) return 'Email is required';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -82,17 +70,16 @@ export default function LoginPage() {
     return '';
   };
 
-  // Check if fields are valid for success tick
+  // Check if fields are valid
   const isEmailValid = email && !validateEmail(email);
   const isPasswordValid = password && !validatePassword(password);
 
-  // Trigger card entrance animation on mount
+  // Trigger card entrance animation
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsCardVisible(true);
     }, 100);
 
-    // Auto-focus email field after animations
     const focusTimer = setTimeout(() => {
       emailInputRef.current?.focus();
     }, 800);
@@ -145,23 +132,17 @@ export default function LoginPage() {
       if (userData) {
         const tokenFromStorage = localStorage.getItem('token');
         if (!tokenFromStorage) {
-          // AuthContext hasn't saved yet, save manually
-          // console.log('⚠️ Manually saving to localStorage');
           localStorage.setItem('user', JSON.stringify(userData));
         }
       }
 
-      //  CHECK FOR FIRST LOGIN
       if (userData?.isFirstLogin) {
-        // User needs to reset password on first login
         router.push('/first-login-reset');
         return;
       }
 
-      // Get role from returned user data
       const role = userData?.role || null;
 
-      // Redirect based on role
       if (role === UserRole.ADMIN) {
         router.push('/admin/dashboard');
       } else if (role === UserRole.SALES) {
@@ -199,717 +180,586 @@ export default function LoginPage() {
   };
 
   return (
-    <Box
-      minH="100vh"
-      bgGradient="to-br"
-      gradientFrom="blue.400"
-      gradientTo="blue.600"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      p={4}
-      position="relative"
-      overflow="hidden"
-      _before={{
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundImage: `
-          radial-gradient(circle at 25% 25%, rgba(255,255,255,0.15) 0%, transparent 50%),
-          radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 0%, transparent 50%),
-          radial-gradient(circle at 50% 10%, rgba(255,255,255,0.08) 0%, transparent 40%)
-        `,
-        pointerEvents: 'none',
-      }}
-      _after={{
-        content: '""',
-        position: 'absolute',
-        top: '-50%',
-        left: '-50%',
-        width: '200%',
-        height: '200%',
-        backgroundImage: `
-          linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%),
-          linear-gradient(-45deg, transparent 30%, rgba(255,255,255,0.02) 50%, transparent 70%)
-        `,
-        animation: 'float 20s ease-in-out infinite',
-        pointerEvents: 'none',
-      }}
-    >
-      {/* Floating geometric shapes */}
-      <Box
-        position="absolute"
-        top="10%"
-        left="10%"
-        width="120px"
-        height="120px"
-        borderRadius="full"
-        bg="rgba(255,255,255,0.08)"
-        filter="blur(1px)"
-      />
-      <Box
-        position="absolute"
-        top="20%"
-        right="15%"
-        width="80px"
-        height="80px"
-        borderRadius="lg"
-        bg="rgba(255,255,255,0.06)"
-        filter="blur(0.5px)"
-      />
-      <Box
-        position="absolute"
-        bottom="15%"
-        left="20%"
-        width="100px"
-        height="100px"
-        borderRadius="md"
-        bg="rgba(255,255,255,0.05)"
-        filter="blur(1px)"
-      />
-      <Box
-        position="absolute"
-        bottom="25%"
-        right="10%"
-        width="60px"
-        height="60px"
-        borderRadius="full"
-        bg="rgba(255,255,255,0.1)"
-        filter="blur(0.5px)"
-      />
-      <Box
-        position="absolute"
-        top="50%"
-        left="5%"
-        width="40px"
-        height="40px"
-        borderRadius="sm"
-        bg="rgba(255,255,255,0.04)"
-        transform="rotate(45deg)"
-      />
-      <Box
-        position="absolute"
-        top="30%"
-        right="5%"
-        width="30px"
-        height="30px"
-        borderRadius="full"
-        bg="rgba(255,255,255,0.07)"
-      />
+    <>
+      {/* Global CSS for Autofill Fix */}
+      <style jsx global>{`
+        /* Remove autofill background and text color */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0 30px #f7fafc inset !important;
+          -webkit-text-fill-color: #1a202c !important;
+          transition: background-color 5000s ease-in-out 0s;
+        }
 
-      {/* Subtle grid pattern */}
+        /* Dark autofill */
+        input:-webkit-autofill {
+          -webkit-background-clip: text;
+        }
+      `}</style>
+
       <Box
-        position="absolute"
-        top="0"
-        left="0"
-        right="0"
-        bottom="0"
-        backgroundImage="linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)"
-        backgroundSize="60px 60px"
-        pointerEvents="none"
-        opacity="0.4"
-      />
+        minH="100vh"
+        bgGradient="to-br"
+        gradientFrom="blue.400"
+        gradientTo="blue.600"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        p={4}
+        position="relative"
+        overflow="hidden"
+        _before={{
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `
+            radial-gradient(circle at 25% 25%, rgba(255,255,255,0.15) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 50% 10%, rgba(255,255,255,0.08) 0%, transparent 40%)
+          `,
+          pointerEvents: 'none',
+        }}
+        _after={{
+          content: '""',
+          position: 'absolute',
+          top: '-50%',
+          left: '-50%',
+          width: '200%',
+          height: '200%',
+          backgroundImage: `
+            linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%),
+            linear-gradient(-45deg, transparent 30%, rgba(255,255,255,0.02) 50%, transparent 70%)
+          `,
+          animation: 'float 20s ease-in-out infinite',
+          pointerEvents: 'none',
+        }}
+      >
+        {/* Floating geometric shapes */}
+        <Box
+          position="absolute"
+          top="10%"
+          left="10%"
+          width="120px"
+          height="120px"
+          borderRadius="full"
+          bg="rgba(255,255,255,0.08)"
+          filter="blur(1px)"
+        />
+        <Box
+          position="absolute"
+          top="20%"
+          right="15%"
+          width="80px"
+          height="80px"
+          borderRadius="lg"
+          bg="rgba(255,255,255,0.06)"
+          filter="blur(0.5px)"
+        />
+        <Box
+          position="absolute"
+          bottom="15%"
+          left="20%"
+          width="100px"
+          height="100px"
+          borderRadius="md"
+          bg="rgba(255,255,255,0.05)"
+          filter="blur(1px)"
+        />
+        <Box
+          position="absolute"
+          bottom="25%"
+          right="10%"
+          width="60px"
+          height="60px"
+          borderRadius="full"
+          bg="rgba(255,255,255,0.1)"
+          filter="blur(0.5px)"
+        />
+        <Box
+          position="absolute"
+          top="50%"
+          left="5%"
+          width="40px"
+          height="40px"
+          borderRadius="sm"
+          bg="rgba(255,255,255,0.04)"
+          transform="rotate(45deg)"
+        />
+        <Box
+          position="absolute"
+          top="30%"
+          right="5%"
+          width="30px"
+          height="30px"
+          borderRadius="full"
+          bg="rgba(255,255,255,0.07)"
+        />
 
-      {/* Additional depth layers */}
-      <Box
-        position="absolute"
-        top="0"
-        left="0"
-        right="0"
-        bottom="0"
-        backgroundImage="radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%)"
-        pointerEvents="none"
-      />
+        {/* Subtle grid pattern */}
+        <Box
+          position="absolute"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          backgroundImage="linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)"
+          backgroundSize="60px 60px"
+          pointerEvents="none"
+          opacity="0.4"
+        />
 
-      <Container maxW="md" position="relative" zIndex="1">
-        <Card.Root
-          className={`login-card ${isCardVisible ? 'visible' : ''}`}
-          bg="rgba(255,255,255,0.95)"
-          shadow="0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 60px rgba(66, 153, 225, 0.15)"
-          borderRadius="2xl"
-          p={10}
-          border="1px solid"
-          borderColor="rgba(255,255,255,0.2)"
-          backdropFilter="blur(20px)"
-          position="relative"
-          transform={
-            isCardVisible
-              ? 'translateY(0) scale(1)'
-              : 'translateY(50px) scale(0.95)'
-          }
-          opacity={isCardVisible ? 1 : 0}
-          transition="all 0.6s cubic-bezier(0.4, 0, 0.2, 1)"
-          _before={{
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: '2xl',
-            padding: '1px',
-            background:
-              'linear-gradient(135deg, rgba(66,153,225,0.3), rgba(255,255,255,0.1), rgba(66,153,225,0.3))',
-            mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-            maskComposite: 'xor',
-            pointerEvents: 'none',
-          }}
-        >
-          <VStack gap={6} align="stretch">
-            {/* Logo - Enhanced with animations */}
-            <VStack gap={3} className="heading-container">
-              <Box
-                className="logo-container"
-                position="relative"
-                w="100px"
-                h="100px"
-                mb={3}
-                p={3}
-                bg="blue.50"
-                borderRadius="full"
-                border="2px solid"
-                borderColor="blue.100"
-                transform={
-                  isCardVisible
-                    ? 'scale(1) rotate(0deg)'
-                    : 'scale(0.8) rotate(-5deg)'
-                }
-                opacity={isCardVisible ? 1 : 0}
-                transition="all 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s"
-                _hover={{
-                  transform: 'scale(1.05)',
-                  shadow: '0 8px 25px rgba(66, 153, 225, 0.2)',
-                }}
-              >
-                <Image
-                  src="/images/logo.png"
-                  alt="ATF Logo"
-                  fill
-                  style={{ objectFit: 'contain' }}
-                  priority
-                />
-              </Box>
-              <Heading
-                size="2xl"
-                textAlign="center"
-                color="blue.700"
-                fontWeight="bold"
-                transform={isCardVisible ? 'translateY(0)' : 'translateY(20px)'}
-                opacity={isCardVisible ? 1 : 0}
-                transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s"
-              >
-                Welcome Back
-              </Heading>
-              <Text
-                color="gray.500"
-                textAlign="center"
-                fontSize="lg"
-                transform={isCardVisible ? 'translateY(0)' : 'translateY(20px)'}
-                opacity={isCardVisible ? 1 : 0}
-                transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s"
-              >
-                Sign in to your account
-              </Text>
-            </VStack>
+        {/* Additional depth layers */}
+        <Box
+          position="absolute"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          backgroundImage="radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%)"
+          pointerEvents="none"
+        />
 
-            {/* Form */}
-            <form onSubmit={handleSubmit}>
-              <VStack gap={4}>
-                {/* Email Field - Enhanced with Floating Label & Success Tick */}
+        <Container maxW="md" position="relative" zIndex="1">
+          <Card.Root
+            className={`login-card ${isCardVisible ? 'visible' : ''}`}
+            bg="rgba(255,255,255,0.95)"
+            shadow="0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 60px rgba(66, 153, 225, 0.15)"
+            borderRadius="2xl"
+            p={10}
+            border="1px solid"
+            borderColor="rgba(255,255,255,0.2)"
+            backdropFilter="blur(20px)"
+            position="relative"
+            transform={
+              isCardVisible
+                ? 'translateY(0) scale(1)'
+                : 'translateY(50px) scale(0.95)'
+            }
+            opacity={isCardVisible ? 1 : 0}
+            transition="all 0.6s cubic-bezier(0.4, 0, 0.2, 1)"
+            _before={{
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: '2xl',
+              padding: '1px',
+              background:
+                'linear-gradient(135deg, rgba(66,153,225,0.3), rgba(255,255,255,0.1), rgba(66,153,225,0.3))',
+              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              maskComposite: 'xor',
+              pointerEvents: 'none',
+            }}
+          >
+            <VStack gap={6} align="stretch">
+              {/* Logo */}
+              <VStack gap={3} className="heading-container">
                 <Box
-                  w="full"
-                  className="form-field"
-                  transform={
-                    isCardVisible ? 'translateX(0)' : 'translateX(-20px)'
-                  }
-                  opacity={isCardVisible ? 1 : 0}
-                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.6s"
-                >
-                  <Box
-                    position="relative"
-                    mt={emailFocused || email ? 4 : 0}
-                    transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                  >
-                    {/* Floating Label */}
-                    <Text
-                      position="absolute"
-                      left={emailFocused || email ? '12px' : '40px'}
-                      top={emailFocused || email ? '-10px' : '50%'}
-                      transform={
-                        emailFocused || email
-                          ? 'translateY(0) scale(0.85)'
-                          : 'translateY(-50%) scale(1)'
-                      }
-                      transformOrigin="left"
-                      fontWeight="semibold"
-                      fontSize="sm"
-                      color={
-                        emailFocused
-                          ? 'blue.600'
-                          : email && !emailError
-                            ? 'blue.600'
-                            : 'gray.500'
-                      }
-                      bg={emailFocused || email ? 'white' : 'transparent'}
-                      px={emailFocused || email ? 2 : 0}
-                      zIndex={2}
-                      pointerEvents="none"
-                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                    >
-                      Email Address
-                    </Text>
-
-                    {/* Left Icon */}
-                    <Box
-                      position="absolute"
-                      left="12px"
-                      top="50%"
-                      transform="translateY(-50%)"
-                      pointerEvents="none"
-                      color={emailFocused || email ? 'blue.500' : 'blue.400'}
-                      zIndex={1}
-                      display="flex"
-                      alignItems="center"
-                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                      opacity={emailFocused || email ? 0 : 1}
-                    >
-                      <EmailIcon />
-                    </Box>
-
-                    {/* Success Tick */}
-                    {isEmailValid && (
-                      <Box
-                        position="absolute"
-                        right="12px"
-                        top="50%"
-                        transform="translateY(-50%)"
-                        zIndex={2}
-                        opacity={1}
-                        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                        animation="fadeInScale 0.3s ease-out"
-                      >
-                        <CheckIcon />
-                      </Box>
-                    )}
-
-                    <Input
-                      ref={emailInputRef}
-                      type="email"
-                      placeholder=""
-                      value={email}
-                      onChange={handleEmailChange}
-                      onFocus={() => setEmailFocused(true)}
-                      onBlur={() => {
-                        setEmailFocused(false);
-                        setTouched({ ...touched, email: true });
-                        setEmailError(validateEmail(email));
-                      }}
-                      pl={emailFocused || email ? '12px' : '40px'}
-                      pr={isEmailValid ? '40px' : '12px'}
-                      bg="gray.50"
-                      border="2px solid"
-                      borderColor={
-                        emailError
-                          ? 'red.500'
-                          : isEmailValid
-                            ? 'green.300'
-                            : 'gray.200'
-                      }
-                      borderRadius="lg"
-                      height="48px"
-                      fontSize="md"
-                      transform="translateY(0)"
-                      _hover={{
-                        borderColor: emailError
-                          ? 'red.500'
-                          : isEmailValid
-                            ? 'green.400'
-                            : 'blue.300',
-                        bg: 'white',
-                        transform: 'translateY(-1px)',
-                        shadow: '0 4px 12px rgba(66, 153, 225, 0.1)',
-                      }}
-                      _focus={{
-                        borderColor: 'blue.500',
-                        bg: 'white',
-                        boxShadow: '0 8px 25px rgba(66, 153, 225, 0.15)',
-                        outline: 'none',
-                        transform: 'translateY(-2px)',
-                      }}
-                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                    />
-                  </Box>
-                  {emailError && (
-                    <Text
-                      color="red.500"
-                      fontSize="sm"
-                      mt={1}
-                      fontWeight="medium"
-                      transform="translateX(0)"
-                      opacity="1"
-                      transition="all 0.2s ease"
-                    >
-                      ⚠️ {emailError}
-                    </Text>
-                  )}
-                </Box>
-
-                {/* Password Field - Enhanced with Floating Label & Success Tick */}
-                <Box
-                  w="full"
-                  className="form-field"
-                  transform={
-                    isCardVisible ? 'translateX(0)' : 'translateX(-20px)'
-                  }
-                  opacity={isCardVisible ? 1 : 0}
-                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.7s"
-                >
-                  <Box
-                    position="relative"
-                    mt={passwordFocused || password ? 4 : 0}
-                    transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                  >
-                    {/* Floating Label */}
-                    <Text
-                      position="absolute"
-                      left={passwordFocused || password ? '12px' : '40px'}
-                      top={passwordFocused || password ? '-10px' : '50%'}
-                      transform={
-                        passwordFocused || password
-                          ? 'translateY(0) scale(0.85)'
-                          : 'translateY(-50%) scale(1)'
-                      }
-                      transformOrigin="left"
-                      fontWeight="semibold"
-                      fontSize="sm"
-                      color={
-                        passwordFocused
-                          ? 'blue.600'
-                          : password && !passwordError
-                            ? 'blue.600'
-                            : 'gray.500'
-                      }
-                      bg={passwordFocused || password ? 'white' : 'transparent'}
-                      px={passwordFocused || password ? 2 : 0}
-                      zIndex={2}
-                      pointerEvents="none"
-                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                    >
-                      Password
-                    </Text>
-
-                    {/* Left Icon */}
-                    <Box
-                      position="absolute"
-                      left="12px"
-                      top="50%"
-                      transform="translateY(-50%)"
-                      pointerEvents="none"
-                      color={
-                        passwordFocused || password ? 'blue.500' : 'blue.400'
-                      }
-                      zIndex={1}
-                      display="flex"
-                      alignItems="center"
-                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                      opacity={passwordFocused || password ? 0 : 1}
-                    >
-                      <LockIcon />
-                    </Box>
-
-                    {/* Success Tick */}
-                    {isPasswordValid && (
-                      <Box
-                        position="absolute"
-                        right={showPassword ? '45px' : '12px'}
-                        top="50%"
-                        transform="translateY(-50%)"
-                        zIndex={2}
-                        opacity={1}
-                        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                        animation="fadeInScale 0.3s ease-out"
-                      >
-                        <CheckIcon />
-                      </Box>
-                    )}
-
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder=""
-                      value={password}
-                      onChange={handlePasswordChange}
-                      onFocus={() => setPasswordFocused(true)}
-                      onBlur={() => {
-                        setPasswordFocused(false);
-                        setTouched({ ...touched, password: true });
-                        setPasswordError(validatePassword(password));
-                      }}
-                      pl={passwordFocused || password ? '12px' : '40px'}
-                      pr={
-                        isPasswordValid
-                          ? showPassword
-                            ? '75px'
-                            : '45px'
-                          : '45px'
-                      }
-                      bg="gray.50"
-                      border="2px solid"
-                      borderColor={
-                        passwordError
-                          ? 'red.500'
-                          : isPasswordValid
-                            ? 'green.300'
-                            : 'gray.200'
-                      }
-                      borderRadius="lg"
-                      height="48px"
-                      fontSize="md"
-                      transform="translateY(0)"
-                      _hover={{
-                        borderColor: passwordError
-                          ? 'red.500'
-                          : isPasswordValid
-                            ? 'green.400'
-                            : 'blue.300',
-                        bg: 'white',
-                        transform: 'translateY(-1px)',
-                        shadow: '0 4px 12px rgba(66, 153, 225, 0.1)',
-                      }}
-                      _focus={{
-                        borderColor: 'blue.500',
-                        bg: 'white',
-                        boxShadow: '0 8px 25px rgba(66, 153, 225, 0.15)',
-                        outline: 'none',
-                        transform: 'translateY(-2px)',
-                      }}
-                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                    />
-
-                    {/* Enhanced Password Toggle with Animation */}
-                    <Button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setShowPassword(!showPassword);
-                      }}
-                      position="absolute"
-                      right="8px"
-                      top="50%"
-                      transform="translateY(-50%)"
-                      size="sm"
-                      variant="ghost"
-                      color="gray.400"
-                      zIndex={3}
-                      minW="auto"
-                      h="auto"
-                      p={2}
-                      borderRadius="md"
-                      _hover={{
-                        color: 'blue.500',
-                        bg: 'blue.50',
-                        transform: 'translateY(-50%) scale(1.1)',
-                      }}
-                      _active={{
-                        transform: 'translateY(-50%) scale(0.95)',
-                      }}
-                      transition="all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
-                    >
-                      <Box className="eye-icon">
-                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                      </Box>
-                    </Button>
-                  </Box>
-                  {passwordError && (
-                    <Text
-                      color="red.500"
-                      fontSize="sm"
-                      mt={1}
-                      fontWeight="medium"
-                      transform="translateX(0)"
-                      opacity="1"
-                      transition="all 0.2s ease"
-                    >
-                      ⚠️ {passwordError}
-                    </Text>
-                  )}
-                </Box>
-
-                {/* Login Error Message - Enhanced */}
-                {loginError && (
-                  <Box
-                    bg="red.50"
-                    color="red.700"
-                    p={4}
-                    borderRadius="lg"
-                    border="1px solid"
-                    borderColor="red.200"
-                    w="full"
-                    transform="scale(1)"
-                    opacity="1"
-                    transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                    _hover={{
-                      transform: 'scale(1.02)',
-                      shadow: 'md',
-                    }}
-                  >
-                    <HStack>
-                      <Box color="red.500" animation="eyeBlink 2s infinite">
-                        ⚠️
-                      </Box>
-                      <Text fontSize="sm" fontWeight="medium">
-                        {loginError}
-                      </Text>
-                    </HStack>
-                  </Box>
-                )}
-
-                {/* Forgot Password Link - Enhanced */}
-                <HStack
-                  justify="flex-end"
-                  w="full"
-                  transform={
-                    isCardVisible ? 'translateY(0)' : 'translateY(10px)'
-                  }
-                  opacity={isCardVisible ? 1 : 0}
-                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.8s"
-                >
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    color="blue.600"
-                    onClick={() => router.push('/forgot-password')}
-                    _hover={{
-                      textDecoration: 'underline',
-                      color: 'blue.700',
-                      transform: 'translateY(-1px)',
-                    }}
-                    _active={{
-                      transform: 'translateY(0)',
-                    }}
-                    transition="all 0.2s ease"
-                  >
-                    Forgot Password?
-                  </Button>
-                </HStack>
-
-                {/* Submit Button - Enhanced with Ripple Effect */}
-                <Button
-                  type="submit"
-                  size="lg"
-                  w="full"
-                  height="48px"
-                  bg="blue.600"
-                  color="white"
-                  fontWeight="semibold"
-                  borderRadius="lg"
-                  className="submit-button ripple-button"
+                  className="logo-container"
                   position="relative"
-                  overflow="hidden"
+                  w="100px"
+                  h="100px"
+                  mb={3}
+                  p={3}
+                  bg="blue.50"
+                  borderRadius="full"
+                  border="2px solid"
+                  borderColor="blue.100"
+                  transform={
+                    isCardVisible
+                      ? 'scale(1) rotate(0deg)'
+                      : 'scale(0.8) rotate(-5deg)'
+                  }
+                  opacity={isCardVisible ? 1 : 0}
+                  transition="all 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s"
+                  _hover={{
+                    transform: 'scale(1.05)',
+                    shadow: '0 8px 25px rgba(66, 153, 225, 0.2)',
+                  }}
+                >
+                  <Image
+                    src="/images/logo.png"
+                    alt="ATF Logo"
+                    fill
+                    style={{ objectFit: 'contain' }}
+                    priority
+                  />
+                </Box>
+                <Heading
+                  size="2xl"
+                  textAlign="center"
+                  color="blue.700"
+                  fontWeight="bold"
                   transform={
                     isCardVisible ? 'translateY(0)' : 'translateY(20px)'
                   }
                   opacity={isCardVisible ? 1 : 0}
-                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.9s"
-                  _hover={{
-                    bg: loading ? 'blue.600' : 'blue.700',
-                    transform: loading
-                      ? isCardVisible
-                        ? 'translateY(0)'
-                        : 'translateY(20px)'
-                      : isCardVisible
-                        ? 'translateY(-2px) scale(1.02)'
-                        : 'translateY(18px) scale(1.02)',
-                    shadow: loading
-                      ? 'md'
-                      : '0 10px 30px rgba(66, 153, 225, 0.3)',
-                  }}
-                  _active={{
-                    transform: loading
-                      ? isCardVisible
-                        ? 'translateY(0)'
-                        : 'translateY(20px)'
-                      : isCardVisible
-                        ? 'translateY(0) scale(0.98)'
-                        : 'translateY(20px) scale(0.98)',
-                    shadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
-                  }}
-                  _loading={{
-                    bg: 'blue.600',
-                    _hover: { bg: 'blue.600' },
-                    cursor: 'not-allowed',
-                  }}
-                  loading={loading}
-                  loadingText="Signing in..."
-                  disabled={loading}
-                  mt={2}
-                  _before={{
-                    content: '""',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: '0',
-                    height: '0',
-                    borderRadius: '50%',
-                    background: 'rgba(255, 255, 255, 0.3)',
-                    transform: 'translate(-50%, -50%)',
-                    transition: 'width 0.6s, height 0.6s',
-                    pointerEvents: 'none',
-                  }}
+                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s"
                 >
-                  <HStack gap={2} position="relative" zIndex={1}>
-                    {loading && (
-                      <Spinner
-                        size="sm"
-                        color="white"
-                        css={{
-                          animation: 'spin 1s linear infinite',
-                        }}
-                      />
-                    )}
-                    <Text>{loading ? 'Signing in...' : 'Sign In'}</Text>
-                  </HStack>
-                </Button>
+                  Welcome Back
+                </Heading>
+                <Text
+                  color="gray.500"
+                  textAlign="center"
+                  fontSize="lg"
+                  transform={
+                    isCardVisible ? 'translateY(0)' : 'translateY(20px)'
+                  }
+                  opacity={isCardVisible ? 1 : 0}
+                  transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s"
+                >
+                  Sign in to your account
+                </Text>
               </VStack>
-            </form>
 
-            {/* Footer - Enhanced */}
-            <VStack
-              gap={2}
-              pt={6}
-              className="footer-content"
-              transform={isCardVisible ? 'translateY(0)' : 'translateY(20px)'}
-              opacity={isCardVisible ? 1 : 0}
-              transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 1s"
-            >
-              <Text
-                fontSize="xs"
-                color="gray.400"
-                textAlign="center"
-                _hover={{
-                  color: 'gray.500',
-                }}
-                transition="color 0.2s ease"
-              >
-                ATF Attendance & Billing Management System
-              </Text>
-              <Text
-                fontSize="xs"
-                color="gray.300"
-                textAlign="center"
-                _hover={{
-                  color: 'gray.400',
-                }}
-                transition="color 0.2s ease"
-              >
-                Secure • Reliable • Professional
-              </Text>
+              {/* Form */}
+              <form onSubmit={handleSubmit}>
+                <VStack gap={4}>
+                  {/* Email Field */}
+                  <Box
+                    w="full"
+                    className="form-field"
+                    transform={
+                      isCardVisible ? 'translateX(0)' : 'translateX(-20px)'
+                    }
+                    opacity={isCardVisible ? 1 : 0}
+                    transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.6s"
+                  >
+                    <Box
+                      position="relative"
+                      mt={4}
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                    >
+                      {/* Floating Label */}
+                      <Text
+                        position="absolute"
+                        left="12px"
+                        top="-10px"
+                        transform="translateY(0) scale(0.85)"
+                        transformOrigin="left"
+                        fontWeight="semibold"
+                        fontSize="sm"
+                        color="blue.600"
+                        bg="white"
+                        px={2}
+                        zIndex={2}
+                        pointerEvents="none"
+                        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                      >
+                        Email Address
+                      </Text>
+
+                      {/* Success Tick */}
+                      {isEmailValid && (
+                        <Box
+                          position="absolute"
+                          right="12px"
+                          top="50%"
+                          transform="translateY(-50%)"
+                          zIndex={2}
+                          opacity={1}
+                          transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                        >
+                          <CheckIcon />
+                        </Box>
+                      )}
+
+                      <Input
+                        ref={emailInputRef}
+                        type="email"
+                        name="email"
+                        id="email"
+                        value={email}
+                        onChange={handleEmailChange}
+                        onFocus={() => setEmailFocused(true)}
+                        onBlur={() => {
+                          setEmailFocused(false);
+                          setTouched({ ...touched, email: true });
+                          setEmailError(validateEmail(email));
+                        }}
+                        pl="12px"
+                        pr={isEmailValid ? '40px' : '12px'}
+                        bg="gray.50"
+                        border="2px solid"
+                        borderColor={
+                          emailError
+                            ? 'red.500'
+                            : isEmailValid
+                              ? 'green.300'
+                              : 'gray.200'
+                        }
+                        borderRadius="lg"
+                        height="48px"
+                        fontSize="md"
+                        autoComplete="email"
+                        transform="translateY(0)"
+                        _hover={{
+                          borderColor: emailError
+                            ? 'red.500'
+                            : isEmailValid
+                              ? 'green.400'
+                              : 'blue.300',
+                          bg: 'white',
+                          transform: 'translateY(-1px)',
+                          shadow: '0 4px 12px rgba(66, 153, 225, 0.1)',
+                        }}
+                        _focus={{
+                          borderColor: 'blue.500',
+                          bg: 'white',
+                          boxShadow: '0 8px 25px rgba(66, 153, 225, 0.15)',
+                          outline: 'none',
+                          transform: 'translateY(-2px)',
+                        }}
+                        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                      />
+                    </Box>
+                    {emailError && (
+                      <Text
+                        color="red.500"
+                        fontSize="sm"
+                        mt={1}
+                        fontWeight="medium"
+                      >
+                        ⚠️ {emailError}
+                      </Text>
+                    )}
+                  </Box>
+
+                  {/* Password Field - FIXED FOR AUTOFILL */}
+                  <Box
+                    w="full"
+                    className="form-field"
+                    transform={
+                      isCardVisible ? 'translateX(0)' : 'translateX(-20px)'
+                    }
+                    opacity={isCardVisible ? 1 : 0}
+                    transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.7s"
+                  >
+                    <Box
+                      position="relative"
+                      mt={4}
+                      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                    >
+                      {/* Floating Label */}
+                      <Text
+                        position="absolute"
+                        left="12px"
+                        top="-10px"
+                        transform="translateY(0) scale(0.85)"
+                        transformOrigin="left"
+                        fontWeight="semibold"
+                        fontSize="sm"
+                        color="blue.600"
+                        bg="white"
+                        px={2}
+                        zIndex={2}
+                        pointerEvents="none"
+                        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                      >
+                        Password
+                      </Text>
+
+                      {/* Success Tick */}
+                      {isPasswordValid && (
+                        <Box
+                          position="absolute"
+                          right="45px"
+                          top="50%"
+                          transform="translateY(-50%)"
+                          zIndex={2}
+                          opacity={1}
+                          transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                        >
+                          <CheckIcon />
+                        </Box>
+                      )}
+
+                      <Input
+                        type={showPassword ? 'text' : 'password'}
+                        name="password"
+                        id="password"
+                        value={password}
+                        onChange={handlePasswordChange}
+                        onFocus={() => setPasswordFocused(true)}
+                        onBlur={() => {
+                          setPasswordFocused(false);
+                          setTouched({ ...touched, password: true });
+                          setPasswordError(validatePassword(password));
+                        }}
+                        pl="12px"
+                        pr="45px"
+                        bg="gray.50"
+                        border="2px solid"
+                        borderColor={
+                          passwordError
+                            ? 'red.500'
+                            : isPasswordValid
+                              ? 'green.300'
+                              : 'gray.200'
+                        }
+                        borderRadius="lg"
+                        height="48px"
+                        fontSize="md"
+                        autoComplete="current-password"
+                        transform="translateY(0)"
+                        _hover={{
+                          borderColor: passwordError
+                            ? 'red.500'
+                            : isPasswordValid
+                              ? 'green.400'
+                              : 'blue.300',
+                          bg: 'white',
+                          transform: 'translateY(-1px)',
+                          shadow: '0 4px 12px rgba(66, 153, 225, 0.1)',
+                        }}
+                        _focus={{
+                          borderColor: 'blue.500',
+                          bg: 'white',
+                          boxShadow: '0 8px 25px rgba(66, 153, 225, 0.15)',
+                          outline: 'none',
+                          transform: 'translateY(-2px)',
+                        }}
+                        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                      />
+
+                      {/* Password Toggle */}
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setShowPassword(!showPassword);
+                        }}
+                        position="absolute"
+                        right="8px"
+                        top="50%"
+                        transform="translateY(-50%)"
+                        size="sm"
+                        variant="ghost"
+                        color="gray.400"
+                        zIndex={3}
+                        minW="auto"
+                        h="auto"
+                        p={2}
+                        borderRadius="md"
+                        _hover={{
+                          color: 'blue.500',
+                          bg: 'blue.50',
+                          transform: 'translateY(-50%) scale(1.1)',
+                        }}
+                        _active={{
+                          transform: 'translateY(-50%) scale(0.95)',
+                        }}
+                        transition="all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+                      >
+                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                      </Button>
+                    </Box>
+                    {passwordError && (
+                      <Text
+                        color="red.500"
+                        fontSize="sm"
+                        mt={1}
+                        fontWeight="medium"
+                      >
+                        ⚠️ {passwordError}
+                      </Text>
+                    )}
+                  </Box>
+
+                  {/* Login Error */}
+                  {loginError && (
+                    <Box
+                      bg="red.50"
+                      color="red.700"
+                      p={4}
+                      borderRadius="lg"
+                      border="1px solid"
+                      borderColor="red.200"
+                      w="full"
+                    >
+                      <HStack>
+                        <Text>⚠️</Text>
+                        <Text fontSize="sm" fontWeight="medium">
+                          {loginError}
+                        </Text>
+                      </HStack>
+                    </Box>
+                  )}
+
+                  {/* Forgot Password */}
+                  <HStack justify="flex-end" w="full">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      color="blue.600"
+                      onClick={() => router.push('/forgot-password')}
+                      _hover={{
+                        textDecoration: 'underline',
+                        color: 'blue.700',
+                      }}
+                    >
+                      Forgot Password?
+                    </Button>
+                  </HStack>
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    size="lg"
+                    w="full"
+                    height="48px"
+                    bg="blue.600"
+                    color="white"
+                    fontWeight="semibold"
+                    borderRadius="lg"
+                    position="relative"
+                    overflow="hidden"
+                    transform={
+                      isCardVisible ? 'translateY(0)' : 'translateY(20px)'
+                    }
+                    opacity={isCardVisible ? 1 : 0}
+                    transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.9s"
+                    _hover={{
+                      bg: loading ? 'blue.600' : 'blue.700',
+                      transform: loading
+                        ? 'translateY(0)'
+                        : 'translateY(-2px) scale(1.02)',
+                      shadow: loading
+                        ? 'md'
+                        : '0 10px 30px rgba(66, 153, 225, 0.3)',
+                    }}
+                    loading={loading}
+                    disabled={loading}
+                    mt={2}
+                  >
+                    <HStack gap={2}>
+                      {loading && <Spinner size="sm" color="white" />}
+                      <Text>{loading ? 'Signing in...' : 'Sign In'}</Text>
+                    </HStack>
+                  </Button>
+                </VStack>
+              </form>
+
+              {/* Footer */}
+              <VStack gap={2} pt={6}>
+                <Text fontSize="xs" color="gray.400" textAlign="center">
+                  ATF Attendance & Billing Management System
+                </Text>
+                <Text fontSize="xs" color="gray.300" textAlign="center">
+                  Secure • Reliable • Professional
+                </Text>
+              </VStack>
             </VStack>
-          </VStack>
-        </Card.Root>
-      </Container>
-    </Box>
+          </Card.Root>
+        </Container>
+      </Box>
+    </>
   );
 }
