@@ -1,0 +1,22 @@
+name: Mirror to Vercel Repo
+
+on:
+  push:
+    branches:
+      - main # triggers on every push to main
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mirror to Vercel repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add vercel https://owais-aitf:${{ secrets.VERCEL_PAT }}@github.com/owais-aitf/vercel-frontend-deploy.git
+          git push vercel main --force
