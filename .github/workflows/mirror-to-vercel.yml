@@ -36,7 +36,8 @@ jobs:
           git remote remove vercel || true
 
           echo "Adding vercel remote..."
-          git remote add vercel https://x-access-token:${{ secrets.VERCEL_PAT }}@github.com/owais-aitf/vercel-frontend-deploy.git
+          git remote add vercel https://owais-aitf:${{ secrets.VERCEL_PAT }}@github.com/owais-aitf/vercel-frontend-deploy.git
+
 
           echo "Verifying remote was added..."
           git remote -v
