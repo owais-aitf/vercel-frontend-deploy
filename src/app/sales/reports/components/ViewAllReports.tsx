@@ -320,12 +320,8 @@ export function ViewAllReports() {
                   Filters
                 </Text>
               </HStack>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={clearFilters}
-                leftIcon={<LuRefreshCw size={14} />}
-              >
+              <Button size="sm" variant="ghost" onClick={clearFilters}>
+                <LuRefreshCw size={14} />
                 Clear All
               </Button>
             </HStack>
@@ -648,8 +644,8 @@ export function ViewAllReports() {
                             size="xs"
                             flex={1}
                             onClick={() => handleViewDetails(report)}
-                            leftIcon={<LuEye size={14} />}
                           >
+                            <LuEye size={14} />
                             View
                           </Button>
                           <Button
@@ -657,8 +653,8 @@ export function ViewAllReports() {
                             flex={1}
                             onClick={() => handleUpdateStatus(report)}
                             disabled={report.status === 'APPROVED'}
-                            leftIcon={<LuFileText size={14} />}
                           >
+                            <LuFileText size={14} />
                             Status
                           </Button>
                           <IconButton
