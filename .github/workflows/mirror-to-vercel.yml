@@ -13,6 +13,7 @@ on:
   push:
     branches:
       - main # Trigger on pushes to main
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   mirror:
@@ -27,8 +28,18 @@ jobs:
       # 2️⃣ Mirror to personal Vercel repo
       - name: Mirror to Vercel repo
         run: |
+          echo "Setting up git config..."
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          echo "Removing existing vercel remote if exists..."
           git remote remove vercel || true
-          git remote add vercel https://owais-aitf:${{ secrets.VERCEL_PAT }}@github.com/owais-aitf/vercel-frontend-deploy.git
+
+          echo "Adding vercel remote..."
+          git remote add vercel https://x-access-token:${{ secrets.VERCEL_PAT }}@github.com/owais-aitf/vercel-frontend-deploy.git
+
+          echo "Verifying remote was added..."
+          git remote -v
+
+          echo "Pushing to vercel repository..."
           git push vercel main --force
