@@ -51,8 +51,8 @@ export function CalendarHeader({
   };
 
   return (
-    <Card.Root p={4} mb={4}>
-      <HStack justify="space-between" flexWrap="wrap" gap={4}>
+    <Card.Root p={2} mb={2}>
+      <HStack justify="space-between" flexWrap="wrap" gap={2} w="full">
         {/* Engineer Info */}
         <VStack align="start" gap={1}>
           <Text fontSize="2xl" fontWeight="bold">
@@ -96,33 +96,31 @@ export function CalendarHeader({
         </HStack>
 
         {/* Stats */}
-        <HStack gap={6}>
-          <VStack gap={0}>
+        <HStack gap={4} flexShrink={0}>
+          <VStack gap={0} minW="60px">
             <Text fontSize="2xl" fontWeight="bold" color="green.600">
               {stats.totalWorkDays}
             </Text>
-            <Text fontSize="xs" color="gray.600">
+            <Text fontSize="xs" color="gray.600" textAlign="center">
               Work Days
             </Text>
           </VStack>
-          <VStack gap={0}>
+          <VStack gap={0} minW="50px">
             <Text fontSize="2xl" fontWeight="bold" color="blue.600">
               {stats.totalLeave}
             </Text>
-            <Text fontSize="xs" color="gray.600">
+            <Text fontSize="xs" color="gray.600" textAlign="center">
               Leave
             </Text>
           </VStack>
-          {stats.totalAbsent > 0 && (
-            <VStack gap={0}>
-              <Text fontSize="2xl" fontWeight="bold" color="red.600">
-                {stats.totalAbsent}
-              </Text>
-              <Text fontSize="xs" color="gray.600">
-                Absent
-              </Text>
-            </VStack>
-          )}
+          <VStack gap={0} minW="50px">
+            <Text fontSize="2xl" fontWeight="bold" color="red.600">
+              {stats.totalAbsent}
+            </Text>
+            <Text fontSize="xs" color="gray.600" textAlign="center">
+              Absent
+            </Text>
+          </VStack>
         </HStack>
       </HStack>
     </Card.Root>

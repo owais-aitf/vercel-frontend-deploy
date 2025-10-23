@@ -30,6 +30,15 @@ interface AttendanceRecord {
   endTime?: string;
   breakHours: number;
   workDescription?: string;
+  projectAssignmentId?: string;
+  projectAssignment?: {
+    project: {
+      projectName: string;
+      client: {
+        name: string;
+      };
+    };
+  };
 }
 
 interface EditFormData {
@@ -161,6 +170,21 @@ export function EditSlideOver({
                 })}
               </Text>
             </HStack>
+
+            {/* Project Info */}
+            {record.projectAssignment && (
+              <HStack gap={2} p={3} bg="green.50" borderRadius="md">
+                <LuFileText size={20} color="#38A169" />
+                <VStack align="start" gap={0}>
+                  <Text fontSize="sm" fontWeight="medium" color="green.900">
+                    {record.projectAssignment.project.projectName}
+                  </Text>
+                  <Text fontSize="xs" color="green.700">
+                    Client: {record.projectAssignment.project.client.name}
+                  </Text>
+                </VStack>
+              </HStack>
+            )}
           </Box>
 
           {/* Form */}
@@ -218,13 +242,30 @@ export function EditSlideOver({
                       Work Location
                     </Text>
                   </HStack>
-                  <Input
+                  <select
                     value={formData.workLocation}
                     onChange={(e) =>
                       onFormChange({ workLocation: e.target.value })
                     }
-                    placeholder="e.g., Office, Remote, Client Site"
-                  />
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: '8px',
+                      border: '1px solid #E2E8F0',
+                      fontSize: '14px',
+                      fontFamily: 'inherit',
+                      backgroundColor: 'white',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <option value="">Select work location</option>
+                    <option value="OFFICE">Office</option>
+                    <option value="REMOTE">Remote</option>
+                    <option value="CLIENT_SITE">Client Site</option>
+                    <option value="HYBRID">Hybrid</option>
+                    <option value="FIELD_WORK">Field Work</option>
+                    <option value="OTHER">Other</option>
+                  </select>
                 </Box>
               )}
 

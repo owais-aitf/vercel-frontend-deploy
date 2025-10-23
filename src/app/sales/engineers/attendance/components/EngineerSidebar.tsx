@@ -1,6 +1,7 @@
 import { Box, Input, VStack, Text, HStack, Badge } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
 import { Engineer } from '@/shared/service/engineerService';
+import { useRef, useEffect } from 'react';
 
 interface EngineerSidebarProps {
   engineers: Engineer[];
@@ -15,6 +16,7 @@ interface EngineerSidebarProps {
     totalLeave: number;
     totalAbsent: number;
   };
+  projectCounts: Map<string, number>;
 }
 
 export function EngineerSidebar({
@@ -26,7 +28,31 @@ export function EngineerSidebar({
   loading,
   width,
   stats,
+  projectCounts,
 }: EngineerSidebarProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollPositionRef = useRef<number>(0);
+
+  // Save scroll position before updates
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const handleScroll = () => {
+        scrollPositionRef.current = container.scrollTop;
+      };
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  // Restore scroll position after updates
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container && scrollPositionRef.current > 0) {
+      container.scrollTop = scrollPositionRef.current;
+    }
+  });
+
   const filteredEngineers = engineers.filter(
     (engineer) =>
       engineer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,6 +99,7 @@ export function EngineerSidebar({
 
       {/* Engineer List */}
       <VStack
+        ref={scrollContainerRef}
         align="stretch"
         gap={0}
         flex={1}
@@ -111,45 +138,80 @@ export function EngineerSidebar({
             return (
               <Box
                 key={engineer.id}
-                p={4}
+                p={3}
                 cursor="pointer"
-                bg={isSelected ? 'blue.50' : 'transparent'}
+                bg={isSelected ? 'blue.50' : 'white'}
+                border="1px solid"
+                borderColor={isSelected ? 'blue.300' : 'gray.200'}
                 borderLeft="3px solid"
-                borderColor={isSelected ? 'blue.500' : 'transparent'}
+                borderLeftColor={isSelected ? 'blue.500' : 'gray.300'}
                 borderRadius="md"
                 mx={2}
+                mb={2}
                 _hover={{
                   bg: isSelected ? 'blue.100' : 'gray.50',
-                  transform: 'translateY(-2px)',
-                  shadow: 'md',
-                  borderColor: isSelected ? 'blue.600' : 'blue.200',
+                  borderColor: isSelected ? 'blue.400' : 'gray.300',
+                  shadow: 'sm',
                 }}
                 _active={{
-                  transform: 'translateY(0px)',
+                  transform: 'scale(0.98)',
                 }}
-                transition="all 0.2s ease-out"
+                transition="all 0.15s ease-out"
                 onClick={() => onSelectEngineer(engineer)}
               >
-                <VStack align="start" gap={1}>
-                  <Text fontWeight="semibold" fontSize="sm">
-                    {engineer.fullName}
-                  </Text>
-                  <Text fontSize="xs" color="gray.600">
+                <VStack align="start" gap={0.5}>
+                  <HStack justify="space-between" w="full">
+                    <Text
+                      fontWeight="semibold"
+                      fontSize="sm"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                    >
+                      {engineer.fullName}
+                    </Text>
+                    {projectCounts.get(engineer.id) !== undefined &&
+                      projectCounts.get(engineer.id)! > 0 && (
+                        <Badge
+                          colorScheme="purple"
+                          fontSize="2xs"
+                          variant="subtle"
+                          flexShrink={0}
+                        >
+                          {projectCounts.get(engineer.id)}
+                        </Badge>
+                      )}
+                  </HStack>
+                  <Text
+                    fontSize="2xs"
+                    color="gray.500"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
+                  >
                     {engineer.email}
                   </Text>
                   {isSelected && (
-                    <HStack gap={2} mt={2} flexWrap="wrap">
-                      <Badge colorScheme="green" fontSize="2xs">
-                        {stats.totalWorkDays} days
+                    <HStack gap={1.5} mt={1.5} flexWrap="wrap">
+                      <Badge
+                        colorScheme="green"
+                        fontSize="2xs"
+                        px={1.5}
+                        py={0.5}
+                      >
+                        {stats.totalWorkDays}d
                       </Badge>
-                      <Badge colorScheme="blue" fontSize="2xs">
-                        {stats.totalLeave} leave
+                      <Badge
+                        colorScheme="blue"
+                        fontSize="2xs"
+                        px={1.5}
+                        py={0.5}
+                      >
+                        {stats.totalLeave}l
                       </Badge>
-                      {stats.totalAbsent > 0 && (
-                        <Badge colorScheme="red" fontSize="2xs">
-                          {stats.totalAbsent} absent
-                        </Badge>
-                      )}
+                      <Badge colorScheme="red" fontSize="2xs" px={1.5} py={0.5}>
+                        {stats.totalAbsent}a
+                      </Badge>
                     </HStack>
                   )}
                 </VStack>

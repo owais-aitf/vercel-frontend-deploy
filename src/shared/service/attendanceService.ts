@@ -79,13 +79,23 @@ export const attendanceService = {
     return response.data;
   },
 
-  updateAttendance: async (id: string, data: Partial<AttendanceData>) => {
-    const response = await apiClient.put(`/attendance/${id}`, data);
+  updateAttendance: async (
+    id: string,
+    data: Partial<AttendanceData>,
+    engineerId?: string
+  ) => {
+    const url = engineerId
+      ? `/attendance/${id}?engineerId=${engineerId}`
+      : `/attendance/${id}`;
+    const response = await apiClient.put(url, data);
     return response.data;
   },
 
-  deleteAttendance: async (id: string) => {
-    const response = await apiClient.delete(`/attendance/${id}`);
+  deleteAttendance: async (id: string, engineerId?: string) => {
+    const url = engineerId
+      ? `/attendance/${id}?engineerId=${engineerId}`
+      : `/attendance/${id}`;
+    const response = await apiClient.delete(url);
     return response.data;
   },
   getAllProjects: async () => {

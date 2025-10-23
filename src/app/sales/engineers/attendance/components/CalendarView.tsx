@@ -7,6 +7,7 @@ import {
   LuClock,
   LuMapPin,
   LuCalendarDays,
+  LuFileText,
 } from 'react-icons/lu';
 
 interface AttendanceRecord {
@@ -18,6 +19,14 @@ interface AttendanceRecord {
   endTime?: string;
   breakHours: number;
   workDescription?: string;
+  projectAssignment?: {
+    project: {
+      projectName: string;
+      client: {
+        name: string;
+      };
+    };
+  };
 }
 
 interface CalendarViewProps {
@@ -110,12 +119,15 @@ export function CalendarView({
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const attendanceMap = new Map(
-    attendanceRecords.map((record) => [
-      new Date(record.workDate).getDate(),
-      record,
-    ])
-  );
+  // Group attendance records by day (supporting multiple records per day)
+  const attendanceByDay = new Map<number, AttendanceRecord[]>();
+  attendanceRecords.forEach((record) => {
+    const day = new Date(record.workDate).getDate();
+    if (!attendanceByDay.has(day)) {
+      attendanceByDay.set(day, []);
+    }
+    attendanceByDay.get(day)!.push(record);
+  });
 
   const today = new Date();
   const isCurrentMonth =
@@ -123,9 +135,9 @@ export function CalendarView({
     selectedYear === today.getFullYear();
 
   return (
-    <Box>
+    <Box w="full" p={2}>
       {/* Week Headers */}
-      <Grid templateColumns="repeat(7, 1fr)" gap={2} mb={2}>
+      <Grid templateColumns="repeat(7, minmax(100px, 1fr))" gap={2} mb={2}>
         {weekDays.map((day) => (
           <Box key={day} textAlign="center" p={2}>
             <Text fontSize="xs" fontWeight="bold" color="gray.600">
@@ -136,7 +148,7 @@ export function CalendarView({
       </Grid>
 
       {/* Calendar Days */}
-      <Grid templateColumns="repeat(7, 1fr)" gap={2}>
+      <Grid templateColumns="repeat(7, minmax(100px, 1fr))" gap={3}>
         {/* Empty cells */}
         {Array.from({ length: firstDayOfMonth }).map((_, i) => (
           <Box key={`empty-${i}`} />
@@ -144,41 +156,45 @@ export function CalendarView({
 
         {/* Days */}
         {days.map((day) => {
-          const record = attendanceMap.get(day);
+          const dayRecords = attendanceByDay.get(day) || [];
           const isToday = isCurrentMonth && day === today.getDate();
+          const hasRecords = dayRecords.length > 0;
+
+          // Determine primary color based on first record or mixed if multiple
+          const primaryColor = hasRecords
+            ? dayRecords.length === 1
+              ? getAttendanceTypeColor(dayRecords[0].attendanceType)
+              : 'purple' // Mixed projects indicator
+            : 'gray';
 
           return (
             <Box
               key={day}
-              p={3}
+              p={2}
               borderRadius="lg"
               border="2px solid"
               borderColor={
                 isToday
                   ? 'purple.400'
-                  : record
-                    ? getAttendanceTypeColor(record.attendanceType) + '.300'
+                  : hasRecords
+                    ? primaryColor + '.300'
                     : 'gray.200'
               }
-              bg={
-                record
-                  ? getAttendanceTypeColor(record.attendanceType) + '.50'
-                  : 'white'
-              }
-              cursor={record ? 'pointer' : 'default'}
+              bg={hasRecords ? primaryColor + '.50' : 'white'}
+              cursor={hasRecords ? 'pointer' : 'default'}
               _hover={
-                record
+                hasRecords
                   ? {
                       shadow: 'lg',
                       transform: 'translateY(-2px)',
-                      borderColor:
-                        getAttendanceTypeColor(record.attendanceType) + '.500',
+                      borderColor: primaryColor + '.500',
                     }
                   : {}
               }
               transition="all 0.2s"
-              onClick={() => record && onDayClick(record)}
-              minH="100px"
+              onClick={() => dayRecords.length > 0 && onDayClick(dayRecords[0])}
+              minH="160px"
+              position="relative"
             >
               <VStack align="stretch" gap={1}>
                 <HStack justify="space-between">
@@ -196,48 +212,80 @@ export function CalendarView({
                   )}
                 </HStack>
 
-                {record && (
+                {/* Project-Filtered Display */}
+                {dayRecords.length > 0 && (
                   <VStack align="start" gap={1}>
-                    <HStack>
-                      <Box
-                        color={`${getAttendanceTypeColor(record.attendanceType)}.600`}
-                      >
-                        {getAttendanceTypeIcon(record.attendanceType)}
-                      </Box>
-                      <Badge
-                        colorScheme={getAttendanceTypeColor(
-                          record.attendanceType
+                    {dayRecords.map((record, index) => (
+                      <Box key={record.id} w="full">
+                        <HStack justify="space-between" mb={1}>
+                          <HStack gap={1}>
+                            <Box
+                              color={`${getAttendanceTypeColor(record.attendanceType)}.600`}
+                            >
+                              {getAttendanceTypeIcon(record.attendanceType)}
+                            </Box>
+                            <Badge
+                              colorScheme={getAttendanceTypeColor(
+                                record.attendanceType
+                              )}
+                              fontSize="2xs"
+                            >
+                              {getAttendanceTypeLabel(record.attendanceType)}
+                            </Badge>
+                          </HStack>
+                          {dayRecords.length > 1 && (
+                            <Text fontSize="2xs" color="gray.500">
+                              #{index + 1}
+                            </Text>
+                          )}
+                        </HStack>
+
+                        {record.startTime && record.endTime && (
+                          <HStack gap={1}>
+                            <LuClock size={12} color="#718096" />
+                            <Text fontSize="2xs" color="gray.600">
+                              {formatTime(record.startTime)} -{' '}
+                              {formatTime(record.endTime)}
+                            </Text>
+                          </HStack>
                         )}
-                        fontSize="2xs"
-                      >
-                        {getAttendanceTypeLabel(record.attendanceType)}
-                      </Badge>
-                    </HStack>
 
-                    {record.startTime && record.endTime && (
-                      <HStack gap={1}>
-                        <LuClock size={12} color="#718096" />
-                        <Text fontSize="2xs" color="gray.600">
-                          {formatTime(record.startTime)} -{' '}
-                          {formatTime(record.endTime)}
-                        </Text>
-                      </HStack>
-                    )}
+                        {record.workLocation && (
+                          <HStack gap={1}>
+                            <LuMapPin size={12} color="#718096" />
+                            <Text
+                              fontSize="2xs"
+                              color="gray.600"
+                              overflow="hidden"
+                              textOverflow="ellipsis"
+                              whiteSpace="nowrap"
+                            >
+                              {record.workLocation}
+                            </Text>
+                          </HStack>
+                        )}
 
-                    {record.workLocation && (
-                      <HStack gap={1}>
-                        <LuMapPin size={12} color="#718096" />
-                        <Text
-                          fontSize="2xs"
-                          color="gray.600"
-                          overflow="hidden"
-                          textOverflow="ellipsis"
-                          whiteSpace="nowrap"
-                        >
-                          {record.workLocation}
-                        </Text>
-                      </HStack>
-                    )}
+                        {record.workDescription && (
+                          <HStack gap={1}>
+                            <LuFileText size={12} color="#718096" />
+                            <Text
+                              fontSize="2xs"
+                              color="gray.600"
+                              overflow="hidden"
+                              textOverflow="ellipsis"
+                              whiteSpace="nowrap"
+                              title={record.workDescription}
+                            >
+                              {record.workDescription}
+                            </Text>
+                          </HStack>
+                        )}
+
+                        {index < dayRecords.length - 1 && (
+                          <Box h="1px" bg="gray.200" my={1} />
+                        )}
+                      </Box>
+                    ))}
                   </VStack>
                 )}
               </VStack>
