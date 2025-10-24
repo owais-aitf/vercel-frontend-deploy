@@ -61,15 +61,25 @@ export default function LoginPage() {
 
   // Validation functions
   const validateEmail = (email: string) => {
-    if (!email) return isHydrated ? t('validation.email_required') : 'Email is required';
+    if (!email)
+      return isHydrated ? t('validation.email_required') : 'Email is required';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return isHydrated ? t('validation.email_invalid') : 'Please enter a valid email';
+    if (!emailRegex.test(email))
+      return isHydrated
+        ? t('validation.email_invalid')
+        : 'Please enter a valid email';
     return '';
   };
 
   const validatePassword = (password: string) => {
-    if (!password) return isHydrated ? t('validation.password_required') : 'Password is required';
-    if (password.length < 8) return isHydrated ? t('validation.password_min_length') : 'Password must be at least 8 characters';
+    if (!password)
+      return isHydrated
+        ? t('validation.password_required')
+        : 'Password is required';
+    if (password.length < 8)
+      return isHydrated
+        ? t('validation.password_min_length')
+        : 'Password must be at least 8 characters';
     return '';
   };
 
@@ -156,7 +166,9 @@ export default function LoginPage() {
         router.push('/engineer/dashboard');
       }
     } catch (err: unknown) {
-      let errorMessage = isHydrated ? t('errors.login_failed') : 'Login failed. Please try again.';
+      let errorMessage = isHydrated
+        ? t('errors.login_failed')
+        : 'Login failed. Please try again.';
 
       if (err && typeof err === 'object') {
         if ('response' in err) {
@@ -424,7 +436,9 @@ export default function LoginPage() {
                   opacity={isCardVisible ? 1 : 0}
                   transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s"
                 >
-                  {isHydrated ? t('sign_in_description') : 'Please sign in to your account'}
+                  {isHydrated
+                    ? t('sign_in_description')
+                    : 'Please sign in to your account'}
                 </Text>
               </VStack>
 
@@ -485,7 +499,11 @@ export default function LoginPage() {
                         type="email"
                         name="email"
                         id="email"
-                        placeholder={isHydrated ? t('email_placeholder') : 'Enter your email'}
+                        placeholder={
+                          isHydrated
+                            ? t('email_placeholder')
+                            : 'Enter your email'
+                        }
                         value={email}
                         onChange={handleEmailChange}
                         onBlur={() => {
@@ -593,7 +611,11 @@ export default function LoginPage() {
                         type={showPassword ? 'text' : 'password'}
                         name="password"
                         id="password"
-                        placeholder={isHydrated ? t('password_placeholder') : 'Enter your password'}
+                        placeholder={
+                          isHydrated
+                            ? t('password_placeholder')
+                            : 'Enter your password'
+                        }
                         value={password}
                         onChange={handlePasswordChange}
                         onBlur={() => {
@@ -750,9 +772,12 @@ export default function LoginPage() {
                       {loading && <Spinner size="sm" color="white" />}
                       <Text>
                         {loading
-                          ? (isHydrated ? t('common:loading') : 'Loading...')
-                          : (isHydrated ? t('sign_in_button') : 'Sign In')
-                        }
+                          ? isHydrated
+                            ? t('common:loading')
+                            : 'Loading...'
+                          : isHydrated
+                            ? t('sign_in_button')
+                            : 'Sign In'}
                       </Text>
                     </HStack>
                   </Button>

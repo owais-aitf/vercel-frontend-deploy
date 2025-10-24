@@ -167,8 +167,8 @@ export default function EngineerDashboard() {
   const attendanceRate = stats
     ? totalWorkingDays > 0
       ? Math.round(
-        ((stats.presentDays + stats.paidLeaveDays) / totalWorkingDays) * 100
-      )
+          ((stats.presentDays + stats.paidLeaveDays) / totalWorkingDays) * 100
+        )
       : 0
     : 0;
 

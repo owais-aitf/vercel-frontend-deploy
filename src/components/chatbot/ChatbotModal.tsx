@@ -10,7 +10,6 @@ import {
   Input,
   Card,
   Portal,
-  Spinner,
   Grid,
 } from '@chakra-ui/react';
 import {
@@ -77,7 +76,9 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
   const [showActionButtons, setShowActionButtons] = useState(true);
   const [followUpSuggestions, setFollowUpSuggestions] = useState<string[]>([]);
   const [loadingButtonId, setLoadingButtonId] = useState<string | null>(null);
-  const [loadingState, setLoadingState] = useState<'loading' | 'success' | null>(null);
+  const [loadingState, setLoadingState] = useState<
+    'loading' | 'success' | null
+  >(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Parameter modal state
@@ -250,7 +251,7 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
       messagesEndRef.current?.scrollIntoView({
         behavior: 'smooth',
         block: 'end',
-        inline: 'nearest'
+        inline: 'nearest',
       });
     };
 
@@ -346,10 +347,13 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
 
   // Add reaction to message
   const addReaction = (messageId: string, reaction: string) => {
-    setMessages(prev =>
-      prev.map(msg =>
+    setMessages((prev) =>
+      prev.map((msg) =>
         msg.id === messageId
-          ? { ...msg, reaction: msg.reaction === reaction ? undefined : reaction }
+          ? {
+            ...msg,
+            reaction: msg.reaction === reaction ? undefined : reaction,
+          }
           : msg
       )
     );
@@ -359,47 +363,49 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
   const generateFollowUps = (questionId: string): string[] => {
     const followUps: Record<string, string[]> = {
       attendance_summary_month: [
-        "Show me overtime for this month",
-        "Compare with last month",
-        "What's my leave balance?"
+        'Show me overtime for this month',
+        'Compare with last month',
+        "What's my leave balance?",
       ],
       overtime_analysis_month: [
-        "Show monthly attendance summary",
-        "Check project hours",
-        "When was my last day off?"
+        'Show monthly attendance summary',
+        'Check project hours',
+        'When was my last day off?',
       ],
       leave_balance: [
-        "Show attendance summary",
-        "When was my last day off?",
-        "Check overtime hours"
+        'Show attendance summary',
+        'When was my last day off?',
+        'Check overtime hours',
       ],
       project_hours_month: [
-        "Show total monthly hours",
-        "Compare with other projects",
-        "Check overtime analysis"
+        'Show total monthly hours',
+        'Compare with other projects',
+        'Check overtime analysis',
       ],
       monthly_comparison: [
-        "Show current month details",
-        "Check leave balance",
-        "Analyze overtime trends"
+        'Show current month details',
+        'Check leave balance',
+        'Analyze overtime trends',
       ],
       attendance_on_date: [
-        "Show weekly summary",
-        "Check nearby dates",
-        "View monthly overview"
+        'Show weekly summary',
+        'Check nearby dates',
+        'View monthly overview',
       ],
       last_day_off: [
-        "Check leave balance",
-        "Show recent attendance",
-        "Plan next time off"
-      ]
+        'Check leave balance',
+        'Show recent attendance',
+        'Plan next time off',
+      ],
     };
 
-    return followUps[questionId] || [
-      "Show monthly summary",
-      "Check leave balance",
-      "View overtime analysis"
-    ];
+    return (
+      followUps[questionId] || [
+        'Show monthly summary',
+        'Check leave balance',
+        'View overtime analysis',
+      ]
+    );
   };
 
   // Send query to chatbot
@@ -687,7 +693,8 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
             right: '-2px',
             bottom: '-2px',
             borderRadius: 'xl',
-            background: 'linear-gradient(135deg, rgba(66,153,225,0.3), rgba(66,153,225,0.1), rgba(66,153,225,0.3))',
+            background:
+              'linear-gradient(135deg, rgba(66,153,225,0.3), rgba(66,153,225,0.1), rgba(66,153,225,0.3))',
             zIndex: -1,
           }}
         >
@@ -714,7 +721,12 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                   <LuBot size={20} />
                 </Box>
                 <VStack align="start" gap={0}>
-                  <Text fontSize="lg" fontWeight="bold" letterSpacing="tight" textShadow="0 1px 2px rgba(0,0,0,0.1)">
+                  <Text
+                    fontSize="lg"
+                    fontWeight="bold"
+                    letterSpacing="tight"
+                    textShadow="0 1px 2px rgba(0,0,0,0.1)"
+                  >
                     AI Attendance Assistant
                   </Text>
                   <HStack gap={2} align="center">
@@ -725,13 +737,23 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                       borderRadius="full"
                       boxShadow="0 0 8px rgba(72, 187, 120, 0.6)"
                     />
-                    <Text fontSize="xs" opacity={0.95} fontWeight="medium" textShadow="0 1px 1px rgba(0,0,0,0.1)">
+                    <Text
+                      fontSize="xs"
+                      opacity={0.95}
+                      fontWeight="medium"
+                      textShadow="0 1px 1px rgba(0,0,0,0.1)"
+                    >
                       Online • Ready to help
                     </Text>
                   </HStack>
                 </VStack>
               </HStack>
-              <Text fontSize="sm" opacity={0.9} fontStyle="italic" textShadow="0 1px 1px rgba(0,0,0,0.1)">
+              <Text
+                fontSize="sm"
+                opacity={0.9}
+                fontStyle="italic"
+                textShadow="0 1px 1px rgba(0,0,0,0.1)"
+              >
                 💡 Ask me anything about your attendance data
               </Text>
             </VStack>
@@ -787,11 +809,13 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                               variant="outline"
                               justifyContent="start"
                               onClick={() => handleActionButtonClick(button)}
-                              isLoading={loadingButtonId === button.id}
-                              loadingText="Processing..."
+                              loading={loadingButtonId === button.id}
                               _hover={{
                                 bg: 'blue.50',
-                                transform: loadingButtonId === button.id ? 'none' : 'translateY(-3px) scale(1.02)',
+                                transform:
+                                  loadingButtonId === button.id
+                                    ? 'none'
+                                    : 'translateY(-3px) scale(1.02)',
                                 boxShadow: 'lg',
                                 borderColor: 'blue.300',
                               }}
@@ -801,7 +825,10 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                               height="auto"
                               py={3}
                               _active={{
-                                transform: loadingButtonId === button.id ? 'none' : 'translateY(-1px) scale(0.98)',
+                                transform:
+                                  loadingButtonId === button.id
+                                    ? 'none'
+                                    : 'translateY(-1px) scale(0.98)',
                               }}
                               disabled={loadingButtonId !== null}
                             >
@@ -811,7 +838,7 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                                     <IconComponent size={16} />
                                   </Box>
                                   <Text fontSize="xs" fontWeight="semibold">
-                                    {button.label}
+                                    {loadingButtonId === button.id ? 'Processing...' : button.label}
                                   </Text>
                                 </HStack>
                                 <Text
@@ -819,7 +846,7 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                                   color="gray.600"
                                   textAlign="left"
                                 >
-                                  {button.description}
+                                  {loadingButtonId === button.id ? 'Please wait...' : button.description}
                                 </Text>
                               </VStack>
                             </Button>
@@ -848,14 +875,20 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                     borderRadius="2xl"
                     boxShadow="md"
                     border="1px solid"
-                    borderColor={message.type === 'user' ? 'blue.400' : 'gray.100'}
+                    borderColor={
+                      message.type === 'user' ? 'blue.400' : 'gray.100'
+                    }
                     _hover={{
                       '& .copy-button': {
                         opacity: message.type === 'bot' ? 1 : 0,
-                      }
+                      },
                     }}
                   >
-                    <Card.Body p={3} position="relative" className="message-card">
+                    <Card.Body
+                      p={3}
+                      position="relative"
+                      className="message-card"
+                    >
                       <VStack align="start" gap={1}>
                         {message.type === 'bot' && (
                           <HStack gap={2} justify="space-between" w="full">
@@ -868,7 +901,11 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                               >
                                 <LuBot size={14} />
                               </Box>
-                              <Text fontSize="xs" fontWeight="semibold" color="blue.600">
+                              <Text
+                                fontSize="xs"
+                                fontWeight="semibold"
+                                color="blue.600"
+                              >
                                 AI Assistant
                               </Text>
                             </HStack>
@@ -902,8 +939,16 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                                 size="xs"
                                 variant="ghost"
                                 onClick={() => addReaction(message.id, emoji)}
-                                bg={message.reaction === emoji ? 'blue.50' : 'transparent'}
-                                color={message.reaction === emoji ? 'blue.600' : 'gray.500'}
+                                bg={
+                                  message.reaction === emoji
+                                    ? 'blue.50'
+                                    : 'transparent'
+                                }
+                                color={
+                                  message.reaction === emoji
+                                    ? 'blue.600'
+                                    : 'gray.500'
+                                }
                                 borderRadius="full"
                                 minW="auto"
                                 h="auto"
@@ -941,16 +986,22 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                   borderRadius="2xl"
                   boxShadow="md"
                   border="1px solid"
-                  borderColor={loadingState === 'success' ? 'green.200' : 'gray.100'}
+                  borderColor={
+                    loadingState === 'success' ? 'green.200' : 'gray.100'
+                  }
                   transition="all 0.3s"
                 >
                   <Card.Body p={3}>
                     <HStack gap={3}>
                       <Box
-                        bg={loadingState === 'success' ? 'green.100' : 'blue.100'}
+                        bg={
+                          loadingState === 'success' ? 'green.100' : 'blue.100'
+                        }
                         borderRadius="full"
                         p={1}
-                        color={loadingState === 'success' ? 'green.600' : 'blue.600'}
+                        color={
+                          loadingState === 'success' ? 'green.600' : 'blue.600'
+                        }
                         transition="all 0.3s"
                       >
                         {loadingState === 'success' ? (
@@ -960,12 +1011,29 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                         )}
                       </Box>
                       <VStack align="start" gap={1}>
-                        <Text fontSize="xs" fontWeight="semibold" color={loadingState === 'success' ? 'green.600' : 'blue.600'}>
+                        <Text
+                          fontSize="xs"
+                          fontWeight="semibold"
+                          color={
+                            loadingState === 'success'
+                              ? 'green.600'
+                              : 'blue.600'
+                          }
+                        >
                           AI Assistant
                         </Text>
                         <HStack gap={2} align="center">
-                          <Text fontSize="sm" color={loadingState === 'success' ? 'green.600' : 'gray.600'}>
-                            {loadingState === 'success' ? 'Request completed successfully!' : 'Analyzing your request'}
+                          <Text
+                            fontSize="sm"
+                            color={
+                              loadingState === 'success'
+                                ? 'green.600'
+                                : 'gray.600'
+                            }
+                          >
+                            {loadingState === 'success'
+                              ? 'Request completed successfully!'
+                              : 'Analyzing your request'}
                           </Text>
                           {loadingState === 'loading' && (
                             <HStack gap={1}>
@@ -1028,9 +1096,14 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                       borderRadius="full"
                       onClick={() => {
                         // Find matching question button and trigger it
-                        const matchingButton = questionButtons.find(btn =>
-                          suggestion.toLowerCase().includes(btn.label.toLowerCase().split(' ')[0]) ||
-                          suggestion.toLowerCase().includes(btn.category)
+                        const matchingButton = questionButtons.find(
+                          (btn) =>
+                            suggestion
+                              .toLowerCase()
+                              .includes(
+                                btn.label.toLowerCase().split(' ')[0]
+                              ) ||
+                            suggestion.toLowerCase().includes(btn.category)
                         );
                         if (matchingButton) {
                           handleActionButtonClick(matchingButton);
@@ -1052,8 +1125,6 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
 
             <div ref={messagesEndRef} />
           </VStack>
-
-
 
           {/* Input Area */}
           <Box
