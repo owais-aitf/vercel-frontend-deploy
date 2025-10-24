@@ -51,8 +51,6 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState('');
   const [touched, setTouched] = useState({ email: false, password: false });
-  const [emailFocused, setEmailFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
 
   const emailInputRef = useRef<HTMLInputElement>(null);
 
@@ -478,9 +476,7 @@ export default function LoginPage() {
                         id="email"
                         value={email}
                         onChange={handleEmailChange}
-                        onFocus={() => setEmailFocused(true)}
                         onBlur={() => {
-                          setEmailFocused(false);
                           setTouched({ ...touched, email: true });
                           setEmailError(validateEmail(email));
                         }}
@@ -587,9 +583,7 @@ export default function LoginPage() {
                         id="password"
                         value={password}
                         onChange={handlePasswordChange}
-                        onFocus={() => setPasswordFocused(true)}
                         onBlur={() => {
-                          setPasswordFocused(false);
                           setTouched({ ...touched, password: true });
                           setPasswordError(validatePassword(password));
                         }}

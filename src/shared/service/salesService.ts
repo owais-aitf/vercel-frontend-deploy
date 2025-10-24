@@ -48,6 +48,7 @@ export interface EngineerWithAssignment {
   hoursThisMonth: number;
   status: 'Complete' | 'Partial' | 'Missing';
   hasActiveAssignment: boolean;
+  assignmentId?: string;
 }
 
 export const salesService = {
@@ -258,10 +259,16 @@ export const salesService = {
       }
 
       interface Assignment {
+        id: string;
         engineerId: string;
         isActive: boolean;
         project?: { projectName: string };
       }
+
+      // Get current month and year
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
 
       // Get all engineers and their assignments
       const [engineersRes, assignmentsRes] = await Promise.allSettled([
@@ -278,22 +285,72 @@ export const salesService = {
           ? assignmentsRes.value.data?.data || []
           : [];
 
-      // Map engineers with their active assignments
-      const engineersWithAssignments = engineers.map((eng) => {
-        // Find active assignment for this engineer
-        const activeAssignment = assignments.find(
-          (a) => a.engineerId === eng.id && a.isActive === true
+      // Fetch hours for each engineer using the monthly-reports endpoint
+      const engineersWithHours = await Promise.all(
+        engineers.map(async (eng) => {
+          try {
+            const hoursRes = await apiClient.get(
+              `/monthly-reports/engineer/${eng.id}/total-hours?year=${currentYear}&month=${currentMonth}`
+            );
+            return {
+              engineerId: eng.id,
+              hoursThisMonth: hoursRes.data?.data?.totalHours || 0,
+            };
+          } catch {
+            // If endpoint fails, return 0 hours
+            return {
+              engineerId: eng.id,
+              hoursThisMonth: 0,
+            };
+          }
+        })
+      );
+
+      // Create a map for quick lookup
+      const hoursMap = new Map(
+        engineersWithHours.map((h) => [h.engineerId, h.hoursThisMonth])
+      );
+
+      // Create rows for each engineer-project combination
+      const engineersWithAssignments: EngineerWithAssignment[] = [];
+
+      engineers.forEach((eng) => {
+        // Get all assignments for this engineer
+        const engineerAssignments = assignments.filter(
+          (a) => a.engineerId === eng.id
         );
 
-        return {
-          id: eng.id,
-          fullName: eng.fullName,
-          email: eng.email,
-          projectName: activeAssignment?.project?.projectName || 'No Project',
-          hoursThisMonth: 0, // Will need attendance API to calculate
-          status: 'Missing' as 'Complete' | 'Partial' | 'Missing',
-          hasActiveAssignment: !!activeAssignment,
-        };
+        const hoursThisMonth = hoursMap.get(eng.id) || 0;
+        let status: 'Complete' | 'Partial' | 'Missing' = 'Missing';
+        if (hoursThisMonth > 0) {
+          status = hoursThisMonth >= 160 ? 'Complete' : 'Partial';
+        }
+
+        // If engineer has assignments, create a row for each
+        if (engineerAssignments.length > 0) {
+          engineerAssignments.forEach((assignment) => {
+            engineersWithAssignments.push({
+              id: eng.id,
+              fullName: eng.fullName,
+              email: eng.email,
+              projectName: assignment.project?.projectName || 'Unknown Project',
+              hoursThisMonth,
+              status,
+              hasActiveAssignment: assignment.isActive,
+            });
+          });
+        } else {
+          // If no assignments, show one row with "No Project"
+          engineersWithAssignments.push({
+            id: eng.id,
+            fullName: eng.fullName,
+            email: eng.email,
+            projectName: 'No Project',
+            hoursThisMonth,
+            status,
+            hasActiveAssignment: false,
+          });
+        }
       });
 
       return {

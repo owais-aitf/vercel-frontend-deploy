@@ -11,7 +11,6 @@ import {
   Card,
   Button,
   Input,
-  Badge,
 } from '@chakra-ui/react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
@@ -40,6 +39,8 @@ export default function SalesDashboard() {
   const [engineers, setEngineers] = useState<EngineerWithAssignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const isFetching = useRef(false);
   const hasFetched = useRef(false);
 
@@ -49,6 +50,10 @@ export default function SalesDashboard() {
       fetchDashboardData();
     }
   }, [user]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const handleNewClient = () => router.push('/sales/clients');
   const handleNewProject = () => router.push('/sales/projects');
@@ -106,13 +111,13 @@ export default function SalesDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Complete':
-        return 'green';
+        return { bg: 'green.100', color: 'green.800' };
       case 'Partial':
-        return 'orange';
+        return { bg: 'orange.100', color: 'orange.800' };
       case 'Missing':
-        return 'red';
+        return { bg: 'red.100', color: 'red.800' };
       default:
-        return 'gray';
+        return { bg: 'gray.100', color: 'gray.800' };
     }
   };
 
@@ -131,6 +136,12 @@ export default function SalesDashboard() {
       eng.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       eng.projectName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredEngineers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedEngineers = filteredEngineers.slice(startIndex, endIndex);
 
   return (
     <FeatureErrorBoundary featureName="Sales Dashboard">
@@ -364,7 +375,7 @@ export default function SalesDashboard() {
                       </Grid>
 
                       {/* Rows */}
-                      {filteredEngineers.map((engineer) => (
+                      {paginatedEngineers.map((engineer) => (
                         <Grid
                           key={engineer.id}
                           templateColumns="2fr 2fr 1.5fr 1fr 1fr"
@@ -398,8 +409,8 @@ export default function SalesDashboard() {
                             {engineer.hoursThisMonth.toFixed(1)}h
                           </Text>
 
-                          <Badge
-                            colorScheme={getStatusColor(engineer.status)}
+                          <Box
+                            {...getStatusColor(engineer.status)}
                             fontSize="xs"
                             w="fit-content"
                             px={2}
@@ -408,7 +419,7 @@ export default function SalesDashboard() {
                             fontWeight="semibold"
                           >
                             {engineer.status}
-                          </Badge>
+                          </Box>
 
                           <Button
                             size="xs"
@@ -433,7 +444,7 @@ export default function SalesDashboard() {
                     w="full"
                     display={{ base: 'flex', md: 'none' }}
                   >
-                    {filteredEngineers.map((engineer) => (
+                    {paginatedEngineers.map((engineer) => (
                       <Card.Root
                         key={engineer.id}
                         w="full"
@@ -452,12 +463,16 @@ export default function SalesDashboard() {
                                   {engineer.email}
                                 </Text>
                               </VStack>
-                              <Badge
-                                colorScheme={getStatusColor(engineer.status)}
+                              <Box
+                                {...getStatusColor(engineer.status)}
                                 fontSize="2xs"
+                                px={2}
+                                py={0.5}
+                                borderRadius="full"
+                                fontWeight="semibold"
                               >
                                 {engineer.status}
-                              </Badge>
+                              </Box>
                             </HStack>
 
                             {/* Project */}
@@ -524,34 +539,106 @@ export default function SalesDashboard() {
                   Status:
                 </Text>
                 <HStack gap={1}>
-                  <Badge colorScheme="green" fontSize="2xs" borderRadius="full">
+                  <Box
+                    bg="green.100"
+                    color="green.800"
+                    fontSize="2xs"
+                    px={2}
+                    py={0.5}
+                    borderRadius="full"
+                    fontWeight="semibold"
+                  >
                     Complete
-                  </Badge>
+                  </Box>
                   <Text fontSize="2xs" color="gray.600">
                     {engineers.filter((e) => e.status === 'Complete').length}
                   </Text>
                 </HStack>
                 <HStack gap={1}>
-                  <Badge
-                    colorScheme="orange"
+                  <Box
+                    bg="orange.100"
+                    color="orange.800"
                     fontSize="2xs"
+                    px={2}
+                    py={0.5}
                     borderRadius="full"
+                    fontWeight="semibold"
                   >
                     Partial
-                  </Badge>
+                  </Box>
                   <Text fontSize="2xs" color="gray.600">
                     {engineers.filter((e) => e.status === 'Partial').length}
                   </Text>
                 </HStack>
                 <HStack gap={1}>
-                  <Badge colorScheme="red" fontSize="2xs" borderRadius="full">
+                  <Box
+                    bg="red.100"
+                    color="red.800"
+                    fontSize="2xs"
+                    px={2}
+                    py={0.5}
+                    borderRadius="full"
+                    fontWeight="semibold"
+                  >
                     Missing
-                  </Badge>
+                  </Box>
                   <Text fontSize="2xs" color="gray.600">
                     {engineers.filter((e) => e.status === 'Missing').length}
                   </Text>
                 </HStack>
               </HStack>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <HStack justify="center" gap={2} mt={4} flexWrap="wrap">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    fontSize={{ base: '2xs', md: 'xs' }}
+                  >
+                    Previous
+                  </Button>
+
+                  {/* Page Numbers */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        size="sm"
+                        variant={currentPage === page ? 'solid' : 'outline'}
+                        colorScheme={currentPage === page ? 'blue' : 'gray'}
+                        onClick={() => setCurrentPage(page)}
+                        fontSize={{ base: '2xs', md: 'xs' }}
+                        minW={{ base: '28px', md: '32px' }}
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    }
+                    disabled={currentPage === totalPages}
+                    fontSize={{ base: '2xs', md: 'xs' }}
+                  >
+                    Next
+                  </Button>
+
+                  <Text
+                    fontSize={{ base: '2xs', md: 'xs' }}
+                    color="gray.600"
+                    ml={2}
+                  >
+                    Page {currentPage} of {totalPages}
+                  </Text>
+                </HStack>
+              )}
             </VStack>
           </Card.Body>
         </Card.Root>
