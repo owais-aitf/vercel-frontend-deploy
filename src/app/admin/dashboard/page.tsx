@@ -9,14 +9,12 @@ import {
   VStack,
   HStack,
   Card,
-  Button,
   Spinner,
 } from '@chakra-ui/react';
 import {
   LuUsers,
   LuUserCog,
   LuUserCheck,
-  LuFolderOpen,
   LuFolderCheck,
   LuFolderX,
   LuBuilding2,
@@ -36,7 +34,7 @@ import adminService, {
 import { toaster } from '@/components/ui/toaster';
 
 export default function AdminDashboard() {
-  const router = useRouter();
+  // const router = useRouter();
   const { user } = useContext(AuthContext);
   const [stats, setStats] = useState<AdminDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,12 +84,6 @@ export default function AdminDashboard() {
     }
     return user.fullName.slice(0, 2).toUpperCase();
   };
-
-  // Quick action handlers
-  const handleManageUsers = () => router.push('/admin/users');
-  const handleManageProjects = () => router.push('/admin/projects');
-  const handleManageClients = () => router.push('/admin/clients');
-  const handleViewReports = () => router.push('/admin/reports');
 
   return (
     <FeatureErrorBoundary featureName="Admin Dashboard">
@@ -520,7 +512,7 @@ export default function AdminDashboard() {
               </Card.Root>
             </Grid>
 
-            {/* Quick Actions */}
+            {/* Quick Actions
             <Card.Root mt={6}>
               <Card.Body p={{ base: 4, md: 6 }}>
                 <VStack alignItems="start" gap={{ base: 3, md: 4 }}>
@@ -582,7 +574,7 @@ export default function AdminDashboard() {
                   </Grid>
                 </VStack>
               </Card.Body>
-            </Card.Root>
+            </Card.Root> */}
           </>
         )}
       </DashboardLayout>

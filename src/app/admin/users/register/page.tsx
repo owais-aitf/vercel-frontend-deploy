@@ -213,10 +213,10 @@ export default function RegisterUserPage() {
     setErrors({ fullName: '', email: '' });
   };
 
-  const handleViewUsers = () => {
-    handleCloseModal();
-    router.push('/admin/users');
-  };
+  // const handleViewUsers = () => {
+  //   handleCloseModal();
+  //   router.push('/admin/users');
+  // };
 
   return (
     <FeatureErrorBoundary featureName="Register User">
@@ -751,7 +751,7 @@ export default function RegisterUserPage() {
                           <Text fontSize="sm">Create Another</Text>
                         </HStack>
                       </Button>
-                      <Button
+                      {/* <Button
                         variant="outline"
                         size="md"
                         onClick={handleViewUsers}
@@ -760,7 +760,7 @@ export default function RegisterUserPage() {
                           <LuArrowLeft size={16} />
                           <Text fontSize="sm">View Users</Text>
                         </HStack>
-                      </Button>
+                      </Button> */}
                     </Grid>
                   </VStack>
                 </Card.Body>

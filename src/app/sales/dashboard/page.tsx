@@ -425,7 +425,10 @@ export default function SalesDashboard() {
                             size="xs"
                             variant="ghost"
                             onClick={() =>
-                              handleSendReminder(engineer.id, engineer.fullName)
+                              handleSendReminder(
+                                engineer.engineerId,
+                                engineer.fullName
+                              )
                             }
                             _hover={{ bg: 'blue.50', color: 'blue.600' }}
                             borderRadius="md"
@@ -504,7 +507,7 @@ export default function SalesDashboard() {
                               mt={1}
                               onClick={() =>
                                 handleSendReminder(
-                                  engineer.id,
+                                  engineer.engineerId,
                                   engineer.fullName
                                 )
                               }

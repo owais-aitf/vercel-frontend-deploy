@@ -1,7 +1,15 @@
 'use client';
 
 import { useState, useEffect, useContext, useRef } from 'react';
-import { Box, Grid, Text, VStack, HStack, Card } from '@chakra-ui/react';
+import {
+  Box,
+  Grid,
+  Text,
+  VStack,
+  HStack,
+  Card,
+  Button,
+} from '@chakra-ui/react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { engineerNavigation } from '@/shared/config/navigation';
 import { AuthContext } from '@/context/AuthContext';
@@ -11,6 +19,8 @@ import {
   RecentActivity,
 } from '@/shared/service/dashboardService';
 import { getUserCacheKey, CACHE_KEYS } from '@/shared/utils/cache';
+import { LuMessageSquare } from 'react-icons/lu';
+import { ChatbotModal } from '@/components/chatbot/ChatbotModal';
 
 // Cache duration: 2 minutes
 const CACHE_DURATION = 2 * 60 * 1000;
@@ -24,6 +34,7 @@ export default function EngineerDashboard() {
   const [activeProjectsCount, setActiveProjectsCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const lastFetchTime = useRef<number>(0);
   const isFetching = useRef<boolean>(false);
 
@@ -500,6 +511,37 @@ export default function EngineerDashboard() {
           </VStack>
         </Card.Root>
       </Grid>
+
+      {/* Floating Chatbot Button */}
+      <Box
+        position="fixed"
+        bottom={{ base: '20px', md: '30px' }}
+        right={{ base: '20px', md: '30px' }}
+        zIndex={999}
+      >
+        <Button
+          colorScheme="blue"
+          size="lg"
+          borderRadius="full"
+          w="60px"
+          h="60px"
+          boxShadow="2xl"
+          onClick={() => setIsChatbotOpen(true)}
+          _hover={{
+            transform: 'scale(1.1)',
+            boxShadow: '3xl',
+          }}
+          transition="all 0.2s"
+        >
+          <LuMessageSquare size={28} />
+        </Button>
+      </Box>
+
+      {/* Chatbot Modal */}
+      <ChatbotModal
+        isOpen={isChatbotOpen}
+        onClose={() => setIsChatbotOpen(false)}
+      />
     </DashboardLayout>
   );
 }

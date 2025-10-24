@@ -41,7 +41,8 @@ export interface PendingReport {
 }
 
 export interface EngineerWithAssignment {
-  id: string;
+  id: string; // Unique composite ID (engineerId-assignmentId)
+  engineerId: string; //Original engineer ID
   fullName: string;
   email: string;
   projectName: string;
@@ -330,7 +331,8 @@ export const salesService = {
         if (engineerAssignments.length > 0) {
           engineerAssignments.forEach((assignment) => {
             engineersWithAssignments.push({
-              id: eng.id,
+              id: `${eng.id}-${assignment.id}`, //FIXED: Unique combination
+              engineerId: eng.id, // Keep original ID for actions
               fullName: eng.fullName,
               email: eng.email,
               projectName: assignment.project?.projectName || 'Unknown Project',
@@ -342,7 +344,8 @@ export const salesService = {
         } else {
           // If no assignments, show one row with "No Project"
           engineersWithAssignments.push({
-            id: eng.id,
+            id: `${eng.id}-no-project`, //FIXED: Unique ID
+            engineerId: eng.id, // keep original ID
             fullName: eng.fullName,
             email: eng.email,
             projectName: 'No Project',
