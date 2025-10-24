@@ -55,7 +55,7 @@ export default function RegisterUserPage() {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    role: 'ENGINEER' as 'ENGINEER' | 'SALES',
+    role: 'ENGINEER' as 'ENGINEER' | 'SALES' | 'ADMIN',
     slackUserId: '',
     annualPaidLeaveAllowance: 10,
   });
@@ -314,7 +314,9 @@ export default function RegisterUserPage() {
                       <Text>User Role *</Text>
                     </HStack>
                   </Fieldset.Legend>
-                  <Grid templateColumns="repeat(2, 1fr)" gap={2}>
+                  <Grid templateColumns="repeat(3, 1fr)" gap={2}>
+                    {' '}
+                    {/* Changed from repeat(2, 1fr) to repeat(3, 1fr) */}
                     {/* Engineer Button */}
                     <Card.Root
                       cursor="pointer"
@@ -364,7 +366,6 @@ export default function RegisterUserPage() {
                         </HStack>
                       </Card.Body>
                     </Card.Root>
-
                     {/* Sales Rep Button */}
                     <Card.Root
                       cursor="pointer"
@@ -408,6 +409,55 @@ export default function RegisterUserPage() {
                           </VStack>
                           {formData.role === 'SALES' && (
                             <Box color="blue.500" ml="auto">
+                              <LuCheck size={14} />
+                            </Box>
+                          )}
+                        </HStack>
+                      </Card.Body>
+                    </Card.Root>
+                    {/* Admin Button - NEW */}
+                    <Card.Root
+                      cursor="pointer"
+                      onClick={() => handleInputChange('role', 'ADMIN')}
+                      bg={formData.role === 'ADMIN' ? 'purple.50' : 'white'}
+                      borderWidth="2px"
+                      borderColor={
+                        formData.role === 'ADMIN' ? 'purple.500' : 'gray.200'
+                      }
+                      _hover={{
+                        borderColor: 'purple.400',
+                        transform: 'translateY(-1px)',
+                      }}
+                      transition="all 0.2s"
+                    >
+                      <Card.Body p={2}>
+                        <HStack gap={2} justify="center">
+                          <Box
+                            p={1.5}
+                            bg={
+                              formData.role === 'ADMIN'
+                                ? 'purple.100'
+                                : 'gray.100'
+                            }
+                            borderRadius="full"
+                            color={
+                              formData.role === 'ADMIN'
+                                ? 'purple.600'
+                                : 'gray.600'
+                            }
+                          >
+                            <LuShieldCheck size={16} />
+                          </Box>
+                          <VStack gap={0} align="start">
+                            <Text fontSize="xs" fontWeight="bold">
+                              Admin
+                            </Text>
+                            <Text fontSize="2xs" color="gray.600">
+                              System admin
+                            </Text>
+                          </VStack>
+                          {formData.role === 'ADMIN' && (
+                            <Box color="purple.500" ml="auto">
                               <LuCheck size={14} />
                             </Box>
                           )}
