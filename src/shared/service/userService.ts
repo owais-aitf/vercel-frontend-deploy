@@ -3,7 +3,7 @@ import apiClient from '@/shared/lib/api-client';
 export interface CreateUserData {
   email: string;
   fullName: string;
-  role: 'ENGINEER' | 'SALES';
+  role: 'ENGINEER' | 'SALES' | 'ADMIN';
   slackUserId?: string;
   annualPaidLeaveAllowance?: number;
 }
