@@ -1,24 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, HStack, Box } from '@chakra-ui/react';
 import { LuGlobe } from 'react-icons/lu';
 
 export const LanguageSwitcher = () => {
-  const [currentLanguage, setCurrentLanguage] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('preferredLanguage') || 'en';
-    }
-    return 'en';
-  });
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    // This runs only on the client after hydration
+    const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
+    setCurrentLanguage(savedLanguage);
+    setIsHydrated(true);
+  }, []);
 
   const switchLanguage = (locale: string) => {
     // Store language preference in localStorage
-    localStorage.setItem('preferredLanguage', locale);
-    setCurrentLanguage(locale);
-
-    // Reload page to apply language change
-    window.location.reload();
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('preferredLanguage', locale);
+      setCurrentLanguage(locale);
+      // Reload page to apply language change
+      window.location.reload();
+    }
   };
 
   return (
@@ -36,13 +40,13 @@ export const LanguageSwitcher = () => {
         <LuGlobe size={18} />
       </Box>
       <Button
-        variant={currentLanguage === 'en' ? 'solid' : 'ghost'}
+        variant={isHydrated && currentLanguage === 'en' ? 'solid' : 'ghost'}
         size="sm"
         onClick={() => switchLanguage('en')}
-        bg={currentLanguage === 'en' ? 'blue.600' : 'transparent'}
-        color={currentLanguage === 'en' ? 'white' : 'gray.700'}
+        bg={isHydrated && currentLanguage === 'en' ? 'blue.600' : 'transparent'}
+        color={isHydrated && currentLanguage === 'en' ? 'white' : 'gray.700'}
         _hover={{
-          bg: currentLanguage === 'en' ? 'blue.700' : 'gray.100',
+          bg: isHydrated && currentLanguage === 'en' ? 'blue.700' : 'gray.100',
         }}
         fontSize="xs"
         px={3}
@@ -53,13 +57,13 @@ export const LanguageSwitcher = () => {
         EN
       </Button>
       <Button
-        variant={currentLanguage === 'ja' ? 'solid' : 'ghost'}
+        variant={isHydrated && currentLanguage === 'ja' ? 'solid' : 'ghost'}
         size="sm"
         onClick={() => switchLanguage('ja')}
-        bg={currentLanguage === 'ja' ? 'blue.600' : 'transparent'}
-        color={currentLanguage === 'ja' ? 'white' : 'gray.700'}
+        bg={isHydrated && currentLanguage === 'ja' ? 'blue.600' : 'transparent'}
+        color={isHydrated && currentLanguage === 'ja' ? 'white' : 'gray.700'}
         _hover={{
-          bg: currentLanguage === 'ja' ? 'blue.700' : 'gray.100',
+          bg: isHydrated && currentLanguage === 'ja' ? 'blue.700' : 'gray.100',
         }}
         fontSize="xs"
         px={3}

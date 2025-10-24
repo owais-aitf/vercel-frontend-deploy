@@ -114,9 +114,6 @@ export const Navbar = ({
 
         {/* User Profile - Hidden on Mobile */}
         <HStack gap={2} display={{ base: 'none', sm: 'flex' }}>
-          <Text fontSize="sm" fontWeight="medium">
-            {userInitials}
-          </Text>
           <Box
             w="32px"
             h="32px"

@@ -50,6 +50,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isCardVisible, setIsCardVisible] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -60,15 +61,15 @@ export default function LoginPage() {
 
   // Validation functions
   const validateEmail = (email: string) => {
-    if (!email) return t('validation.email_required');
+    if (!email) return isHydrated ? t('validation.email_required') : 'Email is required';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return t('validation.email_invalid');
+    if (!emailRegex.test(email)) return isHydrated ? t('validation.email_invalid') : 'Please enter a valid email';
     return '';
   };
 
   const validatePassword = (password: string) => {
-    if (!password) return t('validation.password_required');
-    if (password.length < 8) return t('validation.password_min_length');
+    if (!password) return isHydrated ? t('validation.password_required') : 'Password is required';
+    if (password.length < 8) return isHydrated ? t('validation.password_min_length') : 'Password must be at least 8 characters';
     return '';
   };
 
@@ -76,8 +77,10 @@ export default function LoginPage() {
   const isEmailValid = email && !validateEmail(email);
   const isPasswordValid = password && !validatePassword(password);
 
-  // Trigger card entrance animation
+  // Trigger card entrance animation and hydration
   useEffect(() => {
+    setIsHydrated(true);
+
     const timer = setTimeout(() => {
       setIsCardVisible(true);
     }, 100);
@@ -153,7 +156,7 @@ export default function LoginPage() {
         router.push('/engineer/dashboard');
       }
     } catch (err: unknown) {
-      let errorMessage = t('errors.login_failed');
+      let errorMessage = isHydrated ? t('errors.login_failed') : 'Login failed. Please try again.';
 
       if (err && typeof err === 'object') {
         if ('response' in err) {
@@ -409,7 +412,7 @@ export default function LoginPage() {
                   opacity={isCardVisible ? 1 : 0}
                   transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s"
                 >
-                  {t('welcome_back')}
+                  {isHydrated ? t('welcome_back') : 'Welcome Back'}
                 </Heading>
                 <Text
                   color="gray.500"
@@ -421,7 +424,7 @@ export default function LoginPage() {
                   opacity={isCardVisible ? 1 : 0}
                   transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s"
                 >
-                  {t('sign_in_description')}
+                  {isHydrated ? t('sign_in_description') : 'Please sign in to your account'}
                 </Text>
               </VStack>
 
@@ -459,7 +462,7 @@ export default function LoginPage() {
                         pointerEvents="none"
                         transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                       >
-                        {t('email_label')}
+                        {isHydrated ? t('email_label') : 'Email'}
                       </Text>
 
                       {/* Success Tick */}
@@ -482,7 +485,7 @@ export default function LoginPage() {
                         type="email"
                         name="email"
                         id="email"
-                        placeholder={t('email_placeholder')}
+                        placeholder={isHydrated ? t('email_placeholder') : 'Enter your email'}
                         value={email}
                         onChange={handleEmailChange}
                         onBlur={() => {
@@ -568,7 +571,7 @@ export default function LoginPage() {
                         pointerEvents="none"
                         transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                       >
-                        {t('password_label')}
+                        {isHydrated ? t('password_label') : 'Password'}
                       </Text>
 
                       {/* Success Tick */}
@@ -590,7 +593,7 @@ export default function LoginPage() {
                         type={showPassword ? 'text' : 'password'}
                         name="password"
                         id="password"
-                        placeholder={t('password_placeholder')}
+                        placeholder={isHydrated ? t('password_placeholder') : 'Enter your password'}
                         value={password}
                         onChange={handlePasswordChange}
                         onBlur={() => {
@@ -709,7 +712,7 @@ export default function LoginPage() {
                         color: 'blue.700',
                       }}
                     >
-                      {t('forgot_password')}
+                      {isHydrated ? t('forgot_password') : 'Forgot Password?'}
                     </Button>
                   </HStack>
 
@@ -746,7 +749,10 @@ export default function LoginPage() {
                     <HStack gap={2}>
                       {loading && <Spinner size="sm" color="white" />}
                       <Text>
-                        {loading ? t('common:loading') : t('sign_in_button')}
+                        {loading
+                          ? (isHydrated ? t('common:loading') : 'Loading...')
+                          : (isHydrated ? t('sign_in_button') : 'Sign In')
+                        }
                       </Text>
                     </HStack>
                   </Button>

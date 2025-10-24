@@ -15,7 +15,8 @@ import {
 } from '@chakra-ui/react';
 import {
   LuX,
-  LuMessageSquare,
+  LuBot,
+  LuCopy,
   LuCalendar,
   LuClock,
   LuActivity,
@@ -34,6 +35,7 @@ interface Message {
   type: 'user' | 'bot' | 'action-buttons';
   content: string;
   timestamp: Date;
+  reaction?: string;
 }
 
 interface QuestionButton {
@@ -73,6 +75,9 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
   //   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showActionButtons, setShowActionButtons] = useState(true);
+  const [followUpSuggestions, setFollowUpSuggestions] = useState<string[]>([]);
+  const [loadingButtonId, setLoadingButtonId] = useState<string | null>(null);
+  const [loadingState, setLoadingState] = useState<'loading' | 'success' | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Parameter modal state
@@ -232,16 +237,26 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
         {
           id: '2',
           type: 'action-buttons',
-          content: 'action-buttons',
+          content: '',
           timestamp: new Date(),
         },
       ]);
     }
   }, [isOpen, messages.length, user]);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom when new messages arrive with smooth animation
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const scrollToBottom = () => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+        inline: 'nearest'
+      });
+    };
+
+    // Small delay to ensure DOM is updated
+    const timeoutId = setTimeout(scrollToBottom, 100);
+    return () => clearTimeout(timeoutId);
   }, [messages]);
 
   // Initialize parameters with default values
@@ -287,6 +302,7 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
       setIsParamModalOpen(true);
     } else {
       // Send query directly without parameters
+      setLoadingButtonId(button.id);
       sendQuery(button.questionId, {});
     }
   };
@@ -313,6 +329,79 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
     setSelectedQuestion(null);
   };
 
+  // Copy message to clipboard
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toaster.create({
+        title: 'Copied!',
+        description: 'Message copied to clipboard',
+        type: 'success',
+        duration: 2000,
+      });
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  // Add reaction to message
+  const addReaction = (messageId: string, reaction: string) => {
+    setMessages(prev =>
+      prev.map(msg =>
+        msg.id === messageId
+          ? { ...msg, reaction: msg.reaction === reaction ? undefined : reaction }
+          : msg
+      )
+    );
+  };
+
+  // Generate follow-up suggestions based on query type
+  const generateFollowUps = (questionId: string): string[] => {
+    const followUps: Record<string, string[]> = {
+      attendance_summary_month: [
+        "Show me overtime for this month",
+        "Compare with last month",
+        "What's my leave balance?"
+      ],
+      overtime_analysis_month: [
+        "Show monthly attendance summary",
+        "Check project hours",
+        "When was my last day off?"
+      ],
+      leave_balance: [
+        "Show attendance summary",
+        "When was my last day off?",
+        "Check overtime hours"
+      ],
+      project_hours_month: [
+        "Show total monthly hours",
+        "Compare with other projects",
+        "Check overtime analysis"
+      ],
+      monthly_comparison: [
+        "Show current month details",
+        "Check leave balance",
+        "Analyze overtime trends"
+      ],
+      attendance_on_date: [
+        "Show weekly summary",
+        "Check nearby dates",
+        "View monthly overview"
+      ],
+      last_day_off: [
+        "Check leave balance",
+        "Show recent attendance",
+        "Plan next time off"
+      ]
+    };
+
+    return followUps[questionId] || [
+      "Show monthly summary",
+      "Check leave balance",
+      "View overtime analysis"
+    ];
+  };
+
   // Send query to chatbot
   const sendQuery = async (
     questionId: string,
@@ -320,6 +409,7 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
   ) => {
     setShowActionButtons(false);
     setIsLoading(true);
+    setLoadingState('loading');
 
     try {
       // Build user query
@@ -357,7 +447,14 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
           content: response.data.response,
           timestamp: new Date(),
         };
-        setMessages((prev) => [...prev, botMessage]);
+        // Show success state briefly before adding message
+        setLoadingState('success');
+
+        setTimeout(() => {
+          setMessages((prev) => [...prev, botMessage]);
+          setFollowUpSuggestions(generateFollowUps(questionId));
+          setLoadingState(null);
+        }, 1000);
       } else {
         throw new Error(response.error || 'Failed to get response');
       }
@@ -365,9 +462,8 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: `❌ Sorry, I encountered an error: ${
-          error instanceof Error ? error.message : 'Please try again.'
-        }`,
+        content: `❌ Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Please try again.'
+          }`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -379,8 +475,11 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
         duration: 4000,
       });
     } finally {
-      setIsLoading(false);
-      setShowActionButtons(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        setLoadingButtonId(null);
+        setShowActionButtons(true);
+      }, 1000);
     }
   };
 
@@ -534,6 +633,23 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
 
   return (
     <>
+      {/* Success Animation Keyframes */}
+      <style jsx>{`
+        @keyframes successBounce {
+          0% {
+            transform: scale(0);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.3);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+      `}</style>
       <Portal>
         {/* Backdrop */}
         <Box
@@ -556,41 +672,87 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
           width={{ base: '95%', md: '600px' }}
           maxHeight="80vh"
           bg="white"
-          borderRadius="lg"
+          borderRadius="xl"
           boxShadow="2xl"
+          border="1px solid"
+          borderColor="blue.100"
           zIndex="1500"
           display="flex"
           flexDirection="column"
+          _before={{
+            content: '""',
+            position: 'absolute',
+            top: '-2px',
+            left: '-2px',
+            right: '-2px',
+            bottom: '-2px',
+            borderRadius: 'xl',
+            background: 'linear-gradient(135deg, rgba(66,153,225,0.3), rgba(66,153,225,0.1), rgba(66,153,225,0.3))',
+            zIndex: -1,
+          }}
         >
           {/* Header */}
           <HStack
             justify="space-between"
-            p={4}
+            p={5}
             borderBottom="1px solid"
-            borderColor="gray.200"
-            bg="blue.500"
+            borderColor="rgba(255,255,255,0.2)"
+            bg="blue.600"
             color="white"
-            borderTopRadius="lg"
+            borderTopRadius="xl"
+            position="relative"
           >
-            <VStack align="start" gap={0}>
-              <HStack gap={2}>
-                <LuMessageSquare size={24} />
-                <Text fontSize="lg" fontWeight="bold">
-                  AI Attendance Assistant
-                </Text>
+            <VStack align="start" gap={1} position="relative" zIndex={1}>
+              <HStack gap={3} align="center">
+                <Box
+                  bg="rgba(255,255,255,0.15)"
+                  borderRadius="full"
+                  p={2}
+                  border="1px solid rgba(255,255,255,0.3)"
+                  boxShadow="0 4px 12px rgba(0,0,0,0.2)"
+                >
+                  <LuBot size={20} />
+                </Box>
+                <VStack align="start" gap={0}>
+                  <Text fontSize="lg" fontWeight="bold" letterSpacing="tight" textShadow="0 1px 2px rgba(0,0,0,0.1)">
+                    AI Attendance Assistant
+                  </Text>
+                  <HStack gap={2} align="center">
+                    <Box
+                      w="8px"
+                      h="8px"
+                      bg="green.400"
+                      borderRadius="full"
+                      boxShadow="0 0 8px rgba(72, 187, 120, 0.6)"
+                    />
+                    <Text fontSize="xs" opacity={0.95} fontWeight="medium" textShadow="0 1px 1px rgba(0,0,0,0.1)">
+                      Online • Ready to help
+                    </Text>
+                  </HStack>
+                </VStack>
               </HStack>
-              <Text fontSize="sm" opacity={0.9}>
-                Ask me about your attendance data
+              <Text fontSize="sm" opacity={0.9} fontStyle="italic" textShadow="0 1px 1px rgba(0,0,0,0.1)">
+                💡 Ask me anything about your attendance data
               </Text>
             </VStack>
             <Button
               onClick={onClose}
               variant="ghost"
               color="white"
-              _hover={{ bg: 'blue.600' }}
+              _hover={{
+                bg: 'rgba(255,255,255,0.2)',
+                transform: 'scale(1.1)',
+              }}
+              _active={{
+                transform: 'scale(0.95)',
+              }}
               size="sm"
+              borderRadius="full"
+              transition="all 0.2s"
+              position="relative"
+              zIndex={1}
             >
-              <LuX size={20} />
+              <LuX size={18} />
             </Button>
           </HStack>
 
@@ -605,57 +767,71 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
             maxHeight="500px"
           >
             {messages.map((message) => {
-              if (message.type === 'action-buttons' && showActionButtons) {
-                return (
-                  <VStack key={message.id} gap={2} align="stretch" my={2}>
-                    <Text fontSize="sm" fontWeight="medium" color="gray.600">
-                      📋 Quick Actions:
-                    </Text>
-                    <Grid
-                      templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                      gap={2}
-                    >
-                      {questionButtons.map((button) => {
-                        const IconComponent = button.icon;
-                        return (
-                          <Button
-                            key={button.id}
-                            size="sm"
-                            variant="outline"
-                            justifyContent="start"
-                            onClick={() => handleActionButtonClick(button)}
-                            _hover={{
-                              bg: 'blue.50',
-                              transform: 'translateY(-2px)',
-                              boxShadow: 'md',
-                            }}
-                            transition="all 0.2s"
-                            borderWidth="1px"
-                            borderColor="gray.200"
-                            height="auto"
-                            py={3}
-                          >
-                            <VStack align="start" gap={0} flex={1}>
-                              <HStack gap={2}>
-                                <IconComponent size={16} />
-                                <Text fontSize="xs" fontWeight="semibold">
-                                  {button.label}
+              if (message.type === 'action-buttons') {
+                if (showActionButtons) {
+                  return (
+                    <VStack key={message.id} gap={2} align="stretch" my={2}>
+                      <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                        📋 Quick Actions:
+                      </Text>
+                      <Grid
+                        templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+                        gap={2}
+                      >
+                        {questionButtons.map((button) => {
+                          const IconComponent = button.icon;
+                          return (
+                            <Button
+                              key={button.id}
+                              size="sm"
+                              variant="outline"
+                              justifyContent="start"
+                              onClick={() => handleActionButtonClick(button)}
+                              isLoading={loadingButtonId === button.id}
+                              loadingText="Processing..."
+                              _hover={{
+                                bg: 'blue.50',
+                                transform: loadingButtonId === button.id ? 'none' : 'translateY(-3px) scale(1.02)',
+                                boxShadow: 'lg',
+                                borderColor: 'blue.300',
+                              }}
+                              transition="all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+                              borderWidth="1px"
+                              borderColor="gray.200"
+                              height="auto"
+                              py={3}
+                              _active={{
+                                transform: loadingButtonId === button.id ? 'none' : 'translateY(-1px) scale(0.98)',
+                              }}
+                              disabled={loadingButtonId !== null}
+                            >
+                              <VStack align="start" gap={0} flex={1}>
+                                <HStack gap={2}>
+                                  <Box color="blue.500">
+                                    <IconComponent size={16} />
+                                  </Box>
+                                  <Text fontSize="xs" fontWeight="semibold">
+                                    {button.label}
+                                  </Text>
+                                </HStack>
+                                <Text
+                                  fontSize="2xs"
+                                  color="gray.600"
+                                  textAlign="left"
+                                >
+                                  {button.description}
                                 </Text>
-                              </HStack>
-                              <Text
-                                fontSize="2xs"
-                                color="gray.600"
-                                textAlign="left"
-                              >
-                                {button.description}
-                              </Text>
-                            </VStack>
-                          </Button>
-                        );
-                      })}
-                    </Grid>
-                  </VStack>
-                );
+                              </VStack>
+                            </Button>
+                          );
+                        })}
+                      </Grid>
+                    </VStack>
+                  );
+                } else {
+                  // Don't render anything when action buttons are hidden
+                  return null;
+                }
               }
 
               return (
@@ -669,22 +845,82 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                   <Card.Root
                     bg={message.type === 'user' ? 'blue.500' : 'white'}
                     color={message.type === 'user' ? 'white' : 'gray.800'}
-                    borderRadius="lg"
-                    boxShadow="sm"
+                    borderRadius="2xl"
+                    boxShadow="md"
+                    border="1px solid"
+                    borderColor={message.type === 'user' ? 'blue.400' : 'gray.100'}
+                    _hover={{
+                      '& .copy-button': {
+                        opacity: message.type === 'bot' ? 1 : 0,
+                      }
+                    }}
                   >
-                    <Card.Body p={3}>
+                    <Card.Body p={3} position="relative" className="message-card">
                       <VStack align="start" gap={1}>
                         {message.type === 'bot' && (
-                          <HStack gap={2}>
-                            <LuMessageSquare size={16} />
-                            <Text fontSize="xs" fontWeight="semibold">
-                              AI Assistant
-                            </Text>
+                          <HStack gap={2} justify="space-between" w="full">
+                            <HStack gap={2}>
+                              <Box
+                                bg="blue.100"
+                                borderRadius="full"
+                                p={1}
+                                color="blue.600"
+                              >
+                                <LuBot size={14} />
+                              </Box>
+                              <Text fontSize="xs" fontWeight="semibold" color="blue.600">
+                                AI Assistant
+                              </Text>
+                            </HStack>
+                            <Button
+                              size="xs"
+                              variant="ghost"
+                              colorScheme="gray"
+                              onClick={() => copyToClipboard(message.content)}
+                              opacity={0}
+                              className="copy-button"
+                              _hover={{ opacity: 1 }}
+                              transition="opacity 0.2s"
+                              minW="auto"
+                              h="auto"
+                              p={1}
+                            >
+                              <LuCopy size={12} />
+                            </Button>
                           </HStack>
                         )}
                         <Text fontSize="sm" whiteSpace="pre-wrap">
                           {message.content}
                         </Text>
+
+                        {/* Reaction Buttons for Bot Messages */}
+                        {message.type === 'bot' && (
+                          <HStack gap={1} mt={2}>
+                            {['👍', '👎', '😊', '📊'].map((emoji) => (
+                              <Button
+                                key={emoji}
+                                size="xs"
+                                variant="ghost"
+                                onClick={() => addReaction(message.id, emoji)}
+                                bg={message.reaction === emoji ? 'blue.50' : 'transparent'}
+                                color={message.reaction === emoji ? 'blue.600' : 'gray.500'}
+                                borderRadius="full"
+                                minW="auto"
+                                h="auto"
+                                p={1}
+                                _hover={{
+                                  bg: 'blue.50',
+                                  color: 'blue.600',
+                                  transform: 'scale(1.2)',
+                                }}
+                                transition="all 0.2s"
+                              >
+                                {emoji}
+                              </Button>
+                            ))}
+                          </HStack>
+                        )}
+
                         <Text fontSize="2xs" opacity={0.7}>
                           {message.timestamp.toLocaleTimeString([], {
                             hour: '2-digit',
@@ -700,19 +936,124 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
 
             {isLoading && (
               <Box alignSelf="flex-start">
-                <Card.Root bg="white">
+                <Card.Root
+                  bg="white"
+                  borderRadius="2xl"
+                  boxShadow="md"
+                  border="1px solid"
+                  borderColor={loadingState === 'success' ? 'green.200' : 'gray.100'}
+                  transition="all 0.3s"
+                >
                   <Card.Body p={3}>
-                    <HStack gap={2}>
-                      <Spinner size="sm" />
-                      <Text fontSize="sm">Thinking...</Text>
+                    <HStack gap={3}>
+                      <Box
+                        bg={loadingState === 'success' ? 'green.100' : 'blue.100'}
+                        borderRadius="full"
+                        p={1}
+                        color={loadingState === 'success' ? 'green.600' : 'blue.600'}
+                        transition="all 0.3s"
+                      >
+                        {loadingState === 'success' ? (
+                          <Text fontSize="sm">✓</Text>
+                        ) : (
+                          <LuBot size={14} />
+                        )}
+                      </Box>
+                      <VStack align="start" gap={1}>
+                        <Text fontSize="xs" fontWeight="semibold" color={loadingState === 'success' ? 'green.600' : 'blue.600'}>
+                          AI Assistant
+                        </Text>
+                        <HStack gap={2} align="center">
+                          <Text fontSize="sm" color={loadingState === 'success' ? 'green.600' : 'gray.600'}>
+                            {loadingState === 'success' ? 'Request completed successfully!' : 'Analyzing your request'}
+                          </Text>
+                          {loadingState === 'loading' && (
+                            <HStack gap={1}>
+                              <Box
+                                w="6px"
+                                h="6px"
+                                bg="blue.400"
+                                borderRadius="full"
+                                animation="pulse 1.4s ease-in-out infinite"
+                              />
+                              <Box
+                                w="6px"
+                                h="6px"
+                                bg="blue.400"
+                                borderRadius="full"
+                                animation="pulse 1.4s ease-in-out 0.2s infinite"
+                              />
+                              <Box
+                                w="6px"
+                                h="6px"
+                                bg="blue.400"
+                                borderRadius="full"
+                                animation="pulse 1.4s ease-in-out 0.4s infinite"
+                              />
+                            </HStack>
+                          )}
+                          {loadingState === 'success' && (
+                            <Box
+                              color="green.500"
+                              animation="successBounce 0.6s ease-out"
+                            >
+                              🎉
+                            </Box>
+                          )}
+                        </HStack>
+                      </VStack>
                     </HStack>
                   </Card.Body>
                 </Card.Root>
               </Box>
             )}
 
+            {/* Follow-up Suggestions */}
+            {followUpSuggestions.length > 0 && !isLoading && (
+              <VStack align="stretch" gap={2} mt={3}>
+                <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                  💡 You might also want to ask:
+                </Text>
+                <HStack gap={2} flexWrap="wrap">
+                  {followUpSuggestions.map((suggestion, index) => (
+                    <Button
+                      key={index}
+                      size="sm"
+                      variant="outline"
+                      colorScheme="blue"
+                      fontSize="xs"
+                      px={3}
+                      py={1}
+                      h="auto"
+                      borderRadius="full"
+                      onClick={() => {
+                        // Find matching question button and trigger it
+                        const matchingButton = questionButtons.find(btn =>
+                          suggestion.toLowerCase().includes(btn.label.toLowerCase().split(' ')[0]) ||
+                          suggestion.toLowerCase().includes(btn.category)
+                        );
+                        if (matchingButton) {
+                          handleActionButtonClick(matchingButton);
+                          setFollowUpSuggestions([]);
+                        }
+                      }}
+                      _hover={{
+                        transform: 'translateY(-1px)',
+                        boxShadow: 'md',
+                      }}
+                      transition="all 0.2s"
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </HStack>
+              </VStack>
+            )}
+
             <div ref={messagesEndRef} />
           </VStack>
+
+
 
           {/* Input Area */}
           <Box

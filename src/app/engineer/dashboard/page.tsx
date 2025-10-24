@@ -19,7 +19,7 @@ import {
   RecentActivity,
 } from '@/shared/service/dashboardService';
 import { getUserCacheKey, CACHE_KEYS } from '@/shared/utils/cache';
-import { LuMessageSquare } from 'react-icons/lu';
+import { LuBot } from 'react-icons/lu';
 import { ChatbotModal } from '@/components/chatbot/ChatbotModal';
 
 // Cache duration: 2 minutes
@@ -167,8 +167,8 @@ export default function EngineerDashboard() {
   const attendanceRate = stats
     ? totalWorkingDays > 0
       ? Math.round(
-          ((stats.presentDays + stats.paidLeaveDays) / totalWorkingDays) * 100
-        )
+        ((stats.presentDays + stats.paidLeaveDays) / totalWorkingDays) * 100
+      )
       : 0
     : 0;
 
@@ -519,22 +519,46 @@ export default function EngineerDashboard() {
         right={{ base: '20px', md: '30px' }}
         zIndex={999}
       >
-        <Button
-          colorScheme="blue"
-          size="lg"
-          borderRadius="full"
-          w="60px"
-          h="60px"
-          boxShadow="2xl"
-          onClick={() => setIsChatbotOpen(true)}
-          _hover={{
-            transform: 'scale(1.1)',
-            boxShadow: '3xl',
-          }}
-          transition="all 0.2s"
-        >
-          <LuMessageSquare size={28} />
-        </Button>
+        <VStack align="end" gap={2}>
+          {/* Tooltip Text */}
+          <Box
+            bg="white"
+            color="gray.700"
+            px={3}
+            py={2}
+            borderRadius="lg"
+            boxShadow="lg"
+            border="1px solid"
+            borderColor="gray.200"
+            fontSize="sm"
+            fontWeight="medium"
+            opacity={0.9}
+            _hover={{ opacity: 1 }}
+            transition="all 0.2s"
+            whiteSpace="nowrap"
+          >
+            💬 Ask our AI assistant
+          </Box>
+
+          {/* Chatbot Button */}
+          <Button
+            colorScheme="blue"
+            size="lg"
+            borderRadius="full"
+            w="60px"
+            h="60px"
+            boxShadow="2xl"
+            onClick={() => setIsChatbotOpen(true)}
+            _hover={{
+              transform: 'scale(1.1)',
+              boxShadow: '3xl',
+            }}
+            transition="all 0.2s"
+            title="Ask our AI assistant"
+          >
+            <LuBot size={28} />
+          </Button>
+        </VStack>
       </Box>
 
       {/* Chatbot Modal */}
