@@ -3,6 +3,8 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Heading,
@@ -17,6 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { AuthContext } from '@/context/AuthContext';
 import { UserRole } from '@/shared/constants/roles';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 // SVG Icon Components
 const EyeIcon = ({ color = 'currentColor' }: { color?: string }) => (
@@ -40,6 +43,7 @@ const CheckIcon = ({ color = '#10B981' }: { color?: string }) => (
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useContext(AuthContext);
+  const { t } = useTranslation('auth');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,15 +60,15 @@ export default function LoginPage() {
 
   // Validation functions
   const validateEmail = (email: string) => {
-    if (!email) return 'Email is required';
+    if (!email) return t('validation.email_required');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return 'Invalid email format';
+    if (!emailRegex.test(email)) return t('validation.email_invalid');
     return '';
   };
 
   const validatePassword = (password: string) => {
-    if (!password) return 'Password is required';
-    if (password.length < 8) return 'Password must be at least 8 characters';
+    if (!password) return t('validation.password_required');
+    if (password.length < 8) return t('validation.password_min_length');
     return '';
   };
 
@@ -149,7 +153,7 @@ export default function LoginPage() {
         router.push('/engineer/dashboard');
       }
     } catch (err: unknown) {
-      let errorMessage = 'Login failed. Please try again.';
+      let errorMessage = t('errors.login_failed');
 
       if (err && typeof err === 'object') {
         if ('response' in err) {
@@ -322,6 +326,10 @@ export default function LoginPage() {
           pointerEvents="none"
         />
 
+        <HStack position="absolute" top={4} right={4} zIndex={10}>
+          <LanguageSwitcher />
+        </HStack>
+
         <Container maxW="md" position="relative" zIndex="1">
           <Card.Root
             className={`login-card ${isCardVisible ? 'visible' : ''}`}
@@ -401,7 +409,7 @@ export default function LoginPage() {
                   opacity={isCardVisible ? 1 : 0}
                   transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s"
                 >
-                  Welcome Back
+                  {t('welcome_back')}
                 </Heading>
                 <Text
                   color="gray.500"
@@ -413,7 +421,7 @@ export default function LoginPage() {
                   opacity={isCardVisible ? 1 : 0}
                   transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s"
                 >
-                  Sign in to your account
+                  {t('sign_in_description')}
                 </Text>
               </VStack>
 
@@ -451,7 +459,7 @@ export default function LoginPage() {
                         pointerEvents="none"
                         transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                       >
-                        Email Address
+                        {t('email_label')}
                       </Text>
 
                       {/* Success Tick */}
@@ -474,6 +482,7 @@ export default function LoginPage() {
                         type="email"
                         name="email"
                         id="email"
+                        placeholder={t('email_placeholder')}
                         value={email}
                         onChange={handleEmailChange}
                         onBlur={() => {
@@ -559,7 +568,7 @@ export default function LoginPage() {
                         pointerEvents="none"
                         transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                       >
-                        Password
+                        {t('password_label')}
                       </Text>
 
                       {/* Success Tick */}
@@ -581,6 +590,7 @@ export default function LoginPage() {
                         type={showPassword ? 'text' : 'password'}
                         name="password"
                         id="password"
+                        placeholder={t('password_placeholder')}
                         value={password}
                         onChange={handlePasswordChange}
                         onBlur={() => {
@@ -699,7 +709,7 @@ export default function LoginPage() {
                         color: 'blue.700',
                       }}
                     >
-                      Forgot Password?
+                      {t('forgot_password')}
                     </Button>
                   </HStack>
 
@@ -735,7 +745,9 @@ export default function LoginPage() {
                   >
                     <HStack gap={2}>
                       {loading && <Spinner size="sm" color="white" />}
-                      <Text>{loading ? 'Signing in...' : 'Sign In'}</Text>
+                      <Text>
+                        {loading ? t('common:loading') : t('sign_in_button')}
+                      </Text>
                     </HStack>
                   </Button>
                 </VStack>
