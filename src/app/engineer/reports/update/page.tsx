@@ -219,6 +219,16 @@ export default function UpdateAttendance() {
   const handleUpdateSubmit = async () => {
     if (!editingRecord) return;
 
+    if (
+      formData.attendanceType === 'PRESENT' &&
+      formData.startTime &&
+      formData.endTime
+    ) {
+      if (!validateTimeRange(formData.startTime, formData.endTime)) {
+        return; // Stop submission if validation fails
+      }
+    }
+
     setSubmitting(true);
     try {
       await attendanceService.updateAttendance(editingRecord.id, formData);
@@ -342,6 +352,26 @@ export default function UpdateAttendance() {
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const validateTimeRange = (startTime: string, endTime: string): boolean => {
+    if (!startTime || !endTime) return true;
+
+    const start = new Date(`2000-01-01T${startTime}`);
+    const end = new Date(`2000-01-01T${endTime}`);
+
+    if (end <= start) {
+      toaster.create({
+        title: 'Invalid Time Range',
+        description:
+          '⏰ End time must be after start time. Please select a valid time range.',
+        type: 'error',
+        duration: 4000,
+      });
+      return false;
+    }
+
+    return true;
   };
 
   return (
@@ -1134,12 +1164,20 @@ export default function UpdateAttendance() {
                           <Input
                             type="time"
                             value={formData.startTime}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const newStartTime = e.target.value;
                               setFormData({
                                 ...formData,
-                                startTime: e.target.value,
-                              })
-                            }
+                                startTime: newStartTime,
+                              });
+                              // Real-time validation when start time changes
+                              if (formData.endTime) {
+                                validateTimeRange(
+                                  newStartTime,
+                                  formData.endTime
+                                );
+                              }
+                            }}
                           />
                         </Box>
                         <Box>
@@ -1149,13 +1187,24 @@ export default function UpdateAttendance() {
                           <Input
                             type="time"
                             value={formData.endTime}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const newEndTime = e.target.value;
                               setFormData({
                                 ...formData,
-                                endTime: e.target.value,
-                              })
-                            }
+                                endTime: newEndTime,
+                              });
+                              // Real-time validation when end time changes
+                              if (formData.startTime) {
+                                validateTimeRange(
+                                  formData.startTime,
+                                  newEndTime
+                                );
+                              }
+                            }}
                           />
+                          <Text fontSize="xs" color="gray.500" mt={1}>
+                            💡 End time must be after start time
+                          </Text>
                         </Box>
                       </Grid>
 
