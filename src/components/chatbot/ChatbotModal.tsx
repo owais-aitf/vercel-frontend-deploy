@@ -24,6 +24,7 @@ import {
   LuCalendarDays,
   LuCalendarCheck,
 } from 'react-icons/lu';
+
 import chatbotService from '@/shared/service/chatbotService';
 import { toaster } from '@/components/ui/toaster';
 import { AuthContext } from '@/context/AuthContext';
@@ -351,9 +352,9 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
       prev.map((msg) =>
         msg.id === messageId
           ? {
-            ...msg,
-            reaction: msg.reaction === reaction ? undefined : reaction,
-          }
+              ...msg,
+              reaction: msg.reaction === reaction ? undefined : reaction,
+            }
           : msg
       )
     );
@@ -468,8 +469,9 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: `❌ Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Please try again.'
-          }`,
+        content: `❌ Sorry, I encountered an error: ${
+          error instanceof Error ? error.message : 'Please try again.'
+        }`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -838,7 +840,9 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                                     <IconComponent size={16} />
                                   </Box>
                                   <Text fontSize="xs" fontWeight="semibold">
-                                    {loadingButtonId === button.id ? 'Processing...' : button.label}
+                                    {loadingButtonId === button.id
+                                      ? 'Processing...'
+                                      : button.label}
                                   </Text>
                                 </HStack>
                                 <Text
@@ -846,7 +850,9 @@ export const ChatbotModal: React.FC<ChatbotModalProps> = ({
                                   color="gray.600"
                                   textAlign="left"
                                 >
-                                  {loadingButtonId === button.id ? 'Please wait...' : button.description}
+                                  {loadingButtonId === button.id
+                                    ? 'Please wait...'
+                                    : button.description}
                                 </Text>
                               </VStack>
                             </Button>
