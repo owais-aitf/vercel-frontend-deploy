@@ -379,7 +379,7 @@ export default function UpdateAttendance() {
       <DashboardLayout
         navigation={engineerNavigation}
         pageTitle="Update Daily Reports"
-        pageSubtitle="Edit or delete your attendance records from current month"
+        pageSubtitle="Edit or delete your attendance records of past 90 Days"
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -396,11 +396,11 @@ export default function UpdateAttendance() {
             <Text fontSize="2xl">ℹ️</Text>
             <VStack align="start" gap={1}>
               <Text fontWeight="bold" color="blue.800">
-                Current Month Only
+                Past 90 Days Only
               </Text>
               <Text fontSize="sm" color="blue.700">
-                You can only update or delete attendance records from the
-                current month ({selectedMonth})
+                You can only update or delete attendance records of past 90 days
+                from current date
               </Text>
             </VStack>
           </HStack>

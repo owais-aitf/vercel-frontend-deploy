@@ -4,6 +4,7 @@ import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
+import { Global, css } from '@emotion/react';
 import '@/lib/i18n';
 import {
   Box,
@@ -199,22 +200,25 @@ export default function LoginPage() {
   return (
     <>
       {/* Global CSS for Autofill Fix */}
-      <style jsx global>{`
-        /* Remove autofill background and text color */
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus,
-        input:-webkit-autofill:active {
-          -webkit-box-shadow: 0 0 0 30px #f7fafc inset !important;
-          -webkit-text-fill-color: #1a202c !important;
-          transition: background-color 5000s ease-in-out 0s;
-        }
+      {/* ✅ FIXED: Use Emotion's Global component */}
+      <Global
+        styles={css`
+          /* Remove autofill background and text color */
+          input:-webkit-autofill,
+          input:-webkit-autofill:hover,
+          input:-webkit-autofill:focus,
+          input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #f7fafc inset !important;
+            -webkit-text-fill-color: #1a202c !important;
+            transition: background-color 5000s ease-in-out 0s;
+          }
 
-        /* Dark autofill */
-        input:-webkit-autofill {
-          -webkit-background-clip: text;
-        }
-      `}</style>
+          /* Dark autofill */
+          input:-webkit-autofill {
+            -webkit-background-clip: text;
+          }
+        `}
+      />
 
       <Box
         minH="100vh"
