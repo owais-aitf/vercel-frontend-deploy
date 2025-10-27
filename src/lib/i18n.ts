@@ -9,17 +9,21 @@ import authEN from '../../public/locales/en/auth.json';
 import authJA from '../../public/locales/ja/auth.json';
 import salesEN from '../../public/locales/en/sales.json';
 import salesJA from '../../public/locales/ja/sales.json';
+import engineerEN from '../../public/locales/en/engineer.json';
+import engineerJA from '../../public/locales/ja/engineer.json';
 
 const resources = {
   en: {
     common: commonEN,
     auth: authEN,
     sales: salesEN,
+    engineer: engineerEN,
   },
   ja: {
     common: commonJA,
     auth: authJA,
     sales: salesJA,
+    engineer: engineerJA,
   },
 };
 
@@ -31,7 +35,7 @@ i18n
     fallbackLng: 'en',
     defaultNS: 'common',
     fallbackNS: 'common',
-    ns: ['common', 'auth', 'sales'],
+    ns: ['common', 'auth', 'sales', 'engineer'],
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],

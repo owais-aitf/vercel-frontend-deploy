@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useContext, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -37,6 +39,7 @@ export default function EngineerDashboard() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const lastFetchTime = useRef<number>(0);
   const isFetching = useRef<boolean>(false);
+  const { t } = useTranslation('engineer');
 
   // Get current month in YYYY-MM format
   const currentMonth = new Date().toISOString().slice(0, 7);
@@ -137,7 +140,7 @@ export default function EngineerDashboard() {
       }
     } catch (err) {
       const error = err as { response?: { data?: { error?: string } } };
-      setError(error.response?.data?.error || 'Failed to load dashboard data');
+      setError(error.response?.data?.error || t('dashboard.error_loading'));
     } finally {
       setLoading(false);
       isFetching.current = false;
@@ -216,8 +219,10 @@ export default function EngineerDashboard() {
   return (
     <DashboardLayout
       navigation={engineerNavigation}
-      pageTitle="Dashboard"
-      pageSubtitle={`Welcome back, ${user?.fullName || 'Engineer'}`}
+      pageTitle={t('dashboard.title')}
+      pageSubtitle={t('dashboard.page_subtitle', {
+        name: user?.fullName || 'Engineer',
+      })}
       userName={user?.fullName || 'Engineer'}
       userInitials={getUserInitials()}
       notificationCount={0}
@@ -237,20 +242,20 @@ export default function EngineerDashboard() {
           <VStack align="start" gap={4}>
             <HStack justify="space-between" w="full">
               <Text fontSize="sm" color="gray.600">
-                Hours This Month
+                {t('dashboard.hours_this_month')}
               </Text>
               <Text fontSize={{ base: '20px', md: '24px' }}>🕐</Text>
             </HStack>
             <VStack align="start" gap={1} w="full" minH="56px">
               <Text fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold">
                 {loading
-                  ? 'Loading...'
-                  : `${actualHours}/${expectedHours} hours`}
+                  ? t('dashboard.loading')
+                  : `${actualHours}/${expectedHours} ${t('dashboard.hours')}`}
               </Text>
               {stats?.settlementRangeMin && stats?.settlementRangeMax && (
                 <Text fontSize="xs" color="gray.500">
-                  Range: {stats.settlementRangeMin}-{stats.settlementRangeMax}{' '}
-                  hours
+                  {t('dashboard.range')} {stats.settlementRangeMin}-
+                  {stats.settlementRangeMax} {t('dashboard.hours')}
                 </Text>
               )}
             </VStack>
@@ -271,7 +276,7 @@ export default function EngineerDashboard() {
           <VStack align="start" gap={4}>
             <HStack justify="space-between" w="full">
               <Text fontSize="sm" color="gray.600">
-                Attendance Rate
+                {t('dashboard.attendance_rate')}
               </Text>
               <Text fontSize={{ base: '20px', md: '24px' }}>📋</Text>
             </HStack>
@@ -280,7 +285,7 @@ export default function EngineerDashboard() {
                 {loading ? 'Loading...' : `${attendanceRate}%`}
               </Text>
               <Text fontSize="xs" color="gray.500">
-                This month
+                {t('dashboard.this_month')}
               </Text>
             </VStack>
             <Box w="full" bg="gray.200" borderRadius="full" h="8px">
@@ -300,15 +305,15 @@ export default function EngineerDashboard() {
           <VStack align="start" gap={4}>
             <HStack justify="space-between" w="full">
               <Text fontSize="sm" color="gray.600">
-                Active Projects
+                {t('dashboard.active_projects')}
               </Text>
               <Text fontSize={{ base: '20px', md: '24px' }}>💼</Text>
             </HStack>
             <Box minH="56px" display="flex" alignItems="start">
               <Text fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold">
                 {loading
-                  ? 'Loading...'
-                  : `${activeProjectsCount} Project${activeProjectsCount !== 1 ? 's' : ''}`}
+                  ? t('dashboard.loading')
+                  : `${activeProjectsCount} ${activeProjectsCount !== 1 ? t('dashboard.projects') : t('dashboard.project')}`}
               </Text>
             </Box>
             <Box w="full" bg="gray.200" borderRadius="full" h="8px">
@@ -336,15 +341,15 @@ export default function EngineerDashboard() {
         <Card.Root p={{ base: 4, md: 6 }}>
           <VStack align="start" gap={4}>
             <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
-              Recent Activities
+              {t('dashboard.recent_activities')}
             </Text>
             <Text fontSize="sm" color="gray.500">
-              Your latest attendance entries
+              {t('dashboard.latest_entries')}
             </Text>
 
             {loading ? (
               <Text fontSize="sm" color="gray.500">
-                Loading activities...
+                {t('dashboard.loading_activities')}
               </Text>
             ) : error ? (
               <Text fontSize="sm" color="red.500">
@@ -352,7 +357,7 @@ export default function EngineerDashboard() {
               </Text>
             ) : recentActivities.length === 0 ? (
               <Text fontSize="sm" color="gray.500">
-                No recent activities found
+                {t('dashboard.no_activities')}
               </Text>
             ) : (
               <VStack gap={3} w="full" mt={2}>
@@ -465,26 +470,26 @@ export default function EngineerDashboard() {
         <Card.Root p={{ base: 4, md: 6 }}>
           <VStack align="start" gap={4}>
             <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
-              Upcoming Tasks
+              {t('dashboard.upcoming_tasks')}
             </Text>
             <Text fontSize="sm" color="gray.500">
-              Important deadlines
+              {t('dashboard.important_deadlines')}
             </Text>
 
             <VStack gap={3} w="full" mt={2}>
               {[
                 {
-                  task: 'Submit weekly attendance report',
+                  task: t('dashboard.tasks.submit_report'),
                   due: 'Oct 11',
                   color: 'red',
                 },
                 {
-                  task: 'Complete project status update',
+                  task: t('dashboard.tasks.status_update'),
                   due: 'Oct 12',
                   color: 'blue',
                 },
                 {
-                  task: 'Review code changes',
+                  task: t('dashboard.tasks.review_code'),
                   due: 'Oct 31',
                   color: 'purple',
                 },
@@ -502,7 +507,7 @@ export default function EngineerDashboard() {
                       {task.task}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
-                      Due: {task.due}
+                      {t('dashboard.tasks.due')}: {task.due}
                     </Text>
                   </VStack>
                 </HStack>
@@ -537,7 +542,7 @@ export default function EngineerDashboard() {
             transition="all 0.2s"
             whiteSpace="nowrap"
           >
-            💬 Ask our AI assistant
+            💬 {t('dashboard.ask_ai')}
           </Box>
 
           {/* Chatbot Button */}
@@ -554,7 +559,7 @@ export default function EngineerDashboard() {
               boxShadow: '3xl',
             }}
             transition="all 0.2s"
-            title="Ask our AI assistant"
+            title={t('dashboard.ask_ai')}
           >
             <LuBot size={28} />
           </Button>

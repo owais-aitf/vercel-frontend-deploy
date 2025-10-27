@@ -1,0 +1,30 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "page_subtitle": "Welcome back, {{name}}",
+    "hours_this_month": "Hours This Month",
+    "hours": "hours",
+    "range": "Range",
+    "attendance_rate": "Attendance Rate",
+    "this_month": "This month",
+    "active_projects": "Active Projects",
+    "project": "Project",
+    "projects": "Projects",
+    "recent_activities": "Recent Activities",
+    "latest_entries": "Your latest attendance entries",
+    "upcoming_tasks": "Upcoming Tasks",
+    "important_deadlines": "Important deadlines",
+    "loading": "Loading...",
+    "loading_activities": "Loading activities...",
+    "no_activities": "No recent activities found",
+    "ask_ai": "Ask our AI assistant",
+    "error_loading": "Failed to load dashboard data",
+    "tasks": {
+      "submit_report": "Submit weekly attendance report",
+      "status_update": "Complete project status update",
+      "review_code": "Review code changes",
+      "due": "Due"
+    }
+  }
+}
