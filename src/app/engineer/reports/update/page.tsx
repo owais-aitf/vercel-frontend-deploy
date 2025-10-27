@@ -22,6 +22,9 @@ import {
 import { toaster } from '@/components/ui/toaster';
 import { AuthContext } from '@/context/AuthContext';
 
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
+
 interface FormData {
   workDate: string;
   projectAssignmentId: string;
@@ -54,6 +57,7 @@ export default function UpdateAttendance() {
       };
     }>
   >([]);
+  const { t } = useTranslation('engineer');
 
   // Filter states
   const [projectFilter, setProjectFilter] = useState('');
@@ -180,7 +184,9 @@ export default function UpdateAttendance() {
       const err = error as { response?: { data?: { message?: string } } };
       toaster.create({
         title: 'Error',
-        description: err.response?.data?.message || 'Failed to load records',
+        description:
+          err.response?.data?.message ||
+          t('attendanceHistory.messages.load_failed'),
         type: 'error',
       });
     } finally {
@@ -233,8 +239,8 @@ export default function UpdateAttendance() {
     try {
       await attendanceService.updateAttendance(editingRecord.id, formData);
       toaster.create({
-        title: 'Success',
-        description: 'Attendance record updated successfully',
+        title: t('attendanceHistory.messages.success_title'),
+        description: t('attendanceHistory.messages.update_success'),
         type: 'success',
       });
       setIsEditModalOpen(false);
@@ -242,8 +248,10 @@ export default function UpdateAttendance() {
     } catch (error) {
       const err = error as { response?: { data?: { message?: string } } };
       toaster.create({
-        title: 'Error',
-        description: err.response?.data?.message || 'Failed to update record',
+        title: t('attendanceHistory.messages.error_title'),
+        description:
+          err.response?.data?.message ||
+          t('attendanceHistory.messages.update_failed'),
         type: 'error',
       });
     } finally {
@@ -264,8 +272,8 @@ export default function UpdateAttendance() {
     try {
       await attendanceService.deleteAttendance(deleteRecordId);
       toaster.create({
-        title: 'Success',
-        description: 'Attendance record deleted successfully',
+        title: t('attendanceHistory.messages.success_title'),
+        description: t('attendanceHistory.messages.delete_success'),
         type: 'success',
       });
       setIsDeleteDialogOpen(false);
@@ -273,8 +281,10 @@ export default function UpdateAttendance() {
     } catch (error) {
       const err = error as { response?: { data?: { message?: string } } };
       toaster.create({
-        title: 'Error',
-        description: err.response?.data?.message || 'Failed to delete record',
+        title: t('attendanceHistory.messages.error_title'),
+        description:
+          err.response?.data?.message ||
+          t('attendanceHistory.messages.delete_failed'),
         type: 'error',
       });
     } finally {
@@ -362,9 +372,8 @@ export default function UpdateAttendance() {
 
     if (end <= start) {
       toaster.create({
-        title: 'Invalid Time Range',
-        description:
-          '⏰ End time must be after start time. Please select a valid time range.',
+        title: t('attendanceHistory.messages.invalid_time_title'),
+        description: t('attendanceHistory.messages.invalid_time_desc'),
         type: 'error',
         duration: 4000,
       });
@@ -378,8 +387,8 @@ export default function UpdateAttendance() {
     <FeatureErrorBoundary featureName="Update Reports">
       <DashboardLayout
         navigation={engineerNavigation}
-        pageTitle="Update Daily Reports"
-        pageSubtitle="Edit or delete your attendance records of past 90 Days"
+        pageTitle={t('attendanceHistory.page_title')}
+        pageSubtitle={t('attendanceHistory.page_subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -396,11 +405,10 @@ export default function UpdateAttendance() {
             <Text fontSize="2xl">ℹ️</Text>
             <VStack align="start" gap={1}>
               <Text fontWeight="bold" color="blue.800">
-                Past 90 Days Only
+                {t('attendanceHistory.info_card.title')}
               </Text>
               <Text fontSize="sm" color="blue.700">
-                You can only update or delete attendance records of past 90 days
-                from current date
+                {t('attendanceHistory.info_card.description')}
               </Text>
             </VStack>
           </HStack>
@@ -410,7 +418,7 @@ export default function UpdateAttendance() {
         <Card.Root p={{ base: 4, md: 6 }} mb={{ base: 4, md: 6 }}>
           <VStack align="stretch" gap={4}>
             <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
-              🔍 Filters
+              🔍 {t('attendanceHistory.filters.title')}
             </Text>
 
             <Grid
@@ -424,7 +432,7 @@ export default function UpdateAttendance() {
               {/* Project Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Project
+                  {t('attendanceHistory.filters.project')}
                 </Text>
                 <Box position="relative">
                   <select
@@ -454,7 +462,9 @@ export default function UpdateAttendance() {
                       e.target.style.boxShadow = 'none';
                     }}
                   >
-                    <option value="">📁 All Projects</option>
+                    <option value="">
+                      📁 {t('attendanceHistory.filters.all_projects')}
+                    </option>
                     {userProjects.map((project) => (
                       <option key={project.id} value={project.name}>
                         {project.name}
@@ -489,7 +499,7 @@ export default function UpdateAttendance() {
               {/* Type Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Attendance Type
+                  {t('attendanceHistory.filters.type')}
                 </Text>
                 <Box position="relative">
                   <select
@@ -519,11 +529,21 @@ export default function UpdateAttendance() {
                       e.target.style.boxShadow = 'none';
                     }}
                   >
-                    <option value="">🔍 All Types</option>
-                    <option value="PRESENT">✅ Present</option>
-                    <option value="PAID_LEAVE">🏖️ Paid Leave</option>
-                    <option value="ABSENT">❌ Absent</option>
-                    <option value="LEGAL_HOLIDAY">🎉 Legal Holiday</option>
+                    <option value="">
+                      🔍 {t('attendanceHistory.filters.all_types')}
+                    </option>
+                    <option value="PRESENT">
+                      ✅ {t('attendanceHistory.filters.present')}
+                    </option>
+                    <option value="PAID_LEAVE">
+                      🏖️ {t('attendanceHistory.filters.paid_leave')}
+                    </option>
+                    <option value="ABSENT">
+                      ❌ {t('attendanceHistory.filters.absent')}
+                    </option>
+                    <option value="LEGAL_HOLIDAY">
+                      🎉 {t('attendanceHistory.filters.legal_holiday')}
+                    </option>
                   </select>
 
                   <Box
@@ -553,13 +573,13 @@ export default function UpdateAttendance() {
               {/* Date Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Specific Date
+                  {t('attendanceHistory.filters.specific_date')}
                 </Text>
                 <Input
                   type="date"
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  placeholder="Filter by date"
+                  placeholder={t('attendanceHistory.filters.date_placeholder')}
                   bg="white"
                 />
               </Box>
@@ -572,7 +592,7 @@ export default function UpdateAttendance() {
                   variant="outline"
                   w="full"
                 >
-                  🔄 Reset Filters
+                  🔄 {t('attendanceHistory.filters.reset')}
                 </Button>
               </Box>
             </Grid>
@@ -580,8 +600,11 @@ export default function UpdateAttendance() {
             {/* Results Count */}
             <HStack justify="space-between" pt={2}>
               <Text fontSize="sm" color="gray.600">
-                Showing <strong>{filteredRecords.length}</strong> of{' '}
-                <strong>{records.length}</strong> total records
+                {t('attendanceHistory.filters.showing')}{' '}
+                <strong>{filteredRecords.length}</strong>{' '}
+                {t('attendanceHistory.filters.of')}{' '}
+                <strong>{records.length}</strong>{' '}
+                {t('attendanceHistory.filters.total_records')}
               </Text>
               <Button
                 onClick={fetchAttendanceRecords}
@@ -589,7 +612,7 @@ export default function UpdateAttendance() {
                 variant="ghost"
                 colorScheme="blue"
               >
-                🔄 Refresh
+                🔄 {t('attendanceHistory.filters.refresh')}
               </Button>
             </HStack>
           </VStack>
@@ -600,7 +623,9 @@ export default function UpdateAttendance() {
           <Card.Root p={8}>
             <VStack gap={4}>
               <Text fontSize="2xl">⏳</Text>
-              <Text color="gray.600">Loading attendance records...</Text>
+              <Text color="gray.600">
+                {t('attendanceHistory.states.loading')}
+              </Text>
             </VStack>
           </Card.Root>
         )}
@@ -611,16 +636,16 @@ export default function UpdateAttendance() {
             <VStack gap={4}>
               <Text fontSize="4xl">📭</Text>
               <Text fontSize="lg" fontWeight="bold">
-                No Attendance Records Found
+                {t('attendanceHistory.states.no_records_title')}
               </Text>
               <Text color="gray.600" textAlign="center">
                 {records.length === 0
-                  ? 'No attendance records found for this month. Start by submitting your daily attendance.'
-                  : 'No records match your filters. Try adjusting them.'}
+                  ? t('attendanceHistory.states.no_records_empty')
+                  : t('attendanceHistory.states.no_records_filtered')}
               </Text>
               {records.length > 0 && (
                 <Button onClick={resetFilters} colorScheme="blue" size="sm">
-                  Clear Filters
+                  {t('attendanceHistory.states.clear_filters')}
                 </Button>
               )}
             </VStack>
@@ -648,7 +673,7 @@ export default function UpdateAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Date
+                      {t('attendanceHistory.table.date')}
                     </Box>
                     <Box
                       as="th"
@@ -657,7 +682,7 @@ export default function UpdateAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Project
+                      {t('attendanceHistory.table.project')}
                     </Box>
                     <Box
                       as="th"
@@ -666,7 +691,7 @@ export default function UpdateAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Type
+                      {t('attendanceHistory.table.type')}
                     </Box>
                     <Box
                       as="th"
@@ -675,7 +700,7 @@ export default function UpdateAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Time
+                      {t('attendanceHistory.table.time')}
                     </Box>
                     <Box
                       as="th"
@@ -684,7 +709,7 @@ export default function UpdateAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Location
+                      {t('attendanceHistory.table.location')}
                     </Box>
                     <Box
                       as="th"
@@ -693,7 +718,7 @@ export default function UpdateAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Description
+                      {t('attendanceHistory.table.description')}
                     </Box>
                     <Box
                       as="th"
@@ -702,7 +727,7 @@ export default function UpdateAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Actions
+                      {t('attendanceHistory.table.actions')}
                     </Box>
                   </Box>
                 </Box>
@@ -767,7 +792,7 @@ export default function UpdateAttendance() {
                             variant="ghost"
                             onClick={() => handleEditClick(record)}
                           >
-                            ✏️ Edit
+                            ✏️ {t('attendanceHistory.table.edit')}
                           </Button>
                           <Button
                             size="sm"
@@ -777,7 +802,7 @@ export default function UpdateAttendance() {
                               handleDeleteClick(record.id, record.workDate)
                             }
                           >
-                            🗑️ Delete
+                            🗑️ {t('attendanceHistory.table.delete')}
                           </Button>
                         </HStack>
                       </Box>
@@ -863,7 +888,7 @@ export default function UpdateAttendance() {
                         flex={1}
                         onClick={() => handleEditClick(record)}
                       >
-                        ✏️ Edit
+                        ✏️ {t('attendanceHistory.table.delete')}
                       </Button>
                       <Button
                         size="sm"
@@ -874,7 +899,7 @@ export default function UpdateAttendance() {
                           handleDeleteClick(record.id, record.workDate)
                         }
                       >
-                        🗑️ Delete
+                        🗑️ {t('attendanceHistory.table.delete')}
                       </Button>
                     </HStack>
                   </VStack>
@@ -903,7 +928,7 @@ export default function UpdateAttendance() {
                     disabled={currentPage === 1}
                     variant="outline"
                   >
-                    ← Previous
+                    ← {t('attendanceHistory.pagination.previous')}
                   </Button>
 
                   {/* Desktop Page Numbers */}
@@ -989,7 +1014,8 @@ export default function UpdateAttendance() {
                     fontWeight="medium"
                     display={{ base: 'block', md: 'none' }}
                   >
-                    Page {currentPage} of {totalPages}
+                    {t('attendanceHistory.pagination.page')} {currentPage}{' '}
+                    {t('attendanceHistory.pagination.of')} {totalPages}
                   </Text>
 
                   <Button
@@ -998,7 +1024,7 @@ export default function UpdateAttendance() {
                     disabled={currentPage === totalPages}
                     variant="outline"
                   >
-                    Next →
+                    {t('attendanceHistory.pagination.next')} →
                   </Button>
                 </HStack>
               </HStack>
@@ -1034,7 +1060,7 @@ export default function UpdateAttendance() {
               <VStack align="stretch" gap={4}>
                 <HStack justify="space-between">
                   <Text fontSize="xl" fontWeight="bold">
-                    Edit Attendance Record
+                    {t('attendanceHistory.edit_modal.title')}
                   </Text>
                   <Box
                     as="button"
@@ -1052,7 +1078,7 @@ export default function UpdateAttendance() {
                   {/* Date */}
                   <Box>
                     <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      📅 Date
+                      📅 {t('attendanceHistory.edit_modal.date_label')}
                     </Text>
                     <Input
                       type="date"
@@ -1064,14 +1090,14 @@ export default function UpdateAttendance() {
                       min={ninetyDaysAgo}
                     />
                     <Text fontSize="xs" color="gray.500" mt={1}>
-                      You can update attendance for the past 90 days
+                      {t('attendanceHistory.edit_modal.date_help')}
                     </Text>
                   </Box>
 
                   {/* Project */}
                   <Box>
                     <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      📁 Project
+                      📁 {t('attendanceHistory.edit_modal.project_label')}
                     </Text>
                     <select
                       value={formData.projectAssignmentId}
@@ -1089,7 +1115,9 @@ export default function UpdateAttendance() {
                         fontSize: '14px',
                       }}
                     >
-                      <option value="">Select Project</option>
+                      <option value="">
+                        {t('attendanceHistory.edit_modal.project_placeholder')}
+                      </option>
                       {projects.map((proj) => (
                         <option key={proj.id} value={proj.id}>
                           {proj.project.projectName} -{' '}
@@ -1102,7 +1130,7 @@ export default function UpdateAttendance() {
                   {/* Attendance Type */}
                   <Box>
                     <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      ✅ Attendance Type
+                      ✅ {t('attendanceHistory.edit_modal.type_label')}
                     </Text>
                     <select
                       value={formData.attendanceType}
@@ -1120,10 +1148,18 @@ export default function UpdateAttendance() {
                         fontSize: '14px',
                       }}
                     >
-                      <option value="PRESENT">Present</option>
-                      <option value="PAID_LEAVE">Paid Leave</option>
-                      <option value="ABSENT">Absent</option>
-                      <option value="LEGAL_HOLIDAY">Legal Holiday</option>
+                      <option value="PRESENT">
+                        {t('attendanceHistory.filters.present')}
+                      </option>
+                      <option value="PAID_LEAVE">
+                        {t('attendanceHistory.filters.paid_leave')}
+                      </option>
+                      <option value="ABSENT">
+                        {t('attendanceHistory.filters.absent')}
+                      </option>
+                      <option value="LEGAL_HOLIDAY">
+                        {t('attendanceHistory.filters.legal_holiday')}
+                      </option>
                     </select>
                   </Box>
 
@@ -1132,7 +1168,7 @@ export default function UpdateAttendance() {
                     <>
                       <Box>
                         <Text fontSize="sm" fontWeight="medium" mb={2}>
-                          📍 Work Location
+                          📍 {t('attendanceHistory.edit_modal.location_label')}
                         </Text>
                         <select
                           value={formData.workLocation}
@@ -1150,16 +1186,22 @@ export default function UpdateAttendance() {
                             fontSize: '14px',
                           }}
                         >
-                          <option value="CLIENT_SITE">Client Site</option>
-                          <option value="HOME">Home</option>
-                          <option value="OFFICE">Office</option>
+                          <option value="CLIENT_SITE">
+                            {t('attendanceHistory.edit_modal.client_site')}e
+                          </option>
+                          <option value="HOME">
+                            {t('attendanceHistory.edit_modal.home')}
+                          </option>
+                          <option value="OFFICE">
+                            {t('attendanceHistory.edit_modal.office')}
+                          </option>
                         </select>
                       </Box>
 
                       <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                         <Box>
                           <Text fontSize="sm" fontWeight="medium" mb={2}>
-                            🕐 Start Time
+                            🕐 {t('attendanceHistory.edit_modal.start_time')}
                           </Text>
                           <Input
                             type="time"
@@ -1182,7 +1224,7 @@ export default function UpdateAttendance() {
                         </Box>
                         <Box>
                           <Text fontSize="sm" fontWeight="medium" mb={2}>
-                            🕐 End Time
+                            🕐 {t('attendanceHistory.edit_modal.end_time')}
                           </Text>
                           <Input
                             type="time"
@@ -1203,14 +1245,14 @@ export default function UpdateAttendance() {
                             }}
                           />
                           <Text fontSize="xs" color="gray.500" mt={1}>
-                            💡 End time must be after start time
+                            💡 {t('attendanceHistory.edit_modal.end_time_help')}
                           </Text>
                         </Box>
                       </Grid>
 
                       <Box>
                         <Text fontSize="sm" fontWeight="medium" mb={2}>
-                          ☕ Break Hours
+                          ☕ {t('attendanceHistory.edit_modal.break_hours')}
                         </Text>
                         <Input
                           type="number"
@@ -1228,8 +1270,10 @@ export default function UpdateAttendance() {
 
                       <Box bg="blue.50" p={3} borderRadius="md">
                         <Text fontSize="sm" fontWeight="bold" color="blue.800">
-                          💼 Calculated Work Hours:{' '}
-                          {calculateWorkHours().toFixed(1)} hours
+                          💼{' '}
+                          {t('attendanceHistory.edit_modal.calculated_hours')}:{' '}
+                          {calculateWorkHours().toFixed(1)}{' '}
+                          {t('attendanceHistory.edit_modal.hours_unit')}
                         </Text>
                       </Box>
                     </>
@@ -1238,7 +1282,7 @@ export default function UpdateAttendance() {
                   {/* Work Description */}
                   <Box>
                     <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      📝 Work Description
+                      📝 {t('attendanceHistory.edit_modal.description_label')}
                     </Text>
                     <Textarea
                       value={formData.workDescription}
@@ -1248,7 +1292,9 @@ export default function UpdateAttendance() {
                           workDescription: e.target.value,
                         })
                       }
-                      placeholder="Describe your work..."
+                      placeholder={t(
+                        'attendanceHistory.edit_modal.description_placeholder'
+                      )}
                       rows={3}
                     />
                   </Box>
@@ -1259,14 +1305,16 @@ export default function UpdateAttendance() {
                     variant="outline"
                     onClick={() => setIsEditModalOpen(false)}
                   >
-                    Cancel
+                    {t('attendanceHistory.edit_modal.cancel')}
                   </Button>
                   <Button
                     colorScheme="blue"
                     onClick={handleUpdateSubmit}
                     disabled={submitting}
                   >
-                    {submitting ? 'Updating...' : '💾 Update'}
+                    {submitting
+                      ? t('attendanceHistory.edit_modal.updating')
+                      : `💾 ${t('attendanceHistory.edit_modal.update')}`}
                   </Button>
                 </HStack>
               </VStack>
@@ -1300,7 +1348,7 @@ export default function UpdateAttendance() {
               <VStack align="stretch" gap={4}>
                 <HStack justify="space-between">
                   <Text fontSize="xl" fontWeight="bold">
-                    ⚠️ Confirm Delete
+                    ⚠️ {t('attendanceHistory.delete_dialog.title')}
                   </Text>
                   <Box
                     as="button"
@@ -1316,11 +1364,11 @@ export default function UpdateAttendance() {
 
                 <Box>
                   <Text color="gray.700">
-                    Are you sure you want to delete the attendance record for{' '}
+                    {t('attendanceHistory.delete_dialog.message')}{' '}
                     <strong>{formatDate(deleteRecordDate)}</strong>?
                   </Text>
                   <Text fontSize="sm" color="red.600" mt={2}>
-                    This action cannot be undone.
+                    {t('attendanceHistory.delete_dialog.warning')}
                   </Text>
                 </Box>
 
@@ -1329,14 +1377,16 @@ export default function UpdateAttendance() {
                     variant="outline"
                     onClick={() => setIsDeleteDialogOpen(false)}
                   >
-                    Cancel
+                    {t('attendanceHistory.delete_dialog.cancel')}
                   </Button>
                   <Button
                     colorScheme="red"
                     onClick={handleDeleteConfirm}
                     disabled={deleting}
                   >
-                    {deleting ? 'Deleting...' : '🗑️ Delete'}
+                    {deleting
+                      ? t('attendanceHistory.delete_dialog.deleting')
+                      : `🗑️ ${t('attendanceHistory.delete_dialog.delete')}`}
                   </Button>
                 </HStack>
               </VStack>

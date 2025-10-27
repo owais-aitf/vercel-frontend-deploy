@@ -143,5 +143,101 @@
       "fetch_failed": "Failed to fetch projects",
       "unknown_error": "An unknown error occurred"
     }
+  },
+
+  "attendanceHistory": {
+    "page_title": "Update Daily Reports",
+    "page_subtitle": "Edit or delete your attendance records of past 90 Days",
+    "info_card": {
+      "title": "Past 90 Days Only",
+      "description": "You can only update or delete attendance records of past 90 days from current date"
+    },
+    "filters": {
+      "title": "Filters",
+      "project": "Project",
+      "all_projects": "All Projects",
+      "type": "Attendance Type",
+      "all_types": "All Types",
+      "present": "Present",
+      "paid_leave": "Paid Leave",
+      "absent": "Absent",
+      "legal_holiday": "Legal Holiday",
+      "specific_date": "Specific Date",
+      "date_placeholder": "Filter by date",
+      "reset": "Reset Filters",
+      "showing": "Showing",
+      "of": "of",
+      "total_records": "total records",
+      "refresh": "Refresh"
+    },
+    "table": {
+      "date": "Date",
+      "project": "Project",
+      "type": "Type",
+      "time": "Time",
+      "location": "Location",
+      "description": "Description",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "states": {
+      "loading": "Loading attendance records...",
+      "no_records_title": "No Attendance Records Found",
+      "no_records_empty": "No attendance records found for this month. Start by submitting your daily attendance.",
+      "no_records_filtered": "No records match your filters. Try adjusting them.",
+      "clear_filters": "Clear Filters"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "records": "records",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
+    },
+    "edit_modal": {
+      "title": "Edit Attendance Record",
+      "date_label": "Date",
+      "date_help": "You can update attendance for the past 90 days",
+      "project_label": "Project",
+      "project_placeholder": "Select Project",
+      "type_label": "Attendance Type",
+      "location_label": "Work Location",
+      "client_site": "Client Site",
+      "home": "Home",
+      "office": "Office",
+      "start_time": "Start Time",
+      "end_time": "End Time",
+      "end_time_help": "End time must be after start time",
+      "break_hours": "Break Hours",
+      "calculated_hours": "Calculated Work Hours",
+      "hours_unit": "hours",
+      "description_label": "Work Description",
+      "description_placeholder": "Describe your work...",
+      "cancel": "Cancel",
+      "update": "Update",
+      "updating": "Updating..."
+    },
+    "delete_dialog": {
+      "title": "Confirm Delete",
+      "message": "Are you sure you want to delete the attendance record for",
+      "warning": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    },
+    "messages": {
+      "error_title": "Error",
+      "success_title": "Success",
+      "load_failed": "Failed to load records",
+      "update_success": "Attendance record updated successfully",
+      "update_failed": "Failed to update record",
+      "delete_success": "Attendance record deleted successfully",
+      "delete_failed": "Failed to delete record",
+      "invalid_time_title": "Invalid Time Range",
+      "invalid_time_desc": "End time must be after start time. Please select a valid time range."
+    }
   }
 }

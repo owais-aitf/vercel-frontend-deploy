@@ -143,5 +143,101 @@
       "fetch_failed": "プロジェクトの取得に失敗しました",
       "unknown_error": "不明なエラーが発生しました"
     }
+  },
+
+  "attendanceHistory": {
+    "page_title": "日報を更新",
+    "page_subtitle": "過去90日間の出勤記録を編集または削除",
+    "info_card": {
+      "title": "過去90日間のみ",
+      "description": "現在の日付から過去90日間の出勤記録のみを更新または削除できます"
+    },
+    "filters": {
+      "title": "フィルター",
+      "project": "プロジェクト",
+      "all_projects": "すべてのプロジェクト",
+      "type": "出勤タイプ",
+      "all_types": "すべてのタイプ",
+      "present": "出勤",
+      "paid_leave": "有給休暇",
+      "absent": "欠勤",
+      "legal_holiday": "法定休日",
+      "specific_date": "特定の日付",
+      "date_placeholder": "日付で絞り込む",
+      "reset": "フィルターをリセット",
+      "showing": "表示中",
+      "of": "/",
+      "total_records": "合計記録",
+      "refresh": "更新"
+    },
+    "table": {
+      "date": "日付",
+      "project": "プロジェクト",
+      "type": "タイプ",
+      "time": "時間",
+      "location": "場所",
+      "description": "説明",
+      "actions": "操作",
+      "edit": "編集",
+      "delete": "削除"
+    },
+    "states": {
+      "loading": "出勤記録を読み込み中...",
+      "no_records_title": "出勤記録が見つかりません",
+      "no_records_empty": "今月の出勤記録が見つかりません。日々の出勤を提出してください。",
+      "no_records_filtered": "フィルターに一致する記録がありません。調整してください。",
+      "clear_filters": "フィルターをクリア"
+    },
+    "pagination": {
+      "showing": "表示中",
+      "to": "〜",
+      "of": "/",
+      "records": "記録",
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "ページ"
+    },
+    "edit_modal": {
+      "title": "出勤記録を編集",
+      "date_label": "日付",
+      "date_help": "過去90日間の出勤を更新できます",
+      "project_label": "プロジェクト",
+      "project_placeholder": "プロジェクトを選択",
+      "type_label": "出勤タイプ",
+      "location_label": "勤務場所",
+      "client_site": "クライアント先",
+      "home": "在宅",
+      "office": "オフィス",
+      "start_time": "開始時刻",
+      "end_time": "終了時刻",
+      "end_time_help": "終了時刻は開始時刻より後である必要があります",
+      "break_hours": "休憩時間",
+      "calculated_hours": "計算済み勤務時間",
+      "hours_unit": "時間",
+      "description_label": "作業内容",
+      "description_placeholder": "作業内容を記述...",
+      "cancel": "キャンセル",
+      "update": "更新",
+      "updating": "更新中..."
+    },
+    "delete_dialog": {
+      "title": "削除の確認",
+      "message": "本当にこの出勤記録を削除しますか",
+      "warning": "この操作は元に戻せません。",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "deleting": "削除中..."
+    },
+    "messages": {
+      "error_title": "エラー",
+      "success_title": "成功",
+      "load_failed": "記録の読み込みに失敗しました",
+      "update_success": "出勤記録が正常に更新されました",
+      "update_failed": "記録の更新に失敗しました",
+      "delete_success": "出勤記録が正常に削除されました",
+      "delete_failed": "記録の削除に失敗しました",
+      "invalid_time_title": "無効な時間範囲",
+      "invalid_time_desc": "終了時刻は開始時刻より後である必要があります。有効な時間範囲を選択してください。"
+    }
   }
 }
