@@ -65,5 +65,83 @@
     "error_location_required": "Work location is required for Present attendance",
     "error_failed": "Failed to submit attendance",
     "error_load_projects": "Failed to load projects"
+  },
+
+  "projects": {
+    "page_title": "My Assigned Projects",
+    "page_subtitle": "View all your project assignments",
+    "stats": {
+      "total_projects": "Total Projects",
+      "active_projects": "Active Projects",
+      "completed_projects": "Completed Projects"
+    },
+    "filters": {
+      "title": "Filters",
+      "project_status": "Project Status",
+      "all_projects": "All Projects",
+      "active": "Active Projects",
+      "inactive": "Completed Projects",
+      "search": "Search",
+      "search_placeholder": "Search by project or client...",
+      "reset": "Reset Filters",
+      "showing": "Showing",
+      "total": "total projects",
+      "refresh": "Refresh"
+    },
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "ongoing": "Ongoing"
+    },
+    "labels": {
+      "client": "Client",
+      "role": "Role",
+      "duration": "Duration",
+      "start": "Start",
+      "end": "End",
+      "view_details": "View Details"
+    },
+    "duration": {
+      "month": "month",
+      "months": "months",
+      "day": "day",
+      "days": "days",
+      "ongoing": "(ongoing)"
+    },
+    "states": {
+      "loading": "Loading projects...",
+      "error": "Error",
+      "no_projects_title": "No Projects Found",
+      "no_projects_assigned": "You haven't been assigned to any projects yet.",
+      "no_projects_filtered": "No projects match your filters. Try adjusting them.",
+      "clear_filters": "Clear Filters"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "projects": "projects",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
+    },
+    "modal": {
+      "title": "Project Details",
+      "close": "Close",
+      "project_name": "Project Name",
+      "status": "Status",
+      "client_info": "Client Information",
+      "your_role": "Your Role",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "project_duration": "Project Duration",
+      "description": "Description",
+      "no_description": "No description available",
+      "assigned_on": "Assigned On"
+    },
+    "errors": {
+      "fetch_failed": "Failed to fetch projects",
+      "unknown_error": "An unknown error occurred"
+    }
   }
 }

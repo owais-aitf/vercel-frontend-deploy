@@ -65,5 +65,83 @@
     "error_location_required": "出勤の場合は勤務場所が必要です",
     "error_failed": "出勤の提出に失敗しました",
     "error_load_projects": "プロジェクトの読み込みに失敗しました"
+  },
+
+  "projects": {
+    "page_title": "割り当てられたプロジェクト",
+    "page_subtitle": "すべてのプロジェクト割り当てを表示",
+    "stats": {
+      "total_projects": "総プロジェクト数",
+      "active_projects": "アクティブなプロジェクト",
+      "completed_projects": "完了したプロジェクト"
+    },
+    "filters": {
+      "title": "フィルター",
+      "project_status": "プロジェクトステータス",
+      "all_projects": "すべてのプロジェクト",
+      "active": "アクティブなプロジェクト",
+      "inactive": "完了したプロジェクト",
+      "search": "検索",
+      "search_placeholder": "プロジェクトまたはクライアントで検索...",
+      "reset": "フィルターをリセット",
+      "showing": "表示中",
+      "total": "プロジェクト合計",
+      "refresh": "更新"
+    },
+    "status": {
+      "active": "アクティブ",
+      "completed": "完了",
+      "ongoing": "進行中"
+    },
+    "labels": {
+      "client": "クライアント",
+      "role": "役割",
+      "duration": "期間",
+      "start": "開始",
+      "end": "終了",
+      "view_details": "詳細を表示"
+    },
+    "duration": {
+      "month": "ヶ月",
+      "months": "ヶ月",
+      "day": "日",
+      "days": "日",
+      "ongoing": "（進行中）"
+    },
+    "states": {
+      "loading": "プロジェクトを読み込み中...",
+      "error": "エラー",
+      "no_projects_title": "プロジェクトが見つかりません",
+      "no_projects_assigned": "まだプロジェクトが割り当てられていません。",
+      "no_projects_filtered": "フィルターに一致するプロジェクトがありません。調整してください。",
+      "clear_filters": "フィルターをクリア"
+    },
+    "pagination": {
+      "showing": "表示中",
+      "to": "〜",
+      "of": "/",
+      "projects": "プロジェクト",
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "ページ"
+    },
+    "modal": {
+      "title": "プロジェクト詳細",
+      "close": "閉じる",
+      "project_name": "プロジェクト名",
+      "status": "ステータス",
+      "client_info": "クライアント情報",
+      "your_role": "あなたの役割",
+      "start_date": "開始日",
+      "end_date": "終了日",
+      "project_duration": "プロジェクト期間",
+      "description": "説明",
+      "no_description": "説明がありません",
+      "assigned_on": "割り当て日時"
+    },
+    "errors": {
+      "fetch_failed": "プロジェクトの取得に失敗しました",
+      "unknown_error": "不明なエラーが発生しました"
+    }
   }
 }

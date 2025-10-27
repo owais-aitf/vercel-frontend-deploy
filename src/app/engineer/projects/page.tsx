@@ -16,6 +16,8 @@ import { engineerNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { AuthContext } from '@/context/AuthContext';
 import { attendanceService } from '@/shared/service/attendanceService';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
 interface Project {
   id: string;
@@ -38,6 +40,7 @@ interface Project {
 
 export default function ViewAssignedProjects() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('engineer');
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +74,9 @@ export default function ViewAssignedProjects() {
       setFilteredProjects(projectsData);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } };
-      setError(error.response?.data?.error || 'Failed to fetch projects');
+      setError(
+        error.response?.data?.error || t('projects.errors.fetch_failed')
+      );
     } finally {
       setLoading(false);
     }
@@ -152,8 +157,7 @@ export default function ViewAssignedProjects() {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Ongoing';
-
+    if (!dateString) return t('projects.status.ongoing');
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -171,9 +175,17 @@ export default function ViewAssignedProjects() {
     const days = diffDays % 30;
 
     if (months > 0) {
-      return `${months} month${months > 1 ? 's' : ''} ${days > 0 ? `${days} day${days > 1 ? 's' : ''}` : ''}${!endDate ? ' (ongoing)' : ''}`;
+      const monthText =
+        months > 1
+          ? t('projects.duration.months')
+          : t('projects.duration.month');
+      const dayText =
+        days > 1 ? t('projects.duration.days') : t('projects.duration.day');
+      return `${months} ${monthText} ${days > 0 ? `${days} ${dayText}` : ''}${!endDate ? ` ${t('projects.duration.ongoing')}` : ''}`;
     }
-    return `${days} day${days > 1 ? 's' : ''}${!endDate ? ' (ongoing)' : ''}`;
+    const dayText =
+      days > 1 ? t('projects.duration.days') : t('projects.duration.day');
+    return `${days} ${dayText}${!endDate ? ` ${t('projects.duration.ongoing')}` : ''}`;
   };
 
   const getStatusBadgeColor = (endDate: string | null) => {
@@ -189,8 +201,8 @@ export default function ViewAssignedProjects() {
     <FeatureErrorBoundary featureName="Projects">
       <DashboardLayout
         navigation={engineerNavigation}
-        pageTitle="My Assigned Projects"
-        pageSubtitle="View all your project assignments"
+        pageTitle={t('projects.page_title')}
+        pageSubtitle={t('projects.page_subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -210,7 +222,7 @@ export default function ViewAssignedProjects() {
           <Card.Root p={4} bg="blue.50">
             <VStack align="start" gap={2}>
               <Text fontSize="sm" color="blue.700" fontWeight="medium">
-                Total Projects
+                {t('projects.states.error')}
               </Text>
               <Text fontSize="2xl" fontWeight="bold" color="blue.900">
                 {projects.length}
@@ -221,7 +233,7 @@ export default function ViewAssignedProjects() {
           <Card.Root p={4} bg="green.50">
             <VStack align="start" gap={2}>
               <Text fontSize="sm" color="green.700" fontWeight="medium">
-                Active Projects
+                {t('projects.stats.active_projects')}
               </Text>
               <Text fontSize="2xl" fontWeight="bold" color="green.900">
                 {activeCount}
@@ -232,7 +244,7 @@ export default function ViewAssignedProjects() {
           <Card.Root p={4} bg="red.50">
             <VStack align="start" gap={2}>
               <Text fontSize="sm" color="red.700" fontWeight="medium">
-                Completed Projects
+                {t('projects.stats.completed_projects')}
               </Text>
               <Text fontSize="2xl" fontWeight="bold" color="red.900">
                 {inactiveCount}
@@ -245,7 +257,7 @@ export default function ViewAssignedProjects() {
         <Card.Root p={{ base: 4, md: 6 }} mb={{ base: 4, md: 6 }}>
           <VStack align="stretch" gap={4}>
             <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
-              🔍 Filters
+              🔍 {t('projects.filters.title')}
             </Text>
 
             <Grid
@@ -259,7 +271,7 @@ export default function ViewAssignedProjects() {
               {/* Status Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Project Status
+                  {t('projects.filters.project_status')}
                 </Text>
                 <Box position="relative">
                   <select
@@ -289,9 +301,15 @@ export default function ViewAssignedProjects() {
                       e.target.style.boxShadow = 'none';
                     }}
                   >
-                    <option value="">📁 All Projects</option>
-                    <option value="active">✅ Active Projects</option>
-                    <option value="inactive">❌ Completed Projects</option>
+                    <option value="">
+                      📁 {t('projects.filters.all_projects')}
+                    </option>
+                    <option value="active">
+                      ✅ {t('projects.filters.active')}
+                    </option>
+                    <option value="inactive">
+                      ❌ {t('projects.filters.inactive')}
+                    </option>
                   </select>
 
                   <Box
@@ -321,13 +339,13 @@ export default function ViewAssignedProjects() {
               {/* Search Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Search
+                  {t('projects.filters.search')}
                 </Text>
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search by project or client..."
+                  placeholder={t('projects.filters.search_placeholder')}
                   style={{
                     width: '100%',
                     padding: '11px 14px',
@@ -349,7 +367,7 @@ export default function ViewAssignedProjects() {
                   variant="outline"
                   w="full"
                 >
-                  Reset Filters
+                  {t('projects.filters.reset')}
                 </Button>
               </Box>
             </Grid>
@@ -357,8 +375,9 @@ export default function ViewAssignedProjects() {
             {/* Results Count */}
             <HStack justify="space-between">
               <Text fontSize="sm" color="gray.600">
-                Showing <strong>{filteredProjects.length}</strong> total
-                projects
+                {t('projects.filters.showing')}{' '}
+                <strong>{filteredProjects.length}</strong>
+                {t('projects.filters.total')}
               </Text>
               <Button
                 onClick={fetchProjects}
@@ -366,7 +385,7 @@ export default function ViewAssignedProjects() {
                 variant="ghost"
                 colorScheme="blue"
               >
-                🔄 Refresh
+                🔄 {t('projects.filters.refresh')}
               </Button>
             </HStack>
           </VStack>
@@ -377,7 +396,7 @@ export default function ViewAssignedProjects() {
           <Card.Root p={8}>
             <VStack gap={4}>
               <Text fontSize="2xl">⏳</Text>
-              <Text color="gray.600">Loading projects...</Text>
+              <Text color="gray.600">{t('projects.states.loading')}</Text>
             </VStack>
           </Card.Root>
         )}
@@ -389,7 +408,7 @@ export default function ViewAssignedProjects() {
               <Text fontSize="2xl">⚠️</Text>
               <VStack align="start" gap={1}>
                 <Text fontWeight="bold" color="red.700">
-                  Error
+                  {t('projects.states.error')}
                 </Text>
                 <Text fontSize="sm" color="red.600">
                   {error}
@@ -405,16 +424,16 @@ export default function ViewAssignedProjects() {
             <VStack gap={4}>
               <Text fontSize="4xl">📭</Text>
               <Text fontSize="lg" fontWeight="bold">
-                No Projects Found
+                {t('projects.states.no_projects_title')}
               </Text>
               <Text color="gray.600" textAlign="center">
                 {projects.length === 0
-                  ? "You haven't been assigned to any projects yet."
-                  : 'No projects match your filters. Try adjusting them.'}
+                  ? t('projects.states.no_projects_assigned')
+                  : t('projects.states.no_projects_filtered')}
               </Text>
               {projects.length > 0 && (
                 <Button onClick={resetFilters} colorScheme="blue" size="sm">
-                  Clear Filters
+                  {t('projects.states.clear_filters')}
                 </Button>
               )}
             </VStack>
@@ -455,13 +474,15 @@ export default function ViewAssignedProjects() {
                           )}
                           fontSize="xs"
                         >
-                          {active ? 'Active' : 'Completed'}
+                          {active
+                            ? t('projects.status.active')
+                            : t('projects.status.completed')}
                         </Badge>
                       </HStack>
 
                       <HStack gap={2}>
                         <Text fontSize="sm" color="gray.500">
-                          🏢 Client:
+                          🏢 {t('projects.labels.client')}:
                         </Text>
                         <Text fontSize="sm" fontWeight="medium">
                           {project.project.client.name}
@@ -470,7 +491,7 @@ export default function ViewAssignedProjects() {
 
                       <HStack gap={2}>
                         <Text fontSize="sm" color="gray.500">
-                          👤 Role:
+                          👤 {t('projects.labels.role')}:
                         </Text>
                         <Text fontSize="sm" fontWeight="medium">
                           {project.role}
@@ -479,7 +500,7 @@ export default function ViewAssignedProjects() {
 
                       <HStack gap={2}>
                         <Text fontSize="sm" color="gray.500">
-                          📅 Duration:
+                          📅 {t('projects.labels.duration')}:
                         </Text>
                         <Text fontSize="sm">
                           {calculateDuration(
@@ -493,7 +514,7 @@ export default function ViewAssignedProjects() {
                         <VStack gap={2} align="stretch">
                           <HStack justify="space-between">
                             <Text fontSize="xs" color="gray.600">
-                              Start:
+                              {t('projects.labels.start')}:
                             </Text>
                             <Text fontSize="xs" fontWeight="medium">
                               {formatDate(project.assignmentStart)}
@@ -501,7 +522,7 @@ export default function ViewAssignedProjects() {
                           </HStack>
                           <HStack justify="space-between">
                             <Text fontSize="xs" color="gray.600">
-                              End:
+                              {t('projects.labels.end')}:
                             </Text>
                             <Text fontSize="xs" fontWeight="medium">
                               {formatDate(project.assignmentEnd)}
@@ -516,7 +537,7 @@ export default function ViewAssignedProjects() {
                         variant="ghost"
                         w="full"
                       >
-                        View Details →
+                        {t('projects.labels.view_details')}→
                       </Button>
                     </VStack>
                   </Card.Root>
@@ -533,9 +554,11 @@ export default function ViewAssignedProjects() {
                 gap={4}
               >
                 <Text fontSize="sm" color="gray.600">
-                  Showing {indexOfFirstRecord + 1} to{' '}
-                  {Math.min(indexOfLastRecord, filteredProjects.length)} of{' '}
-                  {filteredProjects.length} projects
+                  {t('projects.pagination.showing')} {indexOfFirstRecord + 1}{' '}
+                  {t('projects.pagination.to')}{' '}
+                  {Math.min(indexOfLastRecord, filteredProjects.length)}
+                  {t('projects.pagination.of')} {filteredProjects.length}{' '}
+                  {t('projects.pagination.projects')}
                 </Text>
 
                 <HStack gap={2}>
@@ -545,7 +568,7 @@ export default function ViewAssignedProjects() {
                     disabled={currentPage === 1}
                     variant="outline"
                   >
-                    ← Previous
+                    ← {t('projects.pagination.previous')}
                   </Button>
 
                   <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
@@ -620,7 +643,8 @@ export default function ViewAssignedProjects() {
                     fontWeight="medium"
                     display={{ base: 'block', md: 'none' }}
                   >
-                    Page {currentPage} of {totalPages}
+                    {t('projects.pagination.page')} {currentPage}{' '}
+                    {t('projects.pagination.of')} {totalPages}
                   </Text>
 
                   <Button
@@ -629,7 +653,7 @@ export default function ViewAssignedProjects() {
                     disabled={currentPage === totalPages}
                     variant="outline"
                   >
-                    Next →
+                    {t('projects.pagination.next')} →
                   </Button>
                 </HStack>
               </HStack>
@@ -665,7 +689,7 @@ export default function ViewAssignedProjects() {
               <VStack align="stretch" gap={4}>
                 <HStack justify="space-between">
                   <Text fontSize="xl" fontWeight="bold">
-                    Project Details
+                    {t('projects.modal.title')}
                   </Text>
                   <Box
                     as="button"
@@ -682,7 +706,7 @@ export default function ViewAssignedProjects() {
                 <VStack align="stretch" gap={4} pt={4}>
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Project Name
+                      {t('projects.modal.project_name')}
                     </Text>
                     <Text fontSize="md" fontWeight="medium">
                       {selectedProject.project.projectName}
@@ -691,7 +715,7 @@ export default function ViewAssignedProjects() {
 
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Status
+                      {t('projects.modal.status')}
                     </Text>
                     <Badge
                       colorScheme={getStatusBadgeColor(
@@ -700,14 +724,14 @@ export default function ViewAssignedProjects() {
                       fontSize="sm"
                     >
                       {isProjectActive(selectedProject.assignmentEnd)
-                        ? 'Active'
-                        : 'Completed'}
+                        ? t('projects.status.active')
+                        : t('projects.status.completed')}
                     </Badge>
                   </Box>
 
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Client Information
+                      {t('projects.modal.client_info')}
                     </Text>
                     <VStack
                       align="start"
@@ -727,7 +751,7 @@ export default function ViewAssignedProjects() {
 
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Your Role
+                      {t('projects.modal.your_role')}
                     </Text>
                     <Text fontSize="md">{selectedProject.role}</Text>
                   </Box>
@@ -735,7 +759,7 @@ export default function ViewAssignedProjects() {
                   <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        Start Date
+                        {t('projects.modal.start_date')}
                       </Text>
                       <Text fontSize="md">
                         {formatDate(selectedProject.assignmentStart)}
@@ -743,7 +767,7 @@ export default function ViewAssignedProjects() {
                     </Box>
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        End Date
+                        {t('projects.modal.end_date')}
                       </Text>
                       <Text fontSize="md">
                         {formatDate(selectedProject.assignmentEnd)}
@@ -753,7 +777,7 @@ export default function ViewAssignedProjects() {
 
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Project Duration
+                      {t('projects.modal.project_duration')}
                     </Text>
                     <Text fontSize="md">
                       {calculateDuration(
@@ -766,7 +790,7 @@ export default function ViewAssignedProjects() {
                   {selectedProject.project.description && (
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        Description
+                        {t('projects.modal.description')}
                       </Text>
                       <Box
                         p={3}
@@ -781,7 +805,7 @@ export default function ViewAssignedProjects() {
                           whiteSpace="pre-wrap"
                         >
                           {selectedProject.project.description ||
-                            'No description available'}
+                            'projects.modal.no_description'}
                         </Text>
                       </Box>
                     </Box>
@@ -789,7 +813,7 @@ export default function ViewAssignedProjects() {
 
                   <Box pt={4} borderTop="1px solid" borderColor="gray.200">
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Assigned On
+                      {t('projects.modal.assigned_on')}
                     </Text>
                     <Text fontSize="sm">
                       {new Date(selectedProject.assignedAt).toLocaleString()}
@@ -799,7 +823,7 @@ export default function ViewAssignedProjects() {
 
                 <HStack justify="flex-end" pt={4}>
                   <Button onClick={closeDetailModal} colorScheme="blue">
-                    Close
+                    {t('projects.modal.close')}
                   </Button>
                 </HStack>
               </VStack>
