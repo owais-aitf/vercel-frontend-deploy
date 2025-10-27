@@ -26,5 +26,44 @@
       "review_code": "Review code changes",
       "due": "Due"
     }
+  },
+
+  "attendance": {
+    "page_title": "Attendance",
+    "page_subtitle": "Manage your daily attendance",
+    "main_title": "Daily Attendance Entry",
+    "main_description": "Record your work hours and activities for today",
+    "date_label": "Date",
+    "date_help": "You can mark attendance for the past 90 days",
+    "project_label": "Project",
+    "project_placeholder": "Select project",
+    "attendance_type_label": "Attendance Type",
+    "attendance_types": {
+      "present": "Present",
+      "paid_leave": "Paid Leave",
+      "absent": "Absent",
+      "legal_holiday": "Legal Holiday"
+    },
+    "work_location_label": "Work Location",
+    "work_location_placeholder": "Select location",
+    "work_locations": {
+      "client_site": "Client Site",
+      "home": "Home",
+      "office": "Office"
+    },
+    "start_time_label": "Start Time",
+    "end_time_label": "End Time",
+    "break_hours_label": "Break Hours",
+    "work_hours_label": "Work Hours (Calculated)",
+    "work_hours_display": "{{hours}} hours",
+    "work_description_label": "Work Description",
+    "work_description_placeholder": "Describe your work activities for the day...",
+    "submit_button": "Submit Attendance",
+    "submitting_button": "Submitting...",
+    "success_message": "Attendance submitted successfully!",
+    "error_project_required": "Please select a project",
+    "error_location_required": "Work location is required for Present attendance",
+    "error_failed": "Failed to submit attendance",
+    "error_load_projects": "Failed to load projects"
   }
 }

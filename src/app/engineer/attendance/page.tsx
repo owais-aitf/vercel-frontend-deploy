@@ -21,6 +21,8 @@ import {
 import { clearDashboardCache } from '@/shared/utils/cache';
 import { AuthContext } from '@/context/AuthContext';
 import { toaster } from '@/components/ui/toaster';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
 interface Project {
   id: string;
@@ -31,6 +33,7 @@ interface Project {
 
 export default function EngineerAttendance() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('engineer');
 
   // Form state
   const [workDate, setWorkDate] = useState('');
@@ -83,8 +86,9 @@ export default function EngineerAttendance() {
       } catch (error) {
         const err = error as { response?: { data?: { error?: string } } };
         toaster.create({
-          title: 'Error',
-          description: err.response?.data?.error || 'Failed to load projects',
+          title: t('attendance.error_load_projects'),
+          description:
+            err.response?.data?.error || t('attendance.error_load_projects'),
           type: 'error',
           duration: 5000,
         });
@@ -92,7 +96,7 @@ export default function EngineerAttendance() {
     };
 
     fetchProjects();
-  }, []);
+  }, [t]);
 
   // Calculate work hours when times change
   useEffect(() => {
@@ -146,7 +150,7 @@ export default function EngineerAttendance() {
 
     if (!projectAssignmentId) {
       toaster.create({
-        title: 'Please select a project',
+        title: t('attendance.error_project_required'),
         type: 'error',
         duration: 3000,
       });
@@ -163,7 +167,7 @@ export default function EngineerAttendance() {
     if (attendanceType === 'PRESENT') {
       if (!workLocation) {
         toaster.create({
-          title: 'Work location is required for Present attendance',
+          title: t('attendance.error_location_required'),
           type: 'error',
           duration: 3000,
         });
@@ -181,7 +185,7 @@ export default function EngineerAttendance() {
 
       if (response.success) {
         toaster.create({
-          title: '✅ Attendance submitted successfully!',
+          title: `✅ ${t('attendance.success_message')}`,
           type: 'success',
           duration: 2500,
         });
@@ -198,7 +202,7 @@ export default function EngineerAttendance() {
       // Extract clean error message without "Error:" prefix
       const err = error as { response?: { data?: { error?: string } } };
       let errorMessage =
-        err.response?.data?.error || 'Failed to submit attendance';
+        err.response?.data?.error || t('attendance.error_failed');
 
       // Remove "Error:" or "Error" prefix if present
       errorMessage = errorMessage
@@ -219,8 +223,8 @@ export default function EngineerAttendance() {
     <FeatureErrorBoundary featureName="Attendance">
       <DashboardLayout
         navigation={engineerNavigation}
-        pageTitle="Attendance"
-        pageSubtitle="Manage your daily attendance"
+        pageTitle={t('attendance.page_title')}
+        pageSubtitle={t('attendance.page_subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -248,10 +252,10 @@ export default function EngineerAttendance() {
                 fontWeight="bold"
                 color="gray.800"
               >
-                📅 Daily Attendance Entry
+                📅 {t('attendance.main_title')}
               </Text>
               <Text color="gray.600" fontSize={{ base: 'xs', md: 'sm' }} mt={1}>
-                Record your work hours and activities for today
+                {t('attendance.main_description')}
               </Text>
             </Box>
 
@@ -269,7 +273,7 @@ export default function EngineerAttendance() {
                         fontWeight="semibold"
                         color="gray.700"
                       >
-                        📆 Date
+                        📆 {t('attendance.date_label')}
                       </Text>
                       <Input
                         type="date"
@@ -288,7 +292,7 @@ export default function EngineerAttendance() {
                         }}
                       />
                       <Text fontSize="xs" color="gray.500" mt={1}>
-                        You can mark attendance for the past 90 days
+                        {t('attendance.date_help')}
                       </Text>
                     </VStack>
                   </GridItem>
@@ -300,7 +304,7 @@ export default function EngineerAttendance() {
                         fontWeight="semibold"
                         color="gray.700"
                       >
-                        📁 Project
+                        📁 {t('attendance.project_label')}
                       </Text>
                       <Box position="relative">
                         <select
@@ -337,7 +341,9 @@ export default function EngineerAttendance() {
                             e.currentTarget.style.boxShadow = 'none';
                           }}
                         >
-                          <option value="">📂 Select project</option>
+                          <option value="">
+                            📂 {t('attendance.project_placeholder')}
+                          </option>
                           {projects.map((project) => (
                             <option
                               key={project.id}
@@ -383,7 +389,7 @@ export default function EngineerAttendance() {
                         fontWeight="semibold"
                         color="gray.700"
                       >
-                        ✅ Attendance Type
+                        ✅ {t('attendance.attendance_type_label')}
                       </Text>
                       <Box position="relative">
                         <select
@@ -420,11 +426,17 @@ export default function EngineerAttendance() {
                             e.currentTarget.style.boxShadow = 'none';
                           }}
                         >
-                          <option value="PRESENT">✅ Present</option>
-                          <option value="PAID_LEAVE">🏖️ Paid Leave</option>
-                          <option value="ABSENT">❌ Absent</option>
+                          <option value="PRESENT">
+                            ✅ {t('attendance.attendance_types.present')}
+                          </option>
+                          <option value="PAID_LEAVE">
+                            🏖️ {t('attendance.attendance_types.paid_leave')}
+                          </option>
+                          <option value="ABSENT">
+                            ❌ {t('attendance.attendance_types.absent')}
+                          </option>
                           <option value="LEGAL_HOLIDAY">
-                            🎉 Legal Holiday
+                            🎉 {t('attendance.attendance_types.legal_holiday')}
                           </option>
                         </select>
                         <Box
@@ -457,7 +469,7 @@ export default function EngineerAttendance() {
                         fontWeight="semibold"
                         color="gray.700"
                       >
-                        📍 Work Location
+                        📍 {t('attendance.work_location_label')}
                       </Text>
                       <Box position="relative">
                         <select
@@ -501,10 +513,18 @@ export default function EngineerAttendance() {
                             e.currentTarget.style.boxShadow = 'none';
                           }}
                         >
-                          <option value="">📍 Select location</option>
-                          <option value="CLIENT_SITE">🏢 Client Site</option>
-                          <option value="HOME">🏠 Home</option>
-                          <option value="OFFICE">🏛️ Office</option>
+                          <option value="">
+                            📍 {t('attendance.work_location_placeholder')}
+                          </option>
+                          <option value="CLIENT_SITE">
+                            🏢 {t('attendance.work_locations.client_site')}
+                          </option>
+                          <option value="HOME">
+                            🏠 {t('attendance.work_locations.home')}
+                          </option>
+                          <option value="OFFICE">
+                            🏛️ {t('attendance.work_locations.office')}
+                          </option>
                         </select>
                         <Box
                           position="absolute"
@@ -543,7 +563,7 @@ export default function EngineerAttendance() {
                         fontWeight="semibold"
                         color="gray.700"
                       >
-                        🕐 Start Time
+                        🕐 {t('attendance.start_time_label')}
                       </Text>
                       <Input
                         type="time"
@@ -576,7 +596,7 @@ export default function EngineerAttendance() {
                         fontWeight="semibold"
                         color="gray.700"
                       >
-                        🕐 End Time
+                        🕐 {t('attendance.end_time_label')}
                       </Text>
                       <Input
                         type="time"
@@ -615,7 +635,7 @@ export default function EngineerAttendance() {
                         fontWeight="semibold"
                         color="gray.700"
                       >
-                        ☕ Break Hours
+                        ☕ {t('attendance.break_hours_label')}
                       </Text>
                       <Input
                         type="number"
@@ -650,7 +670,7 @@ export default function EngineerAttendance() {
                         fontWeight="semibold"
                         color="gray.700"
                       >
-                        ⏱️ Work Hours (Calculated)
+                        ⏱️ {t('attendance.work_hours_label')}
                       </Text>
                       <Box
                         p={3}
@@ -665,7 +685,9 @@ export default function EngineerAttendance() {
                         alignItems="center"
                         h="48px"
                       >
-                        {workHours} hours
+                        {t('attendance.work_hours_display', {
+                          hours: workHours,
+                        })}
                       </Box>
                     </VStack>
                   </GridItem>
@@ -674,12 +696,12 @@ export default function EngineerAttendance() {
                 {/* Work Description */}
                 <VStack align="stretch" gap={2}>
                   <Text fontSize="sm" fontWeight="semibold" color="gray.700">
-                    📝 Work Description
+                    📝 {t('attendance.work_description_label')}
                   </Text>
                   <Textarea
                     value={workDescription}
                     onChange={(e) => setWorkDescription(e.target.value)}
-                    placeholder="Describe your work activities for the day..."
+                    placeholder={t('attendance.work_description_placeholder')}
                     rows={4}
                     resize="vertical"
                     borderRadius="lg"
@@ -698,7 +720,7 @@ export default function EngineerAttendance() {
                   colorScheme="blue"
                   size="lg"
                   loading={submitting}
-                  loadingText="Submitting attendance..."
+                  loadingText={t('attendance.submitting_button')}
                   w={{ base: 'full', md: 'fit-content' }}
                   px={8}
                   py={6}
@@ -717,7 +739,9 @@ export default function EngineerAttendance() {
                   transition="all 0.2s"
                   disabled={submitting}
                 >
-                  {submitting ? '⏳ Submitting...' : '✅ Submit Attendance'}
+                  {submitting
+                    ? `⏳${t('attendance.submitting_button')}`
+                    : `✅ ${t('attendance.submit_button')}`}
                 </Button>
               </VStack>
             </form>

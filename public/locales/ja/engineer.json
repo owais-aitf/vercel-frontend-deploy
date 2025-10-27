@@ -26,5 +26,44 @@
       "review_code": "コード変更をレビュー",
       "due": "期限"
     }
+  },
+
+  "attendance": {
+    "page_title": "出勤管理",
+    "page_subtitle": "日々の出勤を管理する",
+    "main_title": "日次出勤入力",
+    "main_description": "今日の勤務時間と活動を記録する",
+    "date_label": "日付",
+    "date_help": "過去90日間の出勤を記録できます",
+    "project_label": "プロジェクト",
+    "project_placeholder": "プロジェクトを選択",
+    "attendance_type_label": "出勤タイプ",
+    "attendance_types": {
+      "present": "出勤",
+      "paid_leave": "有給休暇",
+      "absent": "欠勤",
+      "legal_holiday": "法定休日"
+    },
+    "work_location_label": "勤務場所",
+    "work_location_placeholder": "場所を選択",
+    "work_locations": {
+      "client_site": "クライアント先",
+      "home": "在宅",
+      "office": "オフィス"
+    },
+    "start_time_label": "開始時刻",
+    "end_time_label": "終了時刻",
+    "break_hours_label": "休憩時間",
+    "work_hours_label": "勤務時間（計算済み）",
+    "work_hours_display": "{{hours}} 時間",
+    "work_description_label": "作業内容",
+    "work_description_placeholder": "今日の作業内容を記述してください...",
+    "submit_button": "出勤を提出",
+    "submitting_button": "送信中...",
+    "success_message": "出勤が正常に提出されました！",
+    "error_project_required": "プロジェクトを選択してください",
+    "error_location_required": "出勤の場合は勤務場所が必要です",
+    "error_failed": "出勤の提出に失敗しました",
+    "error_load_projects": "プロジェクトの読み込みに失敗しました"
   }
 }
