@@ -38,11 +38,18 @@
   "page": "ページ {{current}} / {{total}}",
   "navigation": {
     "sales_portal": "営業ポータル",
+    "engineer_portal": "エンジニアポータル",
+    "admin_portal": "管理者ポータル",
     "dashboard": "ダッシュボード",
     "projects": "プロジェクト",
     "clients": "クライアント",
     "engineers": "エンジニア",
     "assignments": "割り当て",
-    "reports": "レポート"
+    "reports": "レポート",
+    "attendance": "勤怠",
+    "view_assigned_projects": "割り当てられたプロジェクトを表示",
+    "view_daily_report": "日報を表示",
+    "update_daily_report": "日報を更新",
+    "register_users": "ユーザー登録"
   }
 }

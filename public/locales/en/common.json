@@ -38,11 +38,18 @@
   "page": "Page {{current}} of {{total}}",
   "navigation": {
     "sales_portal": "Sales Portal",
+    "engineer_portal": "Engineer Portal",
+    "admin_portal": "Admin Portal",
     "dashboard": "Dashboard",
     "projects": "Projects",
     "clients": "Clients",
     "engineers": "Engineers",
     "assignments": "Assignments",
-    "reports": "Reports"
+    "reports": "Reports",
+    "attendance": "Attendance",
+    "view_assigned_projects": "View Assigned Projects",
+    "view_daily_report": "View Daily Report",
+    "update_daily_report": "Update Daily Report",
+    "register_users": "Register Users"
   }
 }

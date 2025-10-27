@@ -65,6 +65,15 @@ export const Sidebar = ({
   const { t } = useTranslation('common');
   const [userRole, setUserRole] = useState('User');
 
+  // Determine portal translation key based on portalName
+  const getPortalKey = () => {
+    const portalName = navigation.portalName.toLowerCase();
+    if (portalName.includes('sales')) return 'navigation.sales_portal';
+    if (portalName.includes('engineer')) return 'navigation.engineer_portal';
+    if (portalName.includes('admin')) return 'navigation.admin_portal';
+    return 'navigation.sales_portal'; // fallback
+  };
+
   useEffect(() => {
     // Only run in browser environment
     if (typeof window === 'undefined') return;
@@ -146,7 +155,7 @@ export const Sidebar = ({
               ATF System
             </Text>
             <Text fontSize="xs" color="gray.500">
-              {t('navigation.sales_portal')}
+              {t(getPortalKey())}
             </Text>
           </VStack>
         </HStack>
