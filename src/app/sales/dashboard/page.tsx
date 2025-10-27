@@ -31,7 +31,9 @@ import {
   LuUserCog,
   LuFileText,
   LuBell,
+  LuBot,
 } from 'react-icons/lu';
+import { SalesAdminChatbotModal } from '@/components/chatbot/SalesAdminChatbotModal';
 
 export default function SalesDashboard() {
   const router = useRouter();
@@ -46,6 +48,8 @@ export default function SalesDashboard() {
   const itemsPerPage = 10;
   const isFetching = useRef(false);
   const hasFetched = useRef(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     if (user && !hasFetched.current) {
@@ -57,6 +61,10 @@ export default function SalesDashboard() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleNewClient = () => router.push('/sales/clients');
   const handleNewProject = () => router.push('/sales/projects');
@@ -702,6 +710,45 @@ export default function SalesDashboard() {
           </Card.Body>
         </Card.Root>
       </DashboardLayout>
+
+      {/* Floating Chatbot Button */}
+      {mounted && (
+        <>
+          {/* Floating Chatbot Button */}
+          <Button
+            position="fixed"
+            bottom={{ base: 4, md: 6 }}
+            right={{ base: 4, md: 6 }}
+            colorScheme="blue"
+            size="lg"
+            borderRadius="full"
+            boxShadow="2xl"
+            onClick={() => setIsChatbotOpen(true)}
+            zIndex={1000}
+            _hover={{
+              transform: 'scale(1.1)',
+              boxShadow: '2xl',
+            }}
+            transition="all 0.3s"
+            width={{ base: '56px', md: '60px' }}
+            height={{ base: '56px', md: '60px' }}
+            padding={0}
+          >
+            <VStack gap={0}>
+              <LuBot size={24} />
+              <Text fontSize="2xs" fontWeight="bold">
+                AI
+              </Text>
+            </VStack>
+          </Button>
+
+          {/* Chatbot Modal */}
+          <SalesAdminChatbotModal
+            isOpen={isChatbotOpen}
+            onClose={() => setIsChatbotOpen(false)}
+          />
+        </>
+      )}
     </FeatureErrorBoundary>
   );
 }

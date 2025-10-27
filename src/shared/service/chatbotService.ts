@@ -122,6 +122,27 @@ class ChatbotService {
       case 'last_day_off':
         return 'When was my last day off?';
 
+      case 'engineers_assigned_projects':
+        return 'Show me all engineers who are currently assigned to projects';
+
+      case 'engineers_unassigned':
+        return 'Show me all engineers who are not assigned to any project';
+
+      case 'engineer_attendance_records':
+        return `Show me the attendance records for ${params.engineerName} in ${params.month}`;
+
+      case 'engineer_project_assignments':
+        return `Show me the project assignments for ${params.engineerName}`;
+
+      case 'all_overtime_records':
+        return 'Show me all overtime records this month';
+
+      case 'all_active_projects':
+        return 'Show me all active projects';
+
+      case 'all_undertime_records':
+        return 'Show me all undertime records this month';
+
       default:
         return 'Help me with my attendance';
     }
@@ -176,9 +197,32 @@ class ChatbotService {
         }
         break;
 
+      case 'engineer_attendance_records':
+        if (rawParams.engineerName) {
+          formatted.engineerName = rawParams.engineerName;
+        }
+        if (rawParams.month) {
+          formatted.month = rawParams.month;
+        }
+        if (rawParams.year) {
+          formatted.year = rawParams.year;
+        }
+        break;
+
+      case 'engineer_project_assignments':
+        if (rawParams.engineerName) {
+          formatted.engineerName = rawParams.engineerName;
+        }
+        break;
+
       // Questions without parameters
       case 'leave_balance':
       case 'last_day_off':
+      case 'engineers_assigned_projects':
+      case 'engineers_unassigned':
+      case 'all_overtime_records':
+      case 'all_active_projects':
+      case 'all_undertime_records':
         // No parameters needed
         break;
     }
