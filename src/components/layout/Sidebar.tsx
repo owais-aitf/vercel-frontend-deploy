@@ -3,6 +3,8 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { Box, Text, VStack, HStack, Button } from '@chakra-ui/react';
 import {
   LuActivity,
@@ -60,6 +62,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation('common');
   const [userRole, setUserRole] = useState('User');
 
   useEffect(() => {
@@ -143,7 +146,7 @@ export const Sidebar = ({
               ATF System
             </Text>
             <Text fontSize="xs" color="gray.500">
-              {navigation.portalName}
+              {t('navigation.sales_portal')}
             </Text>
           </VStack>
         </HStack>
@@ -184,7 +187,9 @@ export const Sidebar = ({
                   fontWeight={isActive ? 'semibold' : 'normal'}
                   fontSize="sm"
                 >
-                  {item.label}
+                  {t(
+                    `navigation.${item.label.toLowerCase().replace(/ /g, '_')}`
+                  )}
                 </Text>
               </HStack>
             </Box>
@@ -246,7 +251,7 @@ export const Sidebar = ({
           >
             <HStack gap={2}>
               <LuLogOut size={16} />
-              <Text>Logout</Text>
+              <Text>{t('logout')}</Text>
             </HStack>
           </Button>
         </VStack>

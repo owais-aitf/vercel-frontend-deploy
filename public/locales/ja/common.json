@@ -27,5 +27,22 @@
   "filter": "フィルター",
   "sort": "ソート",
   "export": "エクスポート",
-  "import": "インポート"
+  "import": "インポート",
+  "coming_soon": "近日公開",
+  "this_month": "今月",
+  "no_new": "新規なし",
+  "ending_soon": "もうすぐ終了",
+  "all_stable": "すべて安定",
+  "available": "利用可能",
+  "awaiting_approval": "承認待ち",
+  "page": "ページ {{current}} / {{total}}",
+  "navigation": {
+    "sales_portal": "営業ポータル",
+    "dashboard": "ダッシュボード",
+    "projects": "プロジェクト",
+    "clients": "クライアント",
+    "engineers": "エンジニア",
+    "assignments": "割り当て",
+    "reports": "レポート"
+  }
 }

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useContext, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -34,6 +36,7 @@ import {
 export default function SalesDashboard() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('sales');
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [pendingReports, setPendingReports] = useState<PendingReport[]>([]);
   const [engineers, setEngineers] = useState<EngineerWithAssignment[]>([]);
@@ -147,8 +150,8 @@ export default function SalesDashboard() {
     <FeatureErrorBoundary featureName="Sales Dashboard">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Sales Dashboard"
-        pageSubtitle="Manage engineer assignments and track attendance"
+        pageTitle={t('dashboard.title')}
+        pageSubtitle={t('dashboard.subtitle')}
         userName={user?.fullName || 'Sales User'}
         userInitials={getUserInitials()}
         notificationCount={pendingReports.length}
@@ -172,7 +175,7 @@ export default function SalesDashboard() {
                   color="gray.600"
                   fontWeight="medium"
                 >
-                  Total Clients
+                  {t('dashboard.stats.total_clients')}
                 </Text>
                 <Box color="purple.500">
                   <LuUsers size={18} />
@@ -191,11 +194,11 @@ export default function SalesDashboard() {
                   color="green.600"
                   fontWeight="medium"
                 >
-                  +{stats.newClientsThisMonth} this month
+                  +{stats.newClientsThisMonth} {t('common:this_month')}
                 </Text>
               ) : (
                 <Text fontSize={{ base: '2xs', md: 'xs' }} color="gray.400">
-                  No new clients
+                  {t('common:no_new')}
                 </Text>
               )}
             </Card.Body>
@@ -210,7 +213,7 @@ export default function SalesDashboard() {
                   color="gray.600"
                   fontWeight="medium"
                 >
-                  Active Projects
+                  {t('dashboard.stats.active_projects')}
                 </Text>
                 <Box color="orange.500">
                   <LuFolderOpen size={18} />
@@ -229,11 +232,11 @@ export default function SalesDashboard() {
                   color="orange.600"
                   fontWeight="medium"
                 >
-                  {stats.projectsEndingSoon} ending soon
+                  {stats.projectsEndingSoon} {t('common:ending_soon')}
                 </Text>
               ) : (
                 <Text fontSize={{ base: '2xs', md: 'xs' }} color="gray.400">
-                  All stable
+                  {t('common:all_stable')}
                 </Text>
               )}
             </Card.Body>
@@ -248,7 +251,7 @@ export default function SalesDashboard() {
                   color="gray.600"
                   fontWeight="medium"
                 >
-                  Total Engineers
+                  {t('dashboard.stats.total_engineers')}
                 </Text>
                 <Box color="blue.500">
                   <LuUserCog size={18} />
@@ -266,7 +269,7 @@ export default function SalesDashboard() {
                 color="blue.600"
                 fontWeight="medium"
               >
-                {stats?.availableEngineers || 0} available
+                {stats?.availableEngineers || 0} {t('common:available')}
               </Text>
             </Card.Body>
           </Card.Root>
@@ -280,7 +283,7 @@ export default function SalesDashboard() {
                   color="gray.600"
                   fontWeight="medium"
                 >
-                  Pending Reports
+                  {t('dashboard.stats.pending_reports')}
                 </Text>
                 <Box color="green.500">
                   <LuFileText size={18} />
@@ -294,7 +297,7 @@ export default function SalesDashboard() {
                 {loading ? '...' : stats?.pendingReports || 0}
               </Text>
               <Text fontSize={{ base: '2xs', md: 'xs' }} color="gray.500">
-                awaiting approval
+                {t('common:awaiting_approval')}
               </Text>
             </Card.Body>
           </Card.Root>
@@ -330,7 +333,7 @@ export default function SalesDashboard() {
 
               {/* Search Bar */}
               <Input
-                placeholder="Search engineers..."
+                placeholder={t('dashboard.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 size={{ base: 'sm', md: 'md' }}
@@ -340,11 +343,11 @@ export default function SalesDashboard() {
               {/* Table/Cards - Desktop Table, Mobile Cards */}
               {loading ? (
                 <Text fontSize="sm" color="gray.500" py={4}>
-                  Loading engineers...
+                  {t('dashboard.loading')}
                 </Text>
               ) : filteredEngineers.length === 0 ? (
                 <Text fontSize="sm" color="gray.500" py={4}>
-                  No engineers found
+                  {t('dashboard.no_engineers')}
                 </Text>
               ) : (
                 <>
@@ -367,11 +370,11 @@ export default function SalesDashboard() {
                         fontSize="sm"
                         color="gray.700"
                       >
-                        <Text>Name</Text>
-                        <Text>Project</Text>
-                        <Text>Hours (Month)</Text>
-                        <Text>Status</Text>
-                        <Text>Actions</Text>
+                        <Text>{t('dashboard.name')}</Text>
+                        <Text>{t('dashboard.project')}</Text>
+                        <Text>{t('dashboard.hours_month')}</Text>
+                        <Text>{t('dashboard.status')}</Text>
+                        <Text>{t('dashboard.actions')}</Text>
                       </Grid>
 
                       {/* Rows */}
@@ -481,7 +484,7 @@ export default function SalesDashboard() {
                             {/* Project */}
                             <HStack justify="space-between">
                               <Text fontSize="2xs" color="gray.500">
-                                Project
+                                {t('dashboard.project')}
                               </Text>
                               <Text fontSize="xs" fontWeight="medium">
                                 {engineer.projectName}
@@ -491,7 +494,7 @@ export default function SalesDashboard() {
                             {/* Hours */}
                             <HStack justify="space-between">
                               <Text fontSize="2xs" color="gray.500">
-                                Hours (Month)
+                                {t('dashboard.hours_month')}
                               </Text>
                               <Text fontSize="xs" fontWeight="bold">
                                 {engineer.hoursThisMonth.toFixed(1)}h
@@ -514,7 +517,7 @@ export default function SalesDashboard() {
                             >
                               <LuBell size={14} />
                               <Text ml={1} fontSize="2xs">
-                                Send Reminder
+                                {t('dashboard.send_reminder')}
                               </Text>
                             </Button>
                           </VStack>
@@ -539,7 +542,7 @@ export default function SalesDashboard() {
                   fontWeight="medium"
                   color="gray.700"
                 >
-                  Status:
+                  {t('dashboard.status_legend')}
                 </Text>
                 <HStack gap={1}>
                   <Box
@@ -551,7 +554,7 @@ export default function SalesDashboard() {
                     borderRadius="full"
                     fontWeight="semibold"
                   >
-                    Complete
+                    {t('dashboard.status_complete')}
                   </Box>
                   <Text fontSize="2xs" color="gray.600">
                     {engineers.filter((e) => e.status === 'Complete').length}
@@ -567,7 +570,7 @@ export default function SalesDashboard() {
                     borderRadius="full"
                     fontWeight="semibold"
                   >
-                    Partial
+                    {t('dashboard.status_partial')}
                   </Box>
                   <Text fontSize="2xs" color="gray.600">
                     {engineers.filter((e) => e.status === 'Partial').length}
@@ -583,7 +586,7 @@ export default function SalesDashboard() {
                     borderRadius="full"
                     fontWeight="semibold"
                   >
-                    Missing
+                    {t('dashboard.status_missing')}
                   </Box>
                   <Text fontSize="2xs" color="gray.600">
                     {engineers.filter((e) => e.status === 'Missing').length}
@@ -601,7 +604,7 @@ export default function SalesDashboard() {
                     disabled={currentPage === 1}
                     fontSize={{ base: '2xs', md: 'xs' }}
                   >
-                    Previous
+                    {t('common:previous')}
                   </Button>
 
                   {/* Page Numbers */}
@@ -630,7 +633,7 @@ export default function SalesDashboard() {
                     disabled={currentPage === totalPages}
                     fontSize={{ base: '2xs', md: 'xs' }}
                   >
-                    Next
+                    {t('common:next')}
                   </Button>
 
                   <Text

@@ -37,9 +37,7 @@ import { assignmentTabs } from '@/shared/config/assignmentTabs';
 export default function AssignmentsPage() {
   const { user } = useContext(AuthContext);
   const [assignments, setAssignments] = useState<ProjectAssignment[]>([]);
-  const [filteredAssignments, setFilteredAssignments] = useState<
-    ProjectAssignment[]
-  >([]);
+  const [filteredAssignments, setFilteredAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');

@@ -1,7 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { Box, Text, VStack, HStack, Badge, Button } from '@chakra-ui/react';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface NavbarProps {
   title: string;
@@ -20,6 +23,7 @@ export const Navbar = ({
   onMenuClick,
 }: NavbarProps) => {
   const router = useRouter();
+  const { t } = useTranslation('common');
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -84,6 +88,9 @@ export const Navbar = ({
 
       {/* Right Side - Actions */}
       <HStack gap={{ base: 2, md: 4 }}>
+        {/* Language Switcher */}
+        <LanguageSwitcher />
+
         {/* Notification Icon */}
         <Box
           position="relative"
@@ -138,7 +145,7 @@ export const Navbar = ({
           variant="ghost"
           display={{ base: 'flex', lg: 'none' }}
         >
-          Logout
+          {t('logout')}
         </Button>
       </HStack>
     </Box>

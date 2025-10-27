@@ -1,0 +1,82 @@
+{
+  "dashboard": {
+    "title": "営業ダッシュボード",
+    "subtitle": "エンジニア、クライアント、プロジェクト、レポートを管理",
+    "assignments": "エンジニア割り当て",
+    "assignments_subtitle": "{{count}} / {{total}} エンジニアを表示中",
+    "loading": "割り当てを読み込み中...",
+    "reminder_feature_coming": "リマインダー機能は近日公開予定です",
+    "status_legend": "ステータス凡例:",
+    "stats": {
+      "total_engineers": "エンジニア総数",
+      "active_projects": "アクティブなプロジェクト",
+      "total_clients": "クライアント総数",
+      "pending_reports": "保留中のレポート"
+    },
+    "quick_actions": "クイックアクション",
+    "add_new_client": "新しいクライアントを追加",
+    "add_new_project": "新しいプロジェクトを追加",
+    "assign_engineer": "エンジニアを割り当てる",
+    "generate_report": "レポートを生成",
+    "engineers_list": "エンジニアリスト",
+    "name": "名前",
+    "project": "プロジェクト",
+    "hours_month": "時間（月）",
+    "status": "ステータス",
+    "actions": "アクション",
+    "send_reminder": "リマインダーを送信",
+    "no_engineers": "エンジニアが見つかりません",
+    "search_placeholder": "名前またはメールアドレスで検索...",
+    "pagination": {
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "ページ {{current}} / {{total}}"
+    },
+    "status_complete": "完了",
+    "status_partial": "部分的",
+    "status_missing": "未提出",
+    "reminder_sent": "リマインダーが正常に送信されました",
+    "reminder_failed": "リマインダーの送信に失敗しました",
+    "error_loading": "ダッシュボードデータの読み込みに失敗しました"
+  },
+  "assignments": {
+    "title": "エンジニア割り当て",
+    "subtitle": "エンジニアのプロジェクト割り当てを管理",
+    "search_placeholder": "エンジニア名またはプロジェクトで検索...",
+    "filter_all": "すべて",
+    "filter_active": "アクティブ",
+    "filter_inactive": "非アクティブ",
+    "engineer": "エンジニア",
+    "project": "プロジェクト",
+    "client": "クライアント",
+    "start_date": "開始日",
+    "end_date": "終了日",
+    "status": "ステータス",
+    "actions": "アクション",
+    "edit": "編集",
+    "delete": "削除",
+    "create_new": "新しい割り当てを作成",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "no_assignments": "割り当てが見つかりません",
+    "loading": "割り当てを読み込み中...",
+    "error_loading": "割り当ての読み込みに失敗しました",
+    "error_deleting": "割り当ての削除に失敗しました",
+    "error_updating": "割り当ての更新に失敗しました",
+    "confirm_delete": "この割り当てを削除してもよろしいですか？",
+    "delete_success": "割り当てが正常に削除されました",
+    "update_success": "割り当てが正常に更新されました",
+    "pagination": {
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "ページ {{current}} / {{total}}"
+    },
+    "edit_modal": {
+      "title": "割り当てを編集",
+      "start_date_label": "開始日",
+      "end_date_label": "終了日",
+      "save": "変更を保存",
+      "cancel": "キャンセル"
+    }
+  }
+}

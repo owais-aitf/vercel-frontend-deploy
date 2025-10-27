@@ -7,15 +7,19 @@ import commonEN from '../../public/locales/en/common.json';
 import commonJA from '../../public/locales/ja/common.json';
 import authEN from '../../public/locales/en/auth.json';
 import authJA from '../../public/locales/ja/auth.json';
+import salesEN from '../../public/locales/en/sales.json';
+import salesJA from '../../public/locales/ja/sales.json';
 
 const resources = {
   en: {
     common: commonEN,
     auth: authEN,
+    sales: salesEN,
   },
   ja: {
     common: commonJA,
     auth: authJA,
+    sales: salesJA,
   },
 };
 
@@ -26,14 +30,16 @@ i18n
     resources,
     fallbackLng: 'en',
     defaultNS: 'common',
-    ns: ['common', 'auth'],
-    interpolation: {
-      escapeValue: false,
-    },
+    fallbackNS: 'common',
+    ns: ['common', 'auth', 'sales'],
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
       lookupLocalStorage: 'preferredLanguage',
+    },
+    interpolation: {
+      escapeValue: false,
+      formatSeparator: ',',
     },
   });
 

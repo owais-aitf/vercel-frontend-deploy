@@ -27,5 +27,22 @@
   "filter": "Filter",
   "sort": "Sort",
   "export": "Export",
-  "import": "Import"
+  "import": "Import",
+  "coming_soon": "Coming Soon",
+  "this_month": "this month",
+  "no_new": "No new",
+  "ending_soon": "ending soon",
+  "all_stable": "All stable",
+  "available": "available",
+  "awaiting_approval": "awaiting approval",
+  "page": "Page {{current}} of {{total}}",
+  "navigation": {
+    "sales_portal": "Sales Portal",
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "clients": "Clients",
+    "engineers": "Engineers",
+    "assignments": "Assignments",
+    "reports": "Reports"
+  }
 }
