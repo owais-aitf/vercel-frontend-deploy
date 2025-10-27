@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Text, VStack } from '@chakra-ui/react';
+import { Global, css } from '@emotion/react';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
@@ -22,7 +23,7 @@ export const LoadingSpinner = ({
   if (variant === 'dots') {
     return (
       <VStack gap={3} align="center">
-        <Box display="flex" gap={1} align="center">
+        <Box display="flex" gap={1} alignItems="center">
           {[0, 1, 2].map((i) => (
             <Box
               key={i}
@@ -106,35 +107,37 @@ export const LoadingSpinner = ({
         </Text>
       )}
 
-      <style jsx>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
+      <Global
+        styles={css`
+          @keyframes spin {
+            to {
+              transform: rotate(360deg);
+            }
           }
-        }
 
-        @keyframes dotPulse {
-          0%,
-          80%,
-          100% {
-            transform: scale(0.8);
-            opacity: 0.5;
+          @keyframes dotPulse {
+            0%,
+            80%,
+            100% {
+              transform: scale(0.8);
+              opacity: 0.5;
+            }
+            40% {
+              transform: scale(1.2);
+              opacity: 1;
+            }
           }
-          40% {
-            transform: scale(1.2);
-            opacity: 1;
-          }
-        }
 
-        @keyframes shimmer {
-          0% {
-            background-position: -200px 0;
+          @keyframes shimmer {
+            0% {
+              background-position: -200px 0;
+            }
+            100% {
+              background-position: calc(200px + 100%) 0;
+            }
           }
-          100% {
-            background-position: calc(200px + 100%) 0;
-          }
-        }
-      `}</style>
+        `}
+      />
     </VStack>
   );
 };
