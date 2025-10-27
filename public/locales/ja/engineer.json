@@ -239,5 +239,77 @@
       "invalid_time_title": "無効な時間範囲",
       "invalid_time_desc": "終了時刻は開始時刻より後である必要があります。有効な時間範囲を選択してください。"
     }
+  },
+
+  "viewAttendance": {
+    "page_title": "出勤記録",
+    "page_subtitle": "出勤履歴を表示",
+    "filters": {
+      "title": "フィルター",
+      "month": "月",
+      "month_placeholder": "月を選択",
+      "type": "出勤タイプ",
+      "all_types": "すべてのタイプ",
+      "present": "出勤",
+      "paid_leave": "有給休暇",
+      "absent": "欠勤",
+      "legal_holiday": "法定休日",
+      "project": "プロジェクト",
+      "all_projects": "すべてのプロジェクト",
+      "specific_date": "特定の日付",
+      "date_placeholder": "日付で検索",
+      "reset": "フィルターをリセット",
+      "showing": "表示中",
+      "total_records": "合計記録",
+      "refresh": "更新"
+    },
+    "table": {
+      "date": "日付",
+      "project": "プロジェクト",
+      "type": "タイプ",
+      "time": "時間",
+      "location": "場所",
+      "description": "説明",
+      "actions": "操作",
+      "view_details": "詳細を表示",
+      "view": "表示",
+      "client": "クライアント"
+    },
+    "states": {
+      "loading": "出勤記録を読み込み中...",
+      "error": "エラー",
+      "no_records_title": "出勤記録が見つかりません",
+      "no_records_empty": "まだ出勤を記録していません。",
+      "no_records_filtered": "フィルターに一致する記録がありません。調整してください。",
+      "clear_filters": "フィルターをクリア"
+    },
+    "pagination": {
+      "showing": "表示中",
+      "to": "〜",
+      "of": "/",
+      "records": "記録",
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "ページ"
+    },
+    "modal": {
+      "title": "出勤詳細",
+      "close": "閉じる",
+      "date": "日付",
+      "project": "プロジェクト",
+      "client": "クライアント",
+      "type": "出勤タイプ",
+      "start_time": "開始時刻",
+      "end_time": "終了時刻",
+      "location": "勤務場所",
+      "break_hours": "休憩時間",
+      "description": "作業内容",
+      "no_description": "説明がありません",
+      "submitted_at": "提出日時",
+      "last_updated": "最終更新"
+    },
+    "errors": {
+      "fetch_failed": "出勤記録の取得に失敗しました"
+    }
   }
 }

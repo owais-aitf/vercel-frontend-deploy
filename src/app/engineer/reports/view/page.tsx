@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import {
   Box,
   Grid,
@@ -19,9 +19,12 @@ import {
   AttendanceRecord,
 } from '@/shared/service/attendanceService';
 import { AuthContext } from '@/context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
 export default function ViewAttendance() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('engineer');
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
   const [filteredAttendance, setFilteredAttendance] = useState<
     AttendanceRecord[]
@@ -49,12 +52,7 @@ export default function ViewAttendance() {
     Array<{ id: string; name: string }>
   >([]);
 
-  // Fetch attendance data
-  useEffect(() => {
-    fetchAttendance();
-  }, []);
-
-  const fetchAttendance = async () => {
+  const fetchAttendance = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -83,11 +81,18 @@ export default function ViewAttendance() {
       setUserProjects(projects);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } };
-      setError(error.response?.data?.error || 'Failed to fetch attendance');
+      setError(
+        error.response?.data?.error || t('viewAttendance.errors.fetch_failed')
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  // Fetch attendance data
+  useEffect(() => {
+    fetchAttendance();
+  }, [fetchAttendance]);
 
   // Apply filters
   useEffect(() => {
@@ -208,18 +213,21 @@ export default function ViewAttendance() {
 
   // Get status label
   const getStatusLabel = (type: string) => {
-    return type
-      .replace('_', ' ')
-      .toLowerCase()
-      .replace(/\b\w/g, (l) => l.toUpperCase());
+    const statusMap: { [key: string]: string } = {
+      PRESENT: t('viewAttendance.filters.present'),
+      PAID_LEAVE: t('viewAttendance.filters.paid_leave'),
+      ABSENT: t('viewAttendance.filters.absent'),
+      LEGAL_HOLIDAY: t('viewAttendance.filters.legal_holiday'),
+    };
+    return statusMap[type] || type;
   };
 
   return (
     <FeatureErrorBoundary featureName="Reports">
       <DashboardLayout
         navigation={engineerNavigation}
-        pageTitle="Attendance Records"
-        pageSubtitle="View your attendance history"
+        pageTitle={t('viewAttendance.page_title')}
+        pageSubtitle={t('viewAttendance.page_subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -234,7 +242,7 @@ export default function ViewAttendance() {
         <Card.Root p={{ base: 4, md: 6 }} mb={{ base: 4, md: 6 }}>
           <VStack align="stretch" gap={4}>
             <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
-              🔍 Filters
+              🔍 {t('viewAttendance.filters.title')}
             </Text>
 
             <Grid
@@ -248,13 +256,13 @@ export default function ViewAttendance() {
               {/* Month Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Month
+                  {t('viewAttendance.filters.month')}
                 </Text>
                 <Input
                   type="month"
                   value={monthFilter}
                   onChange={(e) => setMonthFilter(e.target.value)}
-                  placeholder="Select month"
+                  placeholder={t('viewAttendance.filters.month_placeholder')}
                   bg="white"
                 />
               </Box>
@@ -262,7 +270,7 @@ export default function ViewAttendance() {
               {/* Type Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Attendance Type
+                  {t('viewAttendance.filters.month_placeholder')}
                 </Text>
                 <Box position="relative">
                   <select
@@ -292,11 +300,21 @@ export default function ViewAttendance() {
                       e.target.style.boxShadow = 'none';
                     }}
                   >
-                    <option value="">🔍 All Types</option>
-                    <option value="PRESENT">✅ Present</option>
-                    <option value="PAID_LEAVE">🏖️ Paid Leave</option>
-                    <option value="ABSENT">❌ Absent</option>
-                    <option value="LEGAL_HOLIDAY">🎉 Legal Holiday</option>
+                    <option value="">
+                      🔍 {t('viewAttendance.filters.all_types')}
+                    </option>
+                    <option value="PRESENT">
+                      ✅ {t('viewAttendance.filters.present')}
+                    </option>
+                    <option value="PAID_LEAVE">
+                      🏖️ {t('viewAttendance.filters.paid_leave')}
+                    </option>
+                    <option value="ABSENT">
+                      ❌ {t('viewAttendance.filters.absent')}
+                    </option>
+                    <option value="LEGAL_HOLIDAY">
+                      🎉 {t('viewAttendance.filters.legal_holiday')}
+                    </option>
                   </select>
 
                   <Box
@@ -326,7 +344,7 @@ export default function ViewAttendance() {
               {/* Project Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Project
+                  {t('viewAttendance.filters.project')}
                 </Text>
                 <Box position="relative">
                   <select
@@ -356,7 +374,9 @@ export default function ViewAttendance() {
                       e.target.style.boxShadow = 'none';
                     }}
                   >
-                    <option value="">📁 All Projects</option>
+                    <option value="">
+                      📁 {t('viewAttendance.filters.all_projects')}
+                    </option>
                     {userProjects.map((project) => (
                       <option key={project.id} value={project.name}>
                         {project.name}
@@ -391,13 +411,13 @@ export default function ViewAttendance() {
               {/* Date Search */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Specific Date
+                  {t('viewAttendance.filters.specific_date')}
                 </Text>
                 <Input
                   type="date"
                   value={searchDate}
                   onChange={(e) => setSearchDate(e.target.value)}
-                  placeholder="Search by date"
+                  placeholder={t('viewAttendance.filters.date_placeholder')}
                   bg="white"
                 />
               </Box>
@@ -410,7 +430,7 @@ export default function ViewAttendance() {
                   variant="outline"
                   w="full"
                 >
-                  Reset Filters
+                  {t('viewAttendance.filters.reset')}
                 </Button>
               </Box>
             </Grid>
@@ -418,8 +438,9 @@ export default function ViewAttendance() {
             {/* Results Count */}
             <HStack justify="space-between">
               <Text fontSize="sm" color="gray.600">
-                Showing <strong>{filteredAttendance.length}</strong> total
-                records
+                {t('viewAttendance.filters.showing')}{' '}
+                <strong>{filteredAttendance.length}</strong>{' '}
+                {t('viewAttendance.filters.total_records')}
               </Text>
               <Button
                 onClick={fetchAttendance}
@@ -427,7 +448,7 @@ export default function ViewAttendance() {
                 variant="ghost"
                 colorScheme="blue"
               >
-                🔄 Refresh
+                🔄 {t('viewAttendance.filters.refresh')}
               </Button>
             </HStack>
           </VStack>
@@ -438,7 +459,7 @@ export default function ViewAttendance() {
           <Card.Root p={8}>
             <VStack gap={4}>
               <Text fontSize="2xl">⏳</Text>
-              <Text color="gray.600">Loading attendance records...</Text>
+              <Text color="gray.600">{t('viewAttendance.states.loading')}</Text>
             </VStack>
           </Card.Root>
         )}
@@ -450,7 +471,7 @@ export default function ViewAttendance() {
               <Text fontSize="2xl">⚠️</Text>
               <VStack align="start" gap={1}>
                 <Text fontWeight="bold" color="red.700">
-                  Error
+                  {t('viewAttendance.states.error')}
                 </Text>
                 <Text fontSize="sm" color="red.600">
                   {error}
@@ -466,16 +487,16 @@ export default function ViewAttendance() {
             <VStack gap={4}>
               <Text fontSize="4xl">📭</Text>
               <Text fontSize="lg" fontWeight="bold">
-                No Attendance Records Found
+                {t('viewAttendance.states.no_records_title')}
               </Text>
               <Text color="gray.600" textAlign="center">
                 {attendance.length === 0
-                  ? "You haven't logged any attendance yet."
-                  : 'No records match your filters. Try adjusting them.'}
+                  ? t('viewAttendance.states.no_records_empty')
+                  : t('viewAttendance.states.no_records_filtered')}
               </Text>
               {attendance.length > 0 && (
                 <Button onClick={resetFilters} colorScheme="blue" size="sm">
-                  Clear Filters
+                  {t('viewAttendance.states.clear_filters')}
                 </Button>
               )}
             </VStack>
@@ -504,7 +525,7 @@ export default function ViewAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Date
+                      {t('viewAttendance.table.date')}
                     </Box>
                     <Box
                       as="th"
@@ -513,7 +534,7 @@ export default function ViewAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Project
+                      {t('viewAttendance.table.project')}
                     </Box>
                     <Box
                       as="th"
@@ -522,7 +543,7 @@ export default function ViewAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Type
+                      {t('viewAttendance.table.type')}
                     </Box>
                     <Box
                       as="th"
@@ -531,7 +552,7 @@ export default function ViewAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Time
+                      {t('viewAttendance.table.time')}
                     </Box>
                     <Box
                       as="th"
@@ -540,7 +561,7 @@ export default function ViewAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Location
+                      {t('viewAttendance.table.location')}
                     </Box>
                     <Box
                       as="th"
@@ -549,7 +570,7 @@ export default function ViewAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Description
+                      {t('viewAttendance.table.description')}
                     </Box>
                     <Box
                       as="th"
@@ -558,7 +579,7 @@ export default function ViewAttendance() {
                       fontSize="sm"
                       fontWeight="semibold"
                     >
-                      Actions
+                      {t('viewAttendance.table.actions')}
                     </Box>
                   </Box>
                 </Box>
@@ -622,7 +643,7 @@ export default function ViewAttendance() {
                           variant="ghost"
                           onClick={() => openDetailModal(record)}
                         >
-                          View Details
+                          {t('viewAttendance.table.view_details')}
                         </Button>
                       </Box>
                     </Box>
@@ -643,7 +664,7 @@ export default function ViewAttendance() {
                     colorScheme="blue"
                     onClick={() => openDetailModal(record)}
                   >
-                    View
+                    {t('viewAttendance.table.view')}
                   </Button>
 
                   <VStack align="stretch" gap={3} pr={16}>
@@ -723,9 +744,12 @@ export default function ViewAttendance() {
                 gap={4}
               >
                 <Text fontSize="sm" color="gray.600">
-                  Showing {indexOfFirstRecord + 1} to{' '}
-                  {Math.min(indexOfLastRecord, filteredAttendance.length)} of{' '}
-                  {filteredAttendance.length} records
+                  {t('viewAttendance.pagination.showing')}{' '}
+                  {indexOfFirstRecord + 1} {t('viewAttendance.pagination.to')}{' '}
+                  {Math.min(indexOfLastRecord, filteredAttendance.length)}{' '}
+                  {t('viewAttendance.pagination.of')}{' '}
+                  {filteredAttendance.length}{' '}
+                  {t('viewAttendance.pagination.records')}
                 </Text>
 
                 <HStack gap={2}>
@@ -735,7 +759,7 @@ export default function ViewAttendance() {
                     disabled={currentPage === 1}
                     variant="outline"
                   >
-                    ← Previous
+                    ← {t('viewAttendance.pagination.previous')}
                   </Button>
 
                   {/* Desktop Page Numbers - FIXED */}
@@ -821,7 +845,8 @@ export default function ViewAttendance() {
                     fontWeight="medium"
                     display={{ base: 'block', md: 'none' }}
                   >
-                    Page {currentPage} of {totalPages}
+                    {t('viewAttendance.pagination.page')} {currentPage}{' '}
+                    {t('viewAttendance.pagination.of')} {totalPages}
                   </Text>
 
                   <Button
@@ -830,7 +855,7 @@ export default function ViewAttendance() {
                     disabled={currentPage === totalPages}
                     variant="outline"
                   >
-                    Next →
+                    {t('viewAttendance.pagination.next')} →
                   </Button>
                 </HStack>
               </HStack>
@@ -866,7 +891,7 @@ export default function ViewAttendance() {
               <VStack align="stretch" gap={4}>
                 <HStack justify="space-between">
                   <Text fontSize="xl" fontWeight="bold">
-                    Attendance Details
+                    {t('viewAttendance.modal.title')}
                   </Text>
                   <Box
                     as="button"
@@ -883,7 +908,7 @@ export default function ViewAttendance() {
                 <VStack align="stretch" gap={4} pt={4}>
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Date
+                      {t('viewAttendance.modal.date')}
                     </Text>
                     <Text fontSize="md" fontWeight="medium">
                       {formatDate(selectedRecord.workDate)}
@@ -892,20 +917,20 @@ export default function ViewAttendance() {
 
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Project
+                      {t('viewAttendance.modal.project')}
                     </Text>
                     <Text fontSize="md" fontWeight="medium">
                       {selectedRecord.projectAssignment.project.projectName}
                     </Text>
                     <Text fontSize="sm" color="gray.600">
-                      Client:{' '}
+                      {t('viewAttendance.modal.client')}:{' '}
                       {selectedRecord.projectAssignment.project.client.name}
                     </Text>
                   </Box>
 
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Attendance Type
+                      {t('viewAttendance.modal.type')}
                     </Text>
                     <Box
                       px={3}
@@ -924,7 +949,7 @@ export default function ViewAttendance() {
                   <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        Start Time
+                        {t('viewAttendance.modal.start_time')}
                       </Text>
                       <Text fontSize="md">
                         {formatTime(selectedRecord.startTime)}
@@ -932,7 +957,7 @@ export default function ViewAttendance() {
                     </Box>
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        End Time
+                        {t('viewAttendance.modal.end_time')}
                       </Text>
                       <Text fontSize="md">
                         {formatTime(selectedRecord.endTime)}
@@ -943,7 +968,7 @@ export default function ViewAttendance() {
                   <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        Work Location
+                        {t('viewAttendance.modal.location')}
                       </Text>
                       <Text fontSize="md">
                         {selectedRecord.workLocation || '-'}
@@ -951,7 +976,7 @@ export default function ViewAttendance() {
                     </Box>
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        Break Hours
+                        {t('viewAttendance.modal.break_hours')}
                       </Text>
                       <Text fontSize="md">{selectedRecord.breakHours}h</Text>
                     </Box>
@@ -959,7 +984,7 @@ export default function ViewAttendance() {
 
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Work Description
+                      {t('viewAttendance.modal.description')}
                     </Text>
                     <Box
                       p={3}
@@ -988,7 +1013,7 @@ export default function ViewAttendance() {
                   >
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        Submitted At
+                        {t('viewAttendance.modal.submitted_at')}
                       </Text>
                       <Text fontSize="sm">
                         {selectedRecord.submittedAt
@@ -1004,7 +1029,7 @@ export default function ViewAttendance() {
                     </Box>
                     <Box>
                       <Text fontSize="xs" color="gray.500" mb={1}>
-                        Last Updated
+                        {t('viewAttendance.modal.last_updated')}
                       </Text>
                       <Text fontSize="sm">
                         {new Date(selectedRecord.updatedAt).toLocaleString()}
@@ -1015,7 +1040,7 @@ export default function ViewAttendance() {
 
                 <HStack justify="flex-end" pt={4}>
                   <Button onClick={closeDetailModal} colorScheme="blue">
-                    Close
+                    {t('viewAttendance.modal.close')}
                   </Button>
                 </HStack>
               </VStack>

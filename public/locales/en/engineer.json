@@ -239,5 +239,77 @@
       "invalid_time_title": "Invalid Time Range",
       "invalid_time_desc": "End time must be after start time. Please select a valid time range."
     }
+  },
+
+  "viewAttendance": {
+    "page_title": "Attendance Records",
+    "page_subtitle": "View your attendance history",
+    "filters": {
+      "title": "Filters",
+      "month": "Month",
+      "month_placeholder": "Select month",
+      "type": "Attendance Type",
+      "all_types": "All Types",
+      "present": "Present",
+      "paid_leave": "Paid Leave",
+      "absent": "Absent",
+      "legal_holiday": "Legal Holiday",
+      "project": "Project",
+      "all_projects": "All Projects",
+      "specific_date": "Specific Date",
+      "date_placeholder": "Search by date",
+      "reset": "Reset Filters",
+      "showing": "Showing",
+      "total_records": "total records",
+      "refresh": "Refresh"
+    },
+    "table": {
+      "date": "Date",
+      "project": "Project",
+      "type": "Type",
+      "time": "Time",
+      "location": "Location",
+      "description": "Description",
+      "actions": "Actions",
+      "view_details": "View Details",
+      "view": "View",
+      "client": "Client"
+    },
+    "states": {
+      "loading": "Loading attendance records...",
+      "error": "Error",
+      "no_records_title": "No Attendance Records Found",
+      "no_records_empty": "You haven't logged any attendance yet.",
+      "no_records_filtered": "No records match your filters. Try adjusting them.",
+      "clear_filters": "Clear Filters"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "records": "records",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
+    },
+    "modal": {
+      "title": "Attendance Details",
+      "close": "Close",
+      "date": "Date",
+      "project": "Project",
+      "client": "Client",
+      "type": "Attendance Type",
+      "start_time": "Start Time",
+      "end_time": "End Time",
+      "location": "Work Location",
+      "break_hours": "Break Hours",
+      "description": "Work Description",
+      "no_description": "No description provided",
+      "submitted_at": "Submitted At",
+      "last_updated": "Last Updated"
+    },
+    "errors": {
+      "fetch_failed": "Failed to fetch attendance"
+    }
   }
 }

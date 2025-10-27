@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import {
   Box,
   Grid,
@@ -105,13 +105,6 @@ export default function UpdateAttendance() {
     setSelectedMonth(currentMonth);
   }, []);
 
-  useEffect(() => {
-    if (selectedMonth) {
-      fetchAttendanceRecords();
-      fetchActiveProjects();
-    }
-  }, [selectedMonth]);
-
   // Apply filters whenever records or filter values change
   useEffect(() => {
     let filtered = [...records];
@@ -145,7 +138,7 @@ export default function UpdateAttendance() {
     setCurrentPage(1); // Reset to first page when filters change
   }, [records, projectFilter, dateFilter, typeFilter]);
 
-  const fetchAttendanceRecords = async () => {
+  const fetchAttendanceRecords = useCallback(async () => {
     try {
       setLoading(true);
       // Calculate 90-day range
@@ -192,7 +185,14 @@ export default function UpdateAttendance() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    if (selectedMonth) {
+      fetchAttendanceRecords();
+      fetchActiveProjects();
+    }
+  }, [selectedMonth, fetchAttendanceRecords]);
 
   const fetchActiveProjects = async () => {
     try {

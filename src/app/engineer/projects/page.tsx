@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import {
   Box,
   Grid,
@@ -57,12 +57,7 @@ export default function ViewAssignedProjects() {
   // Modal state
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  // Fetch projects data
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -80,7 +75,12 @@ export default function ViewAssignedProjects() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  // Fetch projects data
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
 
   const isProjectActive = (endDate: string | null) => {
     if (!endDate) return true;
