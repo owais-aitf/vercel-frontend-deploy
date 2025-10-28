@@ -17,6 +17,8 @@ import {
 } from '@chakra-ui/react';
 import authService from '@/shared/service/authService';
 import { toaster } from '@/components/ui/toaster';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
 const EmailIcon = ({ color = 'currentColor' }: { color?: string }) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill={color}>
@@ -38,6 +40,7 @@ const CheckIcon = ({ color = '#10B981' }: { color?: string }) => (
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
+  const { t } = useTranslation('auth');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
@@ -49,9 +52,10 @@ export default function ForgotPasswordPage() {
 
   // Validation function - moved before it's used
   const validateEmail = (email: string) => {
-    if (!email) return 'Email is required';
+    if (!email) return t('forgotPassword.validation.email_required');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return 'Invalid email format';
+    if (!emailRegex.test(email))
+      return t('forgotPassword.validation.email_invalid');
     return '';
   };
 
@@ -98,8 +102,8 @@ export default function ForgotPasswordPage() {
       const response = await authService.forgotPassword(email);
 
       toaster.create({
-        title: 'OTP Sent Successfully',
-        description: response.message || 'Please check your email for the OTP',
+        title: t('forgotPassword.toast.success_title'),
+        description: response.message || t('forgotPassword.toast.success_desc'),
         type: 'success',
         duration: 5000,
       });
@@ -119,11 +123,10 @@ export default function ForgotPasswordPage() {
               }
             ).response?.data?.message
           : undefined;
-      const finalMessage =
-        errorMessage || 'Failed to send OTP. Please try again.';
+      const finalMessage = errorMessage || t('forgotPassword.toast.error_desc');
 
       toaster.create({
-        title: 'Error',
+        title: t('forgotPassword.toast.error_title'),
         description: finalMessage,
         type: 'error',
         duration: 5000,
@@ -316,7 +319,7 @@ export default function ForgotPasswordPage() {
                 opacity={isCardVisible ? 1 : 0}
                 transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s"
               >
-                Forgot Password?
+                {t('forgotPassword.title')}
               </Heading>
               <Text
                 color="gray.600"
@@ -326,8 +329,7 @@ export default function ForgotPasswordPage() {
                 opacity={isCardVisible ? 1 : 0}
                 transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s"
               >
-                Enter your email address and we&apos;ll send you an OTP to reset
-                your password
+                {t('forgotPassword.subtitle')}
               </Text>
             </VStack>
 
@@ -374,7 +376,7 @@ export default function ForgotPasswordPage() {
                       pointerEvents="none"
                       transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                     >
-                      Email Address
+                      {t('forgotPassword.email_label')}
                     </Text>
 
                     {/* Left Icon */}
@@ -541,7 +543,11 @@ export default function ForgotPasswordPage() {
                         }}
                       />
                     )}
-                    <Text>{loading ? 'Sending OTP...' : 'Send OTP'}</Text>
+                    <Text>
+                      {loading
+                        ? t('forgotPassword.sending_otp')
+                        : t('forgotPassword.send_otp')}
+                    </Text>
                   </HStack>
                 </Button>
 
@@ -577,7 +583,7 @@ export default function ForgotPasswordPage() {
                     >
                       <ArrowLeftIcon />
                     </Box>
-                    <Text>Back to Login</Text>
+                    <Text>{t('forgotPassword.back_to_login')}</Text>
                   </HStack>
                 </Button>
               </VStack>
@@ -601,7 +607,7 @@ export default function ForgotPasswordPage() {
                 }}
                 transition="color 0.2s ease"
               >
-                ATF Attendance & Billing Management System
+                {t('footer.system_name')}
               </Text>
               <Text
                 fontSize="xs"
@@ -612,7 +618,7 @@ export default function ForgotPasswordPage() {
                 }}
                 transition="color 0.2s ease"
               >
-                Secure • Reliable • Professional
+                {t('footer.tagline')}
               </Text>
             </VStack>
           </VStack>
