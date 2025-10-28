@@ -93,7 +93,12 @@ export default function LoginPage() {
   useEffect(() => {
     // Add a small delay to ensure state is fully updated after logout
     const timeoutId = setTimeout(() => {
-      if (token && user?.role) {
+      if (
+        token &&
+        user?.role &&
+        !user?.isFirstLogin &&
+        !user?.mustResetPassword
+      ) {
         const dashboardPath =
           user.role === UserRole.ADMIN
             ? '/admin/dashboard'

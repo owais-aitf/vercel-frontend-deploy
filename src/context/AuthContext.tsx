@@ -88,12 +88,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string): Promise<User> => {
     const res = await api.post('/auth/login', { email, password });
+    const responseData = res.data?.data;
     const tokenFromRes = res.data?.data?.token;
     const userFromRes = res.data?.data?.user;
 
+    const isFirstLogin = responseData?.isFirstLogin;
+    const mustResetPassword = responseData?.mustResetPassword;
+
     if (!tokenFromRes) throw new Error('Token missing from response');
 
-    const userData = userFromRes || jwtDecode(tokenFromRes);
+    const userData: User = {
+      ...(userFromRes || jwtDecode(tokenFromRes)),
+      isFirstLogin: isFirstLogin ?? false, // Use ?? to handle undefined
+      mustResetPassword: mustResetPassword ?? false,
+    };
 
     // ✅ CRITICAL FIX - Save user data to localStorage
     localStorage.setItem('user', JSON.stringify(userData));
