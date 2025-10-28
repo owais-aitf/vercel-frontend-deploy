@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import Image from 'next/image';
 import {
   Box,
@@ -38,6 +40,7 @@ const EyeOffIcon = () => (
 
 export default function ResetPasswordPage() {
   const router = useRouter();
+  const { t } = useTranslation('auth');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -60,8 +63,8 @@ export default function ResetPasswordPage() {
 
     if (!storedEmail || !storedOTP) {
       toaster.create({
-        title: 'Session Expired',
-        description: 'Please start the password reset process again',
+        title: t('resetPassword.toast.session_expired_title'),
+        description: t('resetPassword.toast.session_expired_desc'),
         type: 'error',
         duration: 3000,
       });
@@ -71,19 +74,19 @@ export default function ResetPasswordPage() {
 
     setEmail(storedEmail);
     setOtp(storedOTP);
-  }, [router]);
+  }, [router, t]);
 
   const validatePassword = (password: string) => {
-    if (!password) return 'Password is required';
-    if (password.length < 8) return 'Password must be at least 8 characters';
+    if (!password) return t('resetPassword.validation.password_required');
+    if (password.length < 8) return t('resetPassword.validation.password_min');
     if (!/[A-Z]/.test(password))
-      return 'Password must contain at least one uppercase letter';
+      return t('resetPassword.validation.password_uppercase');
     if (!/[a-z]/.test(password))
-      return 'Password must contain at least one lowercase letter';
+      return t('resetPassword.validation.password_lowercase');
     if (!/[0-9]/.test(password))
-      return 'Password must contain at least one number';
+      return t('resetPassword.validation.password_number');
     if (!/[!@#$%^&*]/.test(password))
-      return 'Password must contain at least one special character';
+      return t('resetPassword.validation.password_special');
     return '';
   };
 
@@ -91,8 +94,9 @@ export default function ResetPasswordPage() {
     password: string,
     confirmPassword: string
   ) => {
-    if (!confirmPassword) return 'Please confirm your password';
-    if (password !== confirmPassword) return 'Passwords do not match';
+    if (!confirmPassword) return t('resetPassword.validation.confirm_required');
+    if (password !== confirmPassword)
+      return t('resetPassword.validation.passwords_mismatch');
     return '';
   };
 
@@ -142,9 +146,8 @@ export default function ResetPasswordPage() {
       sessionStorage.removeItem('resetOTP');
 
       toaster.create({
-        title: 'Password Reset Successful',
-        description:
-          'Your password has been changed. Please login with your new password.',
+        title: t('resetPassword.toast.success_title'),
+        description: t('resetPassword.toast.success_desc'),
         type: 'success',
         duration: 5000,
       });
@@ -165,11 +168,10 @@ export default function ResetPasswordPage() {
               }
             ).response?.data?.message
           : undefined;
-      const finalMessage =
-        errorMessage || 'Failed to reset password. Please try again.';
+      const finalMessage = errorMessage || t('resetPassword.toast.error_desc');
 
       toaster.create({
-        title: 'Error',
+        title: t('resetPassword.toast.error_title'),
         description: finalMessage,
         type: 'error',
         duration: 5000,
@@ -230,10 +232,10 @@ export default function ResetPasswordPage() {
                 color="blue.700"
                 fontWeight="bold"
               >
-                Reset Password
+                {t('resetPassword.title')}
               </Heading>
               <Text color="gray.600" textAlign="center" fontSize="sm">
-                Create a strong new password for your account
+                {t('resetPassword.subtitle')}
               </Text>
             </VStack>
 
@@ -248,7 +250,7 @@ export default function ResetPasswordPage() {
                     fontSize="sm"
                     color="gray.700"
                   >
-                    New Password
+                    {t('resetPassword.new_password')}
                   </Text>
                   <Box position="relative">
                     <Box
@@ -266,7 +268,7 @@ export default function ResetPasswordPage() {
                     </Box>
                     <Input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter new password"
+                      placeholder={t('resetPassword.placeholder_new')}
                       value={password}
                       onChange={handlePasswordChange}
                       onBlur={() => {
@@ -337,7 +339,7 @@ export default function ResetPasswordPage() {
                     fontSize="sm"
                     color="gray.700"
                   >
-                    Confirm Password
+                    {t('resetPassword.confirm_password')}
                   </Text>
                   <Box position="relative">
                     <Box
@@ -355,7 +357,7 @@ export default function ResetPasswordPage() {
                     </Box>
                     <Input
                       type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="Confirm new password"
+                      placeholder={t('resetPassword.placeholder_confirm')}
                       value={confirmPassword}
                       onChange={handleConfirmPasswordChange}
                       onBlur={() => {
@@ -436,20 +438,20 @@ export default function ResetPasswordPage() {
                   borderColor="blue.200"
                 >
                   <Text fontSize="xs" fontWeight="bold" color="blue.700" mb={2}>
-                    Password Requirements:
+                    {t('resetPassword.requirements_title')}
                   </Text>
                   <VStack gap={1} align="start">
                     <Text fontSize="xs" color="blue.600">
-                      • At least 8 characters long
+                      • {t('resetPassword.req_length')}
                     </Text>
                     <Text fontSize="xs" color="blue.600">
-                      • Contains uppercase and lowercase letters
+                      • {t('resetPassword.req_case')}
                     </Text>
                     <Text fontSize="xs" color="blue.600">
-                      • Contains at least one number
+                      • {t('resetPassword.req_number')}
                     </Text>
                     <Text fontSize="xs" color="blue.600">
-                      • Contains at least one special character (!@#$%^&*)
+                      • {t('resetPassword.req_special')}
                     </Text>
                   </VStack>
                 </Box>
@@ -479,10 +481,10 @@ export default function ResetPasswordPage() {
                   {loading ? (
                     <HStack gap={2}>
                       <Spinner size="sm" color="white" />
-                      <Text>Resetting Password...</Text>
+                      <Text>{t('resetPassword.resetting')}</Text>
                     </HStack>
                   ) : (
-                    <Text>Reset Password</Text>
+                    <Text>{t('resetPassword.reset_button')}</Text>
                   )}
                 </Button>
               </VStack>
