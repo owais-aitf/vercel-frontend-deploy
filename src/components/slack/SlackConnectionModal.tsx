@@ -1,22 +1,26 @@
-// src/components/slack/SlackConnectionModal.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import {
-  Box,
+  DialogRoot,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+  DialogFooter,
+  DialogBackdrop,
   Button,
   Text,
   VStack,
-  HStack,
-  Portal,
-  DialogRoot,
-  DialogBackdrop,
-  DialogContent,
-  DialogCloseTrigger,
-  Progress,
+  Box,
 } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
+import {
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaInfoCircle,
+} from 'react-icons/fa';
 
 interface SlackConnectionModalProps {
   isOpen: boolean;
@@ -33,208 +37,127 @@ export const SlackConnectionModal: React.FC<SlackConnectionModalProps> = ({
   status,
   message,
   teamName,
-  autoRedirect = true,
+  autoRedirect = false,
 }) => {
   const { t } = useTranslation('engineer');
-  const router = useRouter();
-  const [countdown, setCountdown] = useState(8);
-  const totalTime = status === 'linking_required' ? 10 : 8;
 
+  // Handle auto-redirect for success case
   useEffect(() => {
-    if (!isOpen || !status) return;
+    if (isOpen && autoRedirect && status === 'success') {
+      const timer = setTimeout(() => {
+        onClose(); // Close modal first
+        setTimeout(() => {
+          window.location.reload(); // Then reload to refresh Slack status
+        }, 300);
+      }, 2000);
 
-    setCountdown(totalTime);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, autoRedirect, status, onClose]);
 
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          if (autoRedirect) {
-            router.push('/engineer/dashboard');
-            onClose();
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  if (!status) return null;
 
-    return () => clearInterval(timer);
-  }, [isOpen, status, autoRedirect, totalTime, router, onClose]);
-
-  const getStatusConfig = () => {
+  const getIcon = () => {
     switch (status) {
       case 'success':
-        return {
-          icon: '✅',
-          title: t('slack.success_title'),
-          description: t('slack.success_description'),
-          color: 'green.500',
-          bgColor: 'green.50',
-          progressColor: 'green',
-        };
-      case 'linking_required':
-        return {
-          icon: '✅',
-          title: t('slack.linking_required_title', {
-            teamName: teamName || 'Your workspace',
-          }),
-          description: t('slack.linking_required_description'),
-          color: 'blue.500',
-          bgColor: 'blue.50',
-          progressColor: 'blue',
-        };
+        return <FaCheckCircle size={48} color="#48BB78" />;
       case 'error':
-        return {
-          icon: '❌',
-          title: t('slack.error_title'),
-          description: message || t('slack.error_description'),
-          color: 'red.500',
-          bgColor: 'red.50',
-          progressColor: 'red',
-        };
-      default:
-        return {
-          icon: 'ℹ️',
-          title: '',
-          description: '',
-          color: 'gray.500',
-          bgColor: 'gray.50',
-          progressColor: 'gray',
-        };
+        return <FaExclamationTriangle size={48} color="#F56565" />;
+      case 'linking_required':
+        return <FaInfoCircle size={48} color="#4299E1" />;
     }
   };
 
-  const config = getStatusConfig();
-  const progressPercentage = ((totalTime - countdown) / totalTime) * 100;
+  const getTitle = () => {
+    switch (status) {
+      case 'success':
+        return (
+          '🎉 ' +
+          t('slack.connection_success_title', 'Slack Connected Successfully!')
+        );
+      case 'error':
+        return (
+          '❌ ' + t('slack.connection_error_title', 'Slack Connection Failed')
+        );
+      case 'linking_required':
+        return (
+          'ℹ️ ' + t('slack.linking_required_title', 'Slack Integration Pending')
+        );
+    }
+  };
+
+  const getDescription = () => {
+    switch (status) {
+      case 'success':
+        return t(
+          'slack.connection_success_message',
+          "You'll now receive attendance reminders in Slack."
+        );
+      case 'error':
+        return (
+          message ||
+          t(
+            'slack.connection_error_message',
+            'Unable to connect to Slack. Please try again.'
+          )
+        );
+      case 'linking_required':
+        return t(
+          'slack.linking_required_message',
+          `Your Slack workspace "${teamName || 'Your workspace'}" is connected, but user linking is required.`
+        );
+    }
+  };
+
+  const getColorScheme = () => {
+    switch (status) {
+      case 'success':
+        return 'green';
+      case 'error':
+        return 'red';
+      case 'linking_required':
+        return 'blue';
+    }
+  };
 
   return (
-    <Portal>
-      <DialogRoot
-        open={isOpen}
-        onOpenChange={(details: { open: boolean }) => {
-          if (!details.open) {
-            onClose();
-          }
-        }}
-        closeOnInteractOutside={false}
-        size="lg"
-      >
-        <DialogBackdrop />
-        <DialogContent
-          maxW={{ base: '90%', md: '540px' }}
-          borderRadius="2xl"
-          p={{ base: 6, md: 8 }}
-          bg="white"
-          boxShadow="2xl"
-        >
-          <DialogCloseTrigger />
-          <VStack gap={6} align="stretch">
-            {/* Icon and Title */}
-            <VStack gap={4} align="center" textAlign="center">
-              <Box
-                fontSize={{ base: '56px', md: '72px' }}
-                lineHeight="1"
-                animation="bounce 0.6s ease-in-out"
-              >
-                {config.icon}
-              </Box>
-
-              <VStack gap={2}>
-                <Text
-                  fontSize={{ base: 'xl', md: '2xl' }}
-                  fontWeight="bold"
-                  color={config.color}
-                >
-                  {config.title}
-                </Text>
-                <Box
-                  bg={config.bgColor}
-                  px={4}
-                  py={3}
-                  borderRadius="lg"
-                  w="full"
-                >
-                  <Text
-                    fontSize={{ base: 'sm', md: 'md' }}
-                    color="gray.700"
-                    lineHeight="1.6"
-                  >
-                    {config.description}
-                  </Text>
-                </Box>
-              </VStack>
-            </VStack>
-
-            {/* Countdown Timer */}
-            <VStack gap={2}>
-              <HStack justify="space-between" w="full" px={1}>
-                <Text fontSize="sm" color="gray.600">
-                  {t('slack.auto_redirect_message')}
-                </Text>
-                <Text fontSize="sm" fontWeight="bold" color={config.color}>
-                  {countdown}s
-                </Text>
-              </HStack>
-
-              {/* Simple Progress Bar */}
-              <Box
-                w="full"
-                h="8px"
-                bg="gray.200"
-                borderRadius="full"
-                overflow="hidden"
-              >
-                <Box
-                  h="full"
-                  bg={config.color}
-                  w={`${progressPercentage}%`}
-                  transition="width 0.5s linear"
-                  borderRadius="full"
-                />
-              </Box>
-            </VStack>
-
-            {/* Action Buttons */}
-            <HStack gap={2} w="full">
-              <Button
-                onClick={() => {
-                  router.push('/engineer/dashboard');
-                  onClose();
-                }}
-                colorScheme="blue"
-                size="lg"
-                flex={1}
-                borderRadius="lg"
-              >
-                {t('slack.go_to_dashboard')}
-              </Button>
-              <Button
-                onClick={onClose}
-                variant="outline"
-                size="lg"
-                flex={1}
-                borderRadius="lg"
-              >
-                {t('slack.stay_here')}
-              </Button>
-            </HStack>
-          </VStack>
-        </DialogContent>
-      </DialogRoot>
-
-      {/* Animation Keyframes */}
-      <style jsx global>{`
-        @keyframes bounce {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
+    <DialogRoot
+      open={isOpen}
+      onOpenChange={(e) => {
+        if (!e.open) {
+          onClose();
         }
-      `}</style>
-    </Portal>
+      }}
+    >
+      <DialogBackdrop />
+      <DialogContent maxW="md">
+        <DialogHeader>
+          <DialogTitle textAlign="center">{getTitle()}</DialogTitle>
+        </DialogHeader>
+        <DialogBody>
+          <VStack gap={4} align="center" py={4}>
+            <Box>{getIcon()}</Box>
+            <Text textAlign="center" color="gray.700">
+              {getDescription()}
+            </Text>
+            {status === 'success' && autoRedirect && (
+              <Text fontSize="sm" color="gray.500">
+                {t('slack.auto_refresh', 'Refreshing in 2 seconds...')}
+              </Text>
+            )}
+          </VStack>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            colorScheme={getColorScheme()}
+            onClick={onClose}
+            w="full"
+            size="lg"
+          >
+            {t('common.ok', 'OK')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </DialogRoot>
   );
 };

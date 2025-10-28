@@ -628,7 +628,12 @@ function EngineerDashboardContent() {
       {/* Slack Connection Modal */}
       <SlackConnectionModal
         isOpen={slackModalOpen}
-        onClose={() => setSlackModalOpen(false)}
+        onClose={() => {
+          setSlackModalOpen(false);
+          // Clean URL when modal closes
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, '', cleanUrl);
+        }}
         status={slackModalStatus}
         message={slackModalMessage}
         teamName={slackTeamName}
