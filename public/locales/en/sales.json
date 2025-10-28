@@ -198,5 +198,183 @@
         "create_failed": "Failed to create project. Please try again."
       }
     }
+  },
+  "clients": {
+    "title": "Client Management",
+    "subtitle": "Manage clients and their project associations",
+    "stats": {
+      "total_clients": "Total Clients",
+      "active_clients": "Active Clients",
+      "inactive_clients": "Inactive Clients"
+    },
+    "filters": {
+      "title": "🔍 Filters",
+      "search_label": "Search",
+      "search_placeholder": "Search by name, email, or phone...",
+      "status_label": "Status",
+      "all_clients": "All Clients",
+      "active_only": "Active Only",
+      "inactive_only": "Inactive Only",
+      "showing": "Showing <strong>{{count}}</strong> clients",
+      "refresh": "🔄 Refresh"
+    },
+    "loading": "Loading clients...",
+    "error_title": "Error",
+    "no_clients_found": "No Clients Found",
+    "no_clients_added": "No clients have been added yet.",
+    "no_clients_match": "No clients match your filters.",
+    "view_details": "View Details",
+    "pagination": {
+      "showing": "Showing {{start}} to {{end}} of {{total}} clients",
+      "previous": "← Previous",
+      "next": "Next →",
+      "page": "Page {{current}} of {{total}}"
+    },
+    "modal": {
+      "title": "Client Details",
+      "client_name": "Client Name",
+      "contact_email": "Contact Email",
+      "contact_phone": "Contact Phone",
+      "address": "Address",
+      "created_at": "Created At",
+      "last_updated": "Last Updated",
+      "client_id": "Client ID",
+      "not_provided": "Not provided",
+      "close": "Close"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "add_client": {
+    "title": "Add New Client",
+    "subtitle": "Register a new client in the system",
+    "form_title": "Client Information",
+    "form_subtitle": "Enter the client details below. Only name is required.",
+    "client_name": "Client Name",
+    "client_name_placeholder": "Enter client name",
+    "contact_email": "Contact Email",
+    "contact_email_placeholder": "client@example.com",
+    "contact_phone": "Contact Phone",
+    "contact_phone_placeholder": "+81 90-1234-5678",
+    "address": "Address",
+    "address_placeholder": "Enter client address",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "required": "*",
+    "optional": "(Optional)",
+    "buttons": {
+      "reset": "Reset",
+      "cancel": "Cancel",
+      "create": "Create Client",
+      "creating": "Creating..."
+    },
+    "success": {
+      "title": "Success!",
+      "message": "Client Created successfully",
+      "redirecting": "Redirecting to clients list..."
+    },
+    "error": {
+      "title": "Creation Failed",
+      "create_failed": "Failed to create client. Please try again."
+    },
+    "validation": {
+      "name_required": "Client name is required",
+      "email_invalid": "Please enter a valid email address",
+      "phone_invalid": "Please enter a valid phone number"
+    }
+  },
+  "update_client": {
+    "title": "Update Client",
+    "subtitle": "Modify existing client information",
+    "select_client": "Select Client to Update",
+    "select_client_placeholder": "-- Select a client --",
+    "loading_clients": "Loading clients...",
+    "no_clients": "No clients available",
+    "form_title": "Client Information",
+    "form_subtitle": "Update the client details below",
+    "client_name": "Client Name",
+    "client_name_placeholder": "Enter client name",
+    "contact_email": "Contact Email",
+    "contact_email_placeholder": "client@example.com",
+    "contact_phone": "Contact Phone",
+    "contact_phone_placeholder": "+81 90-1234-5678",
+    "address": "Address",
+    "address_placeholder": "Enter client address",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "required": "*",
+    "optional": "(Optional)",
+    "active_projects_warning": "⚠️ This client has {{count}} active project(s)",
+    "deactivate_warning_note": "You cannot deactivate a client with active projects. Please complete or deactivate all projects first.",
+    "buttons": {
+      "reset": "Reset",
+      "cancel": "Cancel",
+      "update": "Update Client",
+      "updating": "Updating..."
+    },
+    "success": {
+      "title": "Success!",
+      "message": "Client updated successfully",
+      "redirecting": "Redirecting to clients list..."
+    },
+    "error": {
+      "title": "Update Failed",
+      "load_failed": "Failed to load clients",
+      "update_failed": "Failed to update client. Please try again.",
+      "email_duplicate_tip": "💡 Tip: Each client must have a unique email address. Try using a different email or leaving it blank.",
+      "active_projects_tip": "💡 Tip: You need to complete or deactivate all active projects before making this client inactive."
+    },
+    "validation": {
+      "name_required": "Client name is required",
+      "email_invalid": "Please enter a valid email address",
+      "phone_invalid": "Please enter a valid phone number"
+    },
+    "deactivate_warning": {
+      "title": "⚠️ Cannot Deactivate Client",
+      "message": "This client has {{count}} active project(s) and cannot be deactivated.",
+      "instruction": "Please complete or deactivate all active projects before making this client inactive.",
+      "button": "Got it"
+    }
+  },
+  "client_projects": {
+    "title": "Client Projects",
+    "subtitle": "View all projects associated with each client",
+    "select_client": "Select Client",
+    "select_client_placeholder": "-- Select a client --",
+    "loading_clients": "Loading clients...",
+    "loading_projects": "Loading projects...",
+    "no_clients": "No clients available",
+    "no_client_selected": "No client selected",
+    "select_prompt": "Please select a client from the dropdown above to view their projects",
+    "no_projects": "No Projects Found",
+    "no_projects_message": "This client has no projects yet",
+    "search_placeholder": "Search projects...",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "card": {
+      "start_date": "Start:",
+      "end_date": "End:",
+      "budget": "Budget:",
+      "created": "Created"
+    },
+    "showing": "Showing {{count}} project(s) for",
+    "error": "Failed to load projects"
+  },
+  "tabs": {
+    "view_all_clients": "View All Clients",
+    "add_new_client": "Add New Client",
+    "update_client_info": "Update Client Info",
+    "client_projects": "Client Projects"
   }
 }

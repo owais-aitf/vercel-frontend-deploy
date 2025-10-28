@@ -2,6 +2,8 @@
 
 import { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Text,
@@ -18,11 +20,12 @@ import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
 import { clientService } from '@/shared/service/clientService';
-import { clientTabs } from '@/shared/config/clientTabs';
+import { LuUsers, LuUserPlus, LuPencil, LuFolderOpen } from 'react-icons/lu';
 
 export default function AddClientPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();
+  const { t } = useTranslation('sales');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -77,17 +80,17 @@ export default function AddClientPage() {
 
     // Client name is required
     if (!formData.name.trim()) {
-      errors.name = 'Client name is required';
+      errors.name = t('add_client.validation.name_required');
     }
 
     // Email validation (if provided)
     if (formData.contactEmail && !isValidEmail(formData.contactEmail)) {
-      errors.contactEmail = 'Please enter a valid email address';
+      errors.contactEmail = t('add_client.validation.email_invalid');
     }
 
     // Phone validation (if provided)
     if (formData.contactPhone && !isValidPhone(formData.contactPhone)) {
-      errors.contactPhone = 'Please enter a valid phone number';
+      errors.contactPhone = t('add_client.validation.phone_invalid');
     }
 
     setValidationErrors(errors);
@@ -175,7 +178,7 @@ export default function AddClientPage() {
       console.error('❌ Error creating client:', error);
 
       // Extract the actual error message from the response
-      let errorMessage = 'Failed to create client. Please try again.';
+      let errorMessage = t('add_client.error.create_failed');
 
       const err = error as {
         response?: { data?: { error?: string; message?: string } };
@@ -218,14 +221,37 @@ export default function AddClientPage() {
     <FeatureErrorBoundary featureName="Add Client">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Add New Client"
-        pageSubtitle="Register a new client in the system"
+        pageTitle={t('add_client.title')}
+        pageSubtitle={t('add_client.subtitle')}
         userName={user?.fullName || 'Sales Representative'}
         userInitials={getUserInitials()}
         notificationCount={0}
       >
         {/* Tab Navigation */}
-        <TabNavigation tabs={clientTabs} />
+        <TabNavigation
+          tabs={[
+            {
+              label: t('tabs.view_all_clients'),
+              href: '/sales/clients',
+              icon: LuUsers,
+            },
+            {
+              label: t('tabs.add_new_client'),
+              href: '/sales/clients/add',
+              icon: LuUserPlus,
+            },
+            {
+              label: t('tabs.update_client_info'),
+              href: '/sales/clients/update',
+              icon: LuPencil,
+            },
+            {
+              label: t('tabs.client_projects'),
+              href: '/sales/clients/projects',
+              icon: LuFolderOpen,
+            },
+          ]}
+        />
 
         {/* Success Popup/Toast */}
         {success && (
@@ -271,13 +297,13 @@ export default function AddClientPage() {
                 {/* Success Message */}
                 <VStack gap={2} textAlign="center">
                   <Text fontSize="xl" fontWeight="bold" color="gray.800">
-                    Success!
+                    {t('add_client.success.title')}
                   </Text>
                   <Text fontSize="md" color="gray.600">
-                    Client Created successfully
+                    {t('add_client.success.message')}
                   </Text>
                   <Text fontSize="sm" color="gray.500">
-                    Redirecting to clients list...
+                    {t('add_client.success.redirecting')}
                   </Text>
                 </VStack>
 
@@ -378,7 +404,7 @@ export default function AddClientPage() {
                   </Box>
                   <VStack align="start" gap={0}>
                     <Text fontSize="lg" fontWeight="bold" color="red.800">
-                      Failed to Create Client
+                      {t('add_client.error.title')}
                     </Text>
                     <Text fontSize="sm" color="gray.600">
                       {error.toLowerCase().includes('email') &&
@@ -525,10 +551,10 @@ export default function AddClientPage() {
               {/* Form Title */}
               <VStack align="start" gap={1}>
                 <Text fontSize="lg" fontWeight="bold">
-                  Client Information
+                  {t('add_client.form_title')}
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  Enter the details of the new client below
+                  {t('add_client.form_subtitle')}
                 </Text>
               </VStack>
 
@@ -536,10 +562,10 @@ export default function AddClientPage() {
               <Box>
                 <HStack mb={2}>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                    Client Name
+                    {t('add_client.client_name')}
                   </Text>
                   <Text fontSize="sm" color="red.500">
-                    *
+                    {t('add_client.required')}
                   </Text>
                 </HStack>
                 <Input
@@ -547,7 +573,7 @@ export default function AddClientPage() {
                   type="text"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Enter client name"
+                  placeholder={t('add_client.client_name_placeholder')}
                   bg="white"
                   borderColor={validationErrors.name ? 'red.500' : 'gray.300'}
                   _hover={{
@@ -570,14 +596,17 @@ export default function AddClientPage() {
               {/* Contact Email - Optional */}
               <Box>
                 <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
-                  Contact Email
+                  {t('add_client.contact_email')}{' '}
+                  <Text as="span" fontSize="xs" color="gray.500">
+                    {t('add_client.optional')}
+                  </Text>
                 </Text>
                 <Input
                   name="contactEmail"
                   type="email"
                   value={formData.contactEmail}
                   onChange={handleChange}
-                  placeholder="email@example.com"
+                  placeholder={t('add_client.contact_email_placeholder')}
                   bg="white"
                   borderColor={
                     validationErrors.contactEmail ? 'red.500' : 'gray.300'
@@ -606,14 +635,17 @@ export default function AddClientPage() {
               {/* Contact Phone - Optional */}
               <Box>
                 <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
-                  Contact Phone
+                  {t('add_client.contact_phone')}{' '}
+                  <Text as="span" fontSize="xs" color="gray.500">
+                    {t('add_client.optional')}
+                  </Text>
                 </Text>
                 <Input
                   name="contactPhone"
                   type="tel"
                   value={formData.contactPhone}
                   onChange={handleChange}
-                  placeholder="+1-234-567-8900"
+                  placeholder={t('add_client.contact_phone_placeholder')}
                   bg="white"
                   borderColor={
                     validationErrors.contactPhone ? 'red.500' : 'gray.300'
@@ -642,13 +674,16 @@ export default function AddClientPage() {
               {/* Address - Optional */}
               <Box>
                 <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
-                  Address
+                  {t('add_client.address')}{' '}
+                  <Text as="span" fontSize="xs" color="gray.500">
+                    {t('add_client.optional')}
+                  </Text>
                 </Text>
                 <Textarea
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  placeholder="Enter client address"
+                  placeholder={t('add_client.address_placeholder')}
                   bg="white"
                   rows={3}
                   resize="vertical"
@@ -664,7 +699,7 @@ export default function AddClientPage() {
               {/* Status Toggle - FIXED VERSION */}
               <Box>
                 <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
-                  Status
+                  {t('add_client.status')}
                 </Text>
                 <HStack gap={4}>
                   <Button
@@ -678,7 +713,8 @@ export default function AddClientPage() {
                     }}
                     borderWidth="2px"
                   >
-                    {formData.isActive && '✓ '}Active
+                    {formData.isActive && '✓ '}
+                    {t('add_client.active')}
                   </Button>
                   <Button
                     type="button"
@@ -691,7 +727,8 @@ export default function AddClientPage() {
                     }}
                     borderWidth="2px"
                   >
-                    {!formData.isActive && '✓ '}Inactive
+                    {!formData.isActive && '✓ '}
+                    {t('add_client.inactive')}
                   </Button>
                 </HStack>
                 <Box mt={2} p={2} bg="gray.50" borderRadius="md">
@@ -700,7 +737,9 @@ export default function AddClientPage() {
                     <strong
                       style={{ color: formData.isActive ? 'green' : 'red' }}
                     >
-                      {formData.isActive ? 'Active' : 'Inactive'}
+                      {formData.isActive
+                        ? t('add_client.active')
+                        : t('add_client.inactive')}
                     </strong>
                   </Text>
                   {/* <Text fontSize="xs" color="gray.500" mt={1}>
@@ -725,7 +764,7 @@ export default function AddClientPage() {
                   onClick={handleReset}
                   disabled={loading}
                 >
-                  Reset
+                  {t('add_client.buttons.reset')}
                 </Button>
                 <Button
                   type="button"
@@ -733,7 +772,7 @@ export default function AddClientPage() {
                   onClick={handleCancel}
                   disabled={loading}
                 >
-                  Cancel
+                  {t('add_client.buttons.cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -741,7 +780,9 @@ export default function AddClientPage() {
                   disabled={loading}
                   opacity={loading ? 0.6 : 1}
                 >
-                  {loading ? 'Creating...' : 'Create Client'}
+                  {loading
+                    ? t('add_client.buttons.creating')
+                    : t('add_client.buttons.create')}
                 </Button>
               </HStack>
             </VStack>

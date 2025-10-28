@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useContext, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Text,
@@ -19,11 +21,12 @@ import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
 import { clientService, Client } from '@/shared/service/clientService';
-import { clientTabs } from '@/shared/config/clientTabs';
+import { LuUsers, LuUserPlus, LuPencil, LuFolderOpen } from 'react-icons/lu';
 
 export default function UpdateClientPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();
+  const { t } = useTranslation('sales');
 
   // State for client list
   const [clients, setClients] = useState<Client[]>([]);
@@ -90,7 +93,7 @@ export default function UpdateClientPage() {
       setClients(response.data || []);
     } catch (error) {
       console.error('❌ Error fetching clients:', error);
-      setError('Failed to load clients');
+      setError(t('update_client.error.load_failed'));
       setClients([]);
     } finally {
       setLoadingClients(false);
@@ -138,7 +141,7 @@ export default function UpdateClientPage() {
         setActiveProjectsCount(activeCount);
       }
     } catch {
-      setError('Failed to load client details');
+      setError(t('update_client.error.load_failed'));
     } finally {
       setLoading(false);
     }
@@ -179,20 +182,20 @@ export default function UpdateClientPage() {
     const errors: { [key: string]: string } = {};
 
     if (!selectedClientId) {
-      setError('Please select a client to update');
+      setError(t('update_client.select_client'));
       return false;
     }
 
     if (!formData.name.trim()) {
-      errors.name = 'Client name is required';
+      errors.name = t('update_client.validation.name_required');
     }
 
     if (formData.contactEmail && !isValidEmail(formData.contactEmail)) {
-      errors.contactEmail = 'Please enter a valid email address';
+      errors.contactEmail = t('update_client.validation.email_invalid');
     }
 
     if (formData.contactPhone && !isValidPhone(formData.contactPhone)) {
-      errors.contactPhone = 'Please enter a valid phone number';
+      errors.contactPhone = t('update_client.validation.phone_invalid');
     }
 
     setValidationErrors(errors);
@@ -300,13 +303,36 @@ export default function UpdateClientPage() {
     <FeatureErrorBoundary featureName="Update Client">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Update Client"
-        pageSubtitle="Modify existing client information"
+        pageTitle={t('update_client.title')}
+        pageSubtitle={t('update_client.subtitle')}
         userName={user?.fullName || 'Sales Representative'}
         userInitials={getUserInitials()}
         notificationCount={0}
       >
-        <TabNavigation tabs={clientTabs} />
+        <TabNavigation
+          tabs={[
+            {
+              label: t('tabs.view_all_clients'),
+              href: '/sales/clients',
+              icon: LuUsers,
+            },
+            {
+              label: t('tabs.add_new_client'),
+              href: '/sales/clients/add',
+              icon: LuUserPlus,
+            },
+            {
+              label: t('tabs.update_client_info'),
+              href: '/sales/clients/update',
+              icon: LuPencil,
+            },
+            {
+              label: t('tabs.client_projects'),
+              href: '/sales/clients/projects',
+              icon: LuFolderOpen,
+            },
+          ]}
+        />
 
         {/* Success Popup/Toast */}
         {success && (
@@ -348,13 +374,13 @@ export default function UpdateClientPage() {
 
                 <VStack gap={2} textAlign="center">
                   <Text fontSize="xl" fontWeight="bold" color="gray.800">
-                    Success!
+                    {t('update_client.success.title')}
                   </Text>
                   <Text fontSize="md" color="gray.600">
-                    Client updated successfully
+                    {t('update_client.success.message')}
                   </Text>
                   <Text fontSize="sm" color="gray.500">
-                    Redirecting to clients list...
+                    {t('update_client.success.redirecting')}
                   </Text>
                 </VStack>
 
@@ -434,7 +460,7 @@ export default function UpdateClientPage() {
                 </Box>
                 <VStack align="start" gap={0}>
                   <Text fontWeight="bold" color="red.800" fontSize="md">
-                    Update Failed
+                    {t('update_client.error.title')}
                   </Text>
                   <Text fontSize="sm" color="red.600">
                     {error}
@@ -547,7 +573,7 @@ export default function UpdateClientPage() {
                   w="full"
                   size={{ base: 'md', md: 'lg' }}
                 >
-                  Got it
+                  {t('update_client.deactivate_warning.button')}
                 </Button>
               </VStack>
 
@@ -616,7 +642,7 @@ export default function UpdateClientPage() {
                     animation="pulse 2s ease-in-out infinite"
                   />
                   <Text fontSize="lg" fontWeight="bold" color="gray.800">
-                    Select Client to Update
+                    {t('update_client.select_client')}
                   </Text>
                 </HStack>
                 <Text fontSize="sm" color="gray.600">
@@ -677,7 +703,7 @@ export default function UpdateClientPage() {
                         ? `${clients.find((c) => c.id === selectedClientId)?.isActive ? '●' : '○'} ${
                             clients.find((c) => c.id === selectedClientId)?.name
                           }`
-                        : '-- Click to select a client --'}
+                        : t('update_client.select_client_placeholder')}
                     </Text>
                   </HStack>
                   <Box
@@ -895,10 +921,10 @@ export default function UpdateClientPage() {
               <VStack align="stretch" gap={6}>
                 <VStack align="start" gap={1}>
                   <Text fontSize="lg" fontWeight="bold">
-                    Client Information
+                    {t('update_client.form_title')}
                   </Text>
                   <Text fontSize="sm" color="gray.600">
-                    Update the client details below
+                    {t('update_client.form_subtitle')}
                   </Text>
                 </VStack>
 
@@ -906,10 +932,10 @@ export default function UpdateClientPage() {
                 <Box>
                   <HStack mb={2}>
                     <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                      Client Name
+                      {t('update_client.client_name')}
                     </Text>
                     <Text fontSize="sm" color="red.500">
-                      *
+                      {t('update_client.required')}
                     </Text>
                   </HStack>
                   <Input
@@ -917,7 +943,7 @@ export default function UpdateClientPage() {
                     type="text"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Enter client name"
+                    placeholder={t('update_client.client_name_placeholder')}
                     bg="white"
                     borderColor={validationErrors.name ? 'red.500' : 'gray.300'}
                   />
@@ -936,14 +962,14 @@ export default function UpdateClientPage() {
                     color="gray.700"
                     mb={2}
                   >
-                    Contact Email
+                    {t('update_client.contact_email')}
                   </Text>
                   <Input
                     name="contactEmail"
                     type="email"
                     value={formData.contactEmail}
                     onChange={handleChange}
-                    placeholder="email@example.com"
+                    placeholder={t('update_client.contact_email_placeholder')}
                     bg="white"
                     borderColor={
                       validationErrors.contactEmail ? 'red.500' : 'gray.300'
@@ -964,14 +990,14 @@ export default function UpdateClientPage() {
                     color="gray.700"
                     mb={2}
                   >
-                    Contact Phone
+                    {t('update_client.contact_phone')}
                   </Text>
                   <Input
                     name="contactPhone"
                     type="tel"
                     value={formData.contactPhone}
                     onChange={handleChange}
-                    placeholder="+1-234-567-8900"
+                    placeholder={t('update_client.contact_phone_placeholder')}
                     bg="white"
                     borderColor={
                       validationErrors.contactPhone ? 'red.500' : 'gray.300'
@@ -992,13 +1018,13 @@ export default function UpdateClientPage() {
                     color="gray.700"
                     mb={2}
                   >
-                    Address
+                    {t('update_client.address')}
                   </Text>
                   <Textarea
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    placeholder="Enter client address"
+                    placeholder={t('update_client.address_placeholder')}
                     bg="white"
                     rows={3}
                     resize="vertical"
@@ -1013,7 +1039,7 @@ export default function UpdateClientPage() {
                     color="gray.700"
                     mb={2}
                   >
-                    Status
+                    {t('update_client.status')}
                   </Text>
                   <HStack gap={4}>
                     <Button
@@ -1024,7 +1050,8 @@ export default function UpdateClientPage() {
                       onClick={() => handleStatusToggle(true)}
                       borderWidth="2px"
                     >
-                      {formData.isActive && '✓ '}Active
+                      {formData.isActive && '✓ '}
+                      {t('update_client.active')}
                     </Button>
                     <Button
                       type="button"
@@ -1034,7 +1061,8 @@ export default function UpdateClientPage() {
                       onClick={() => handleStatusToggle(false)}
                       borderWidth="2px"
                     >
-                      {!formData.isActive && '✓ '}Inactive
+                      {!formData.isActive && '✓ '}
+                      {t('update_client.inactive')}
                     </Button>
                   </HStack>
                   <Box mt={2} p={2} bg="gray.50" borderRadius="md">
@@ -1043,7 +1071,9 @@ export default function UpdateClientPage() {
                       <strong
                         style={{ color: formData.isActive ? 'green' : 'red' }}
                       >
-                        {formData.isActive ? 'Active' : 'Inactive'}
+                        {formData.isActive
+                          ? t('update_client.active')
+                          : t('update_client.inactive')}
                       </strong>
                       {activeProjectsCount > 0 && formData.isActive && (
                         <Text as="span" color="orange.600" ml={2}>
@@ -1069,7 +1099,7 @@ export default function UpdateClientPage() {
                     onClick={handleReset}
                     disabled={loading}
                   >
-                    Reset
+                    {t('update_client.buttons.reset')}
                   </Button>
                   <Button
                     type="button"
@@ -1077,7 +1107,7 @@ export default function UpdateClientPage() {
                     onClick={handleCancel}
                     disabled={loading}
                   >
-                    Cancel
+                    {t('update_client.buttons.cancel')}
                   </Button>
                   <Button
                     type="submit"
@@ -1085,7 +1115,9 @@ export default function UpdateClientPage() {
                     disabled={loading}
                     opacity={loading ? 0.6 : 1}
                   >
-                    {loading ? 'Updating...' : 'Update Client'}
+                    {loading
+                      ? t('update_client.buttons.updating')
+                      : t('update_client.buttons.update')}
                   </Button>
                 </HStack>
               </VStack>

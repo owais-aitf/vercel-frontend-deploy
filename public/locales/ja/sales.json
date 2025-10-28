@@ -194,5 +194,183 @@
         "create_failed": "プロジェクトの作成に失敗しました。もう一度お試しください。"
       }
     }
+  },
+  "clients": {
+    "title": "クライアント管理",
+    "subtitle": "クライアントとプロジェクトの関連付けを管理",
+    "stats": {
+      "total_clients": "クライアント総数",
+      "active_clients": "アクティブなクライアント",
+      "inactive_clients": "非アクティブなクライアント"
+    },
+    "filters": {
+      "title": "🔍 フィルター",
+      "search_label": "検索",
+      "search_placeholder": "名前、メール、または電話番号で検索...",
+      "status_label": "ステータス",
+      "all_clients": "すべてのクライアント",
+      "active_only": "アクティブのみ",
+      "inactive_only": "非アクティブのみ",
+      "showing": "<strong>{{count}}</strong> クライアントを表示中",
+      "refresh": "🔄 更新"
+    },
+    "loading": "クライアントを読み込み中...",
+    "error_title": "エラー",
+    "no_clients_found": "クライアントが見つかりません",
+    "no_clients_added": "まだクライアントが追加されていません。",
+    "no_clients_match": "フィルターに一致するクライアントがありません。",
+    "view_details": "詳細を表示",
+    "pagination": {
+      "showing": "{{start}} ～ {{end}} / {{total}} クライアントを表示中",
+      "previous": "← 前へ",
+      "next": "次へ →",
+      "page": "ページ {{current}} / {{total}}"
+    },
+    "modal": {
+      "title": "クライアント詳細",
+      "client_name": "クライアント名",
+      "contact_email": "連絡先メール",
+      "contact_phone": "連絡先電話番号",
+      "address": "住所",
+      "created_at": "作成日時",
+      "last_updated": "最終更新日時",
+      "client_id": "クライアントID",
+      "not_provided": "未提供",
+      "close": "閉じる"
+    },
+    "status": {
+      "active": "アクティブ",
+      "inactive": "非アクティブ"
+    }
+  },
+  "add_client": {
+    "title": "新しいクライアントを追加",
+    "subtitle": "システムに新しいクライアントを登録",
+    "form_title": "クライアント情報",
+    "form_subtitle": "以下にクライアントの詳細を入力してください。名前のみ必須です。",
+    "client_name": "クライアント名",
+    "client_name_placeholder": "クライアント名を入力",
+    "contact_email": "連絡先メール",
+    "contact_email_placeholder": "client@example.com",
+    "contact_phone": "連絡先電話番号",
+    "contact_phone_placeholder": "+81 90-1234-5678",
+    "address": "住所",
+    "address_placeholder": "クライアントの住所を入力",
+    "status": "ステータス",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "required": "*",
+    "optional": "（任意）",
+    "buttons": {
+      "reset": "リセット",
+      "cancel": "キャンセル",
+      "create": "クライアントを作成",
+      "creating": "作成中..."
+    },
+    "success": {
+      "title": "成功！",
+      "message": "クライアントが正常に作成されました",
+      "redirecting": "クライアントリストにリダイレクト中..."
+    },
+    "error": {
+      "title": "作成失敗",
+      "create_failed": "クライアントの作成に失敗しました。もう一度お試しください。"
+    },
+    "validation": {
+      "name_required": "クライアント名は必須です",
+      "email_invalid": "有効なメールアドレスを入力してください",
+      "phone_invalid": "有効な電話番号を入力してください"
+    }
+  },
+  "update_client": {
+    "title": "クライアント情報を更新",
+    "subtitle": "既存のクライアント情報を変更",
+    "select_client": "更新するクライアントを選択",
+    "select_client_placeholder": "-- クライアントを選択 --",
+    "loading_clients": "クライアントを読み込み中...",
+    "no_clients": "利用可能なクライアントがありません",
+    "form_title": "クライアント情報",
+    "form_subtitle": "以下のクライアント詳細を更新してください",
+    "client_name": "クライアント名",
+    "client_name_placeholder": "クライアント名を入力",
+    "contact_email": "連絡先メール",
+    "contact_email_placeholder": "client@example.com",
+    "contact_phone": "連絡先電話番号",
+    "contact_phone_placeholder": "+81 90-1234-5678",
+    "address": "住所",
+    "address_placeholder": "クライアントの住所を入力",
+    "status": "ステータス",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "required": "*",
+    "optional": "（任意）",
+    "active_projects_warning": "⚠️ このクライアントには{{count}}件のアクティブなプロジェクトがあります",
+    "deactivate_warning_note": "アクティブなプロジェクトがあるクライアントは非アクティブにできません。まずすべてのプロジェクトを完了または非アクティブにしてください。",
+    "buttons": {
+      "reset": "リセット",
+      "cancel": "キャンセル",
+      "update": "クライアントを更新",
+      "updating": "更新中..."
+    },
+    "success": {
+      "title": "成功！",
+      "message": "クライアントが正常に更新されました",
+      "redirecting": "クライアントリストにリダイレクト中..."
+    },
+    "error": {
+      "title": "更新失敗",
+      "load_failed": "クライアントの読み込みに失敗しました",
+      "update_failed": "クライアントの更新に失敗しました。もう一度お試しください。",
+      "email_duplicate_tip": "💡 ヒント：各クライアントは一意のメールアドレスを持つ必要があります。別のメールを使用するか、空白のままにしてください。",
+      "active_projects_tip": "💡 ヒント：このクライアントを非アクティブにする前に、すべてのアクティブなプロジェクトを完了または非アクティブにする必要があります。"
+    },
+    "validation": {
+      "name_required": "クライアント名は必須です",
+      "email_invalid": "有効なメールアドレスを入力してください",
+      "phone_invalid": "有効な電話番号を入力してください"
+    },
+    "deactivate_warning": {
+      "title": "⚠️ クライアントを非アクティブにできません",
+      "message": "このクライアントには{{count}}件のアクティブなプロジェクトがあり、非アクティブにできません。",
+      "instruction": "このクライアントを非アクティブにする前に、すべてのアクティブなプロジェクトを完了または非アクティブにしてください。",
+      "button": "了解"
+    }
+  },
+  "client_projects": {
+    "title": "クライアントプロジェクト",
+    "subtitle": "各クライアントに関連するすべてのプロジェクトを表示",
+    "select_client": "クライアントを選択",
+    "select_client_placeholder": "-- クライアントを選択 --",
+    "loading_clients": "クライアントを読み込み中...",
+    "loading_projects": "プロジェクトを読み込み中...",
+    "no_clients": "利用可能なクライアントがありません",
+    "no_client_selected": "クライアントが選択されていません",
+    "select_prompt": "プロジェクトを表示するには、上のドロップダウンからクライアントを選択してください",
+    "no_projects": "プロジェクトが見つかりません",
+    "no_projects_message": "このクライアントにはまだプロジェクトがありません",
+    "search_placeholder": "プロジェクトを検索...",
+    "filters": {
+      "all": "すべて",
+      "active": "アクティブ",
+      "inactive": "非アクティブ"
+    },
+    "status": {
+      "active": "アクティブ",
+      "inactive": "非アクティブ"
+    },
+    "card": {
+      "start_date": "開始：",
+      "end_date": "終了：",
+      "budget": "予算：",
+      "created": "作成日"
+    },
+    "showing": "{{count}}件のプロジェクトを表示中：",
+    "error": "プロジェクトの読み込みに失敗しました"
+  },
+  "tabs": {
+    "view_all_clients": "すべてのクライアントを表示",
+    "add_new_client": "新しいクライアントを追加",
+    "update_client_info": "クライアント情報を更新",
+    "client_projects": "クライアントプロジェクト"
   }
 }

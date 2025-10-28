@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useContext, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -18,7 +20,7 @@ import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
 import { clientService, Client } from '@/shared/service/clientService';
-import { clientTabs } from '@/shared/config/clientTabs';
+import { LuUsers, LuUserPlus, LuPencil, LuFolderOpen } from 'react-icons/lu';
 
 interface Project {
   id: string;
@@ -39,6 +41,7 @@ interface ClientWithProjects extends Client {
 
 export default function ClientProjectsPage() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('sales');
 
   // State
   const [clients, setClients] = useState<Client[]>([]);
@@ -75,7 +78,7 @@ export default function ClientProjectsPage() {
       const response = await clientService.getClients();
       setClients(response.data || []);
     } catch {
-      setError('Failed to load clients');
+      setError(t('client_projects.error'));
     } finally {
       setLoadingClients(false);
     }
@@ -148,7 +151,7 @@ export default function ClientProjectsPage() {
       console.log('✅ Mapped projects:', mappedProjects);
     } catch (error) {
       console.error('❌ Error loading projects:', error);
-      setError('Failed to load client projects');
+      setError(t('client_projects.error'));
     } finally {
       setLoadingProjects(false);
     }
@@ -201,13 +204,36 @@ export default function ClientProjectsPage() {
     <FeatureErrorBoundary featureName="Client Projects">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Client Projects"
-        pageSubtitle="View all projects for each client"
+        pageTitle={t('client_projects.title')}
+        pageSubtitle={t('client_projects.subtitle')}
         userName={user?.fullName || 'Sales Representative'}
         userInitials={getUserInitials()}
         notificationCount={0}
       >
-        <TabNavigation tabs={clientTabs} />
+        <TabNavigation
+          tabs={[
+            {
+              label: t('tabs.view_all_clients'),
+              href: '/sales/clients',
+              icon: LuUsers,
+            },
+            {
+              label: t('tabs.add_new_client'),
+              href: '/sales/clients/add',
+              icon: LuUserPlus,
+            },
+            {
+              label: t('tabs.update_client_info'),
+              href: '/sales/clients/update',
+              icon: LuPencil,
+            },
+            {
+              label: t('tabs.client_projects'),
+              href: '/sales/clients/projects',
+              icon: LuFolderOpen,
+            },
+          ]}
+        />
 
         {/* Error Popup */}
         {error && (
@@ -287,7 +313,7 @@ export default function ClientProjectsPage() {
                     animation="pulse 2s ease-in-out infinite"
                   />
                   <Text fontSize="lg" fontWeight="bold" color="gray.800">
-                    Select Client
+                    {t('client_projects.select_client')}
                   </Text>
                 </HStack>
                 <Text fontSize="sm" color="gray.600">
@@ -348,7 +374,7 @@ export default function ClientProjectsPage() {
                         ? `${clients.find((c) => c.id === selectedClientId)?.isActive ? '●' : '○'} ${
                             clients.find((c) => c.id === selectedClientId)?.name
                           }`
-                        : '-- Click to select a client --'}
+                        : t('client_projects.select_client_placeholder')}
                     </Text>
                   </HStack>
                   <Box
@@ -431,7 +457,7 @@ export default function ClientProjectsPage() {
                           </HStack>
                           {!client.isActive && (
                             <Badge colorScheme="red" fontSize="xs">
-                              Inactive
+                              {t('client_projects.status.inactive')}
                             </Badge>
                           )}
                         </HStack>
@@ -566,7 +592,9 @@ export default function ClientProjectsPage() {
                     <Badge
                       colorScheme={selectedClient.isActive ? 'green' : 'red'}
                     >
-                      {selectedClient.isActive ? 'Active' : 'Inactive'}
+                      {selectedClient.isActive
+                        ? t('client_projects.status.active')
+                        : t('client_projects.status.inactive')}
                     </Badge>
                   </HStack>
                   <Text fontSize="sm" color="gray.600">
@@ -626,7 +654,7 @@ export default function ClientProjectsPage() {
               <HStack gap={4} wrap="wrap">
                 <Box flex={1} minW="300px">
                   <Input
-                    placeholder="Search projects by name or description..."
+                    placeholder={t('client_projects.search_placeholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     bg="white"
@@ -639,7 +667,7 @@ export default function ClientProjectsPage() {
                     colorScheme={filterStatus === 'all' ? 'blue' : 'gray'}
                     onClick={() => setFilterStatus('all')}
                   >
-                    All ({projectStats.total})
+                    {t('client_projects.filters.all')} ({projectStats.total})
                   </Button>
                   <Button
                     size="sm"
@@ -647,7 +675,8 @@ export default function ClientProjectsPage() {
                     colorScheme={filterStatus === 'active' ? 'green' : 'gray'}
                     onClick={() => setFilterStatus('active')}
                   >
-                    Active ({projectStats.active})
+                    {t('client_projects.filters.active')} ({projectStats.active}
+                    )
                   </Button>
                   <Button
                     size="sm"
@@ -655,7 +684,8 @@ export default function ClientProjectsPage() {
                     colorScheme={filterStatus === 'inactive' ? 'red' : 'gray'}
                     onClick={() => setFilterStatus('inactive')}
                   >
-                    Inactive ({projectStats.inactive})
+                    {t('client_projects.filters.inactive')} (
+                    {projectStats.inactive})
                   </Button>
                 </HStack>
               </HStack>
@@ -666,7 +696,9 @@ export default function ClientProjectsPage() {
               <Card.Root p={12}>
                 <VStack gap={3}>
                   <Text fontSize="2xl">⏳</Text>
-                  <Text color="gray.600">Loading projects...</Text>
+                  <Text color="gray.600">
+                    {t('client_projects.loading_projects')}
+                  </Text>
                 </VStack>
               </Card.Root>
             ) : filteredProjects.length === 0 ? (
@@ -674,12 +706,12 @@ export default function ClientProjectsPage() {
                 <VStack gap={3}>
                   <Text fontSize="3xl">📭</Text>
                   <Text fontSize="lg" fontWeight="bold">
-                    No Projects Found
+                    {t('client_projects.no_projects')}
                   </Text>
                   <Text fontSize="sm" color="gray.600">
                     {searchQuery || filterStatus !== 'all'
-                      ? 'Try adjusting your search or filters'
-                      : 'This client has no projects yet'}
+                      ? t('client_projects.no_projects_message')
+                      : t('client_projects.no_projects_message')}
                   </Text>
                 </VStack>
               </Card.Root>
@@ -721,7 +753,9 @@ export default function ClientProjectsPage() {
                           colorScheme={project.isActive ? 'green' : 'red'}
                           flexShrink={0}
                         >
-                          {project.isActive ? 'Active' : 'Inactive'}
+                          {project.isActive
+                            ? t('client_projects.status.active')
+                            : t('client_projects.status.inactive')}
                         </Badge>
                       </HStack>
 
@@ -751,7 +785,7 @@ export default function ClientProjectsPage() {
                       >
                         <HStack justify="space-between">
                           <Text fontSize="xs" color="gray.500">
-                            Start Date:
+                            {t('client_projects.card.start_date')}
                           </Text>
                           <Text fontSize="xs" fontWeight="medium">
                             {formatDate(project.startDate)}
@@ -761,7 +795,7 @@ export default function ClientProjectsPage() {
                         {project.endDate && (
                           <HStack justify="space-between">
                             <Text fontSize="xs" color="gray.500">
-                              End Date:
+                              {t('client_projects.card.end_date')}
                             </Text>
                             <Text fontSize="xs" fontWeight="medium">
                               {formatDate(project.endDate)}
@@ -771,7 +805,7 @@ export default function ClientProjectsPage() {
 
                         <HStack justify="space-between">
                           <Text fontSize="xs" color="gray.500">
-                            Budget:
+                            {t('client_projects.card.budget')}
                           </Text>
                           <Text
                             fontSize="sm"
@@ -790,7 +824,8 @@ export default function ClientProjectsPage() {
                         textAlign="center"
                         pt={2}
                       >
-                        Created {formatDate(project.createdAt)}
+                        {t('client_projects.card.created')}{' '}
+                        {formatDate(project.createdAt)}
                       </Text>
                     </VStack>
                   </Card.Root>

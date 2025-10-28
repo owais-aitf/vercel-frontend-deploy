@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -18,10 +20,11 @@ import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
 import { clientService, Client } from '@/shared/service/clientService';
-import { clientTabs } from '@/shared/config/clientTabs';
+import { LuUsers, LuUserPlus, LuPencil, LuFolderOpen } from 'react-icons/lu';
 
 export default function ClientsPage() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('sales');
   console.log('User from AuthContext:', user);
   const [clients, setClients] = useState<Client[]>([]);
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
@@ -67,7 +70,7 @@ export default function ClientsPage() {
           ? (error as { response?: { data?: { message?: string } } }).response
               ?.data?.message
           : undefined;
-      setError(errorMessage || 'Failed to fetch clients');
+      setError(errorMessage || t('clients.error_title'));
     } finally {
       setLoading(false);
     }
@@ -137,14 +140,37 @@ export default function ClientsPage() {
     <FeatureErrorBoundary featureName="Clients">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Client Management"
-        pageSubtitle="Manage clients and their project associations"
+        pageTitle={t('clients.title')}
+        pageSubtitle={t('clients.subtitle')}
         userName={user?.fullName || 'Sales Representative'}
         userInitials={getUserInitials()}
         notificationCount={0}
       >
         {/* Tab Navigation */}
-        <TabNavigation tabs={clientTabs} />
+        <TabNavigation
+          tabs={[
+            {
+              label: t('tabs.view_all_clients'),
+              href: '/sales/clients',
+              icon: LuUsers,
+            },
+            {
+              label: t('tabs.add_new_client'),
+              href: '/sales/clients/add',
+              icon: LuUserPlus,
+            },
+            {
+              label: t('tabs.update_client_info'),
+              href: '/sales/clients/update',
+              icon: LuPencil,
+            },
+            {
+              label: t('tabs.client_projects'),
+              href: '/sales/clients/projects',
+              icon: LuFolderOpen,
+            },
+          ]}
+        />
 
         {/* Stats Cards */}
         <Grid
@@ -155,7 +181,7 @@ export default function ClientsPage() {
           <Card.Root p={4} bg="blue.50">
             <VStack align="start" gap={2}>
               <Text fontSize="sm" color="blue.700" fontWeight="medium">
-                Total Clients
+                {t('clients.stats.total_clients')}
               </Text>
               <Text fontSize="2xl" fontWeight="bold" color="blue.900">
                 {clients.length}
@@ -166,7 +192,7 @@ export default function ClientsPage() {
           <Card.Root p={4} bg="green.50">
             <VStack align="start" gap={2}>
               <Text fontSize="sm" color="green.700" fontWeight="medium">
-                Active Clients
+                {t('clients.stats.active_clients')}
               </Text>
               <Text fontSize="2xl" fontWeight="bold" color="green.900">
                 {activeCount}
@@ -177,7 +203,7 @@ export default function ClientsPage() {
           <Card.Root p={4} bg="red.50">
             <VStack align="start" gap={2}>
               <Text fontSize="sm" color="red.700" fontWeight="medium">
-                Inactive Clients
+                {t('clients.stats.inactive_clients')}
               </Text>
               <Text fontSize="2xl" fontWeight="bold" color="red.900">
                 {inactiveCount}
@@ -190,7 +216,7 @@ export default function ClientsPage() {
         <Card.Root p={6} mb={6}>
           <VStack align="stretch" gap={4}>
             <Text fontSize="lg" fontWeight="bold">
-              🔍 Filters
+              {t('clients.filters.title')}
             </Text>
 
             <Grid
@@ -200,13 +226,13 @@ export default function ClientsPage() {
               {/* Search */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Search
+                  {t('clients.filters.search_label')}
                 </Text>
                 <Input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search by name, email, or phone..."
+                  placeholder={t('clients.filters.search_placeholder')}
                   bg="white"
                 />
               </Box>
@@ -214,7 +240,7 @@ export default function ClientsPage() {
               {/* Status Filter */}
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
-                  Status
+                  {t('clients.filters.status_label')}
                 </Text>
                 <Box position="relative">
                   <select
@@ -239,25 +265,37 @@ export default function ClientsPage() {
                       color: '#2D3748',
                     }}
                   >
-                    <option value="all">All Clients</option>
-                    <option value="active">Active Only</option>
-                    <option value="inactive">Inactive Only</option>
+                    <option value="all">
+                      {t('clients.filters.all_clients')}
+                    </option>
+                    <option value="active">
+                      {t('clients.filters.active_only')}
+                    </option>
+                    <option value="inactive">
+                      {t('clients.filters.inactive_only')}
+                    </option>
                   </select>
                 </Box>
               </Box>
             </Grid>
 
             <HStack justify="space-between">
-              <Text fontSize="sm" color="gray.600">
-                Showing <strong>{filteredClients.length}</strong> clients
-              </Text>
+              <Text
+                fontSize="sm"
+                color="gray.600"
+                dangerouslySetInnerHTML={{
+                  __html: t('clients.filters.showing', {
+                    count: filteredClients.length,
+                  }),
+                }}
+              />
               <Button
                 onClick={fetchClients}
                 size="sm"
                 variant="ghost"
                 colorScheme="blue"
               >
-                🔄 Refresh
+                {t('clients.filters.refresh')}
               </Button>
             </HStack>
           </VStack>
@@ -268,7 +306,7 @@ export default function ClientsPage() {
           <Card.Root p={8}>
             <VStack gap={4}>
               <Text fontSize="2xl">⏳</Text>
-              <Text color="gray.600">Loading clients...</Text>
+              <Text color="gray.600">{t('clients.loading')}</Text>
             </VStack>
           </Card.Root>
         )}
@@ -279,7 +317,7 @@ export default function ClientsPage() {
               <Text fontSize="2xl">⚠️</Text>
               <VStack align="start" gap={1}>
                 <Text fontWeight="bold" color="red.700">
-                  Error
+                  {t('clients.error_title')}
                 </Text>
                 <Text fontSize="sm" color="red.600">
                   {error}
@@ -294,12 +332,12 @@ export default function ClientsPage() {
             <VStack gap={4}>
               <Text fontSize="4xl">📭</Text>
               <Text fontSize="lg" fontWeight="bold">
-                No Clients Found
+                {t('clients.no_clients_found')}
               </Text>
               <Text color="gray.600">
                 {clients.length === 0
-                  ? 'No clients have been added yet.'
-                  : 'No clients match your filters.'}
+                  ? t('clients.no_clients_added')
+                  : t('clients.no_clients_match')}
               </Text>
             </VStack>
           </Card.Root>
@@ -335,7 +373,9 @@ export default function ClientsPage() {
                         colorScheme={client.isActive ? 'green' : 'red'}
                         fontSize="xs"
                       >
-                        {client.isActive ? 'Active' : 'Inactive'}
+                        {client.isActive
+                          ? t('clients.status.active')
+                          : t('clients.status.inactive')}
                       </Badge>
                     </HStack>
 
@@ -384,7 +424,7 @@ export default function ClientsPage() {
                       w="full"
                       mt={2}
                     >
-                      View Details
+                      {t('clients.view_details')}
                     </Button>
                   </VStack>
                 </Card.Root>
@@ -400,9 +440,11 @@ export default function ClientsPage() {
                 gap={4}
               >
                 <Text fontSize="sm" color="gray.600">
-                  Showing {indexOfFirstClient + 1} to{' '}
-                  {Math.min(indexOfLastClient, filteredClients.length)} of{' '}
-                  {filteredClients.length} clients
+                  {t('clients.pagination.showing', {
+                    start: indexOfFirstClient + 1,
+                    end: Math.min(indexOfLastClient, filteredClients.length),
+                    total: filteredClients.length,
+                  })}
                 </Text>
 
                 <HStack gap={2}>
@@ -412,7 +454,7 @@ export default function ClientsPage() {
                     disabled={currentPage === 1}
                     variant="outline"
                   >
-                    ← Previous
+                    {t('clients.pagination.previous')}
                   </Button>
 
                   <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
@@ -487,7 +529,10 @@ export default function ClientsPage() {
                     fontWeight="medium"
                     display={{ base: 'block', md: 'none' }}
                   >
-                    Page {currentPage} of {totalPages}
+                    {t('clients.pagination.page', {
+                      current: currentPage,
+                      total: totalPages,
+                    })}
                   </Text>
 
                   <Button
@@ -496,7 +541,7 @@ export default function ClientsPage() {
                     disabled={currentPage === totalPages}
                     variant="outline"
                   >
-                    Next →
+                    {t('clients.pagination.next')}
                   </Button>
                 </HStack>
               </HStack>
@@ -541,13 +586,15 @@ export default function ClientsPage() {
                 >
                   <VStack align="start" gap={1}>
                     <Text fontSize="xl" fontWeight="bold">
-                      Client Details
+                      {t('clients.modal.title')}
                     </Text>
                     <Badge
                       colorScheme={selectedClient.isActive ? 'green' : 'red'}
                       fontSize="sm"
                     >
-                      {selectedClient.isActive ? 'Active' : 'Inactive'}
+                      {selectedClient.isActive
+                        ? t('clients.status.active')
+                        : t('clients.status.inactive')}
                     </Badge>
                   </VStack>
                   <Box
@@ -567,7 +614,7 @@ export default function ClientsPage() {
                   {/* Client Name */}
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Client Name
+                      {t('clients.modal.client_name')}
                     </Text>
                     <Text fontSize="md" fontWeight="medium">
                       {selectedClient.name}
@@ -577,12 +624,13 @@ export default function ClientsPage() {
                   {/* Contact Email */}
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Contact Email
+                      {t('clients.modal.contact_email')}
                     </Text>
                     <HStack gap={2}>
                       <Text fontSize="sm">📧</Text>
                       <Text fontSize="md">
-                        {selectedClient.contactEmail || 'Not provided'}
+                        {selectedClient.contactEmail ||
+                          t('clients.modal.not_provided')}
                       </Text>
                     </HStack>
                   </Box>
@@ -590,12 +638,13 @@ export default function ClientsPage() {
                   {/* Contact Phone */}
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Contact Phone
+                      {t('clients.modal.contact_phone')}
                     </Text>
                     <HStack gap={2}>
                       <Text fontSize="sm">📱</Text>
                       <Text fontSize="md">
-                        {selectedClient.contactPhone || 'Not provided'}
+                        {selectedClient.contactPhone ||
+                          t('clients.modal.not_provided')}
                       </Text>
                     </HStack>
                   </Box>
@@ -603,7 +652,7 @@ export default function ClientsPage() {
                   {/* Address */}
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Address
+                      {t('clients.modal.address')}
                     </Text>
                     <Box
                       p={3}
@@ -615,7 +664,8 @@ export default function ClientsPage() {
                       <HStack gap={2} align="start">
                         <Text fontSize="sm">📍</Text>
                         <Text fontSize="sm" color="gray.700">
-                          {selectedClient.address || 'Not provided'}
+                          {selectedClient.address ||
+                            t('clients.modal.not_provided')}
                         </Text>
                       </HStack>
                     </Box>
@@ -626,7 +676,7 @@ export default function ClientsPage() {
                     <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                       <Box>
                         <Text fontSize="xs" color="gray.500" mb={1}>
-                          Created At
+                          {t('clients.modal.created_at')}
                         </Text>
                         <Text fontSize="sm">
                           {formatDate(selectedClient.createdAt)}
@@ -634,7 +684,7 @@ export default function ClientsPage() {
                       </Box>
                       <Box>
                         <Text fontSize="xs" color="gray.500" mb={1}>
-                          Last Updated
+                          {t('clients.modal.last_updated')}
                         </Text>
                         <Text fontSize="sm">
                           {formatDate(selectedClient.updatedAt)}
@@ -646,7 +696,7 @@ export default function ClientsPage() {
                   {/* Client ID */}
                   <Box>
                     <Text fontSize="xs" color="gray.500" mb={1}>
-                      Client ID
+                      {t('clients.modal.client_id')}
                     </Text>
                     <Text fontSize="xs" fontFamily="mono" color="gray.600">
                       {selectedClient.id}
@@ -662,7 +712,7 @@ export default function ClientsPage() {
                   borderColor="gray.200"
                 >
                   <Button onClick={closeClientModal} colorScheme="blue">
-                    Close
+                    {t('clients.modal.close')}
                   </Button>
                 </HStack>
               </VStack>
