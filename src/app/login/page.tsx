@@ -43,7 +43,7 @@ const CheckIcon = ({ color = '#10B981' }: { color?: string }) => (
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useContext(AuthContext);
+  const { login, token, user } = useContext(AuthContext);
   const { t } = useTranslation('auth');
 
   const [email, setEmail] = useState('');
@@ -87,6 +87,25 @@ export default function LoginPage() {
   // Check if fields are valid
   const isEmailValid = email && !validateEmail(email);
   const isPasswordValid = password && !validatePassword(password);
+
+  // Check if user is already authenticated and redirect to dashboard
+  // Only redirect if both token AND user exist (prevents redirect loop after logout)
+  useEffect(() => {
+    // Add a small delay to ensure state is fully updated after logout
+    const timeoutId = setTimeout(() => {
+      if (token && user?.role) {
+        const dashboardPath =
+          user.role === UserRole.ADMIN
+            ? '/admin/dashboard'
+            : user.role === UserRole.SALES
+              ? '/sales/dashboard'
+              : '/engineer/dashboard';
+        router.replace(dashboardPath);
+      }
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [token, user, router]);
 
   // Trigger card entrance animation and hydration
   useEffect(() => {

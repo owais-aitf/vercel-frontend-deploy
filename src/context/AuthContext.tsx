@@ -18,6 +18,7 @@ type User = {
 type AuthContextType = {
   user: User | null;
   token: string | null;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   setToken: (t: string | null) => void;
@@ -27,6 +28,7 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
+  isLoading: true,
   login: async () => ({ id: '', email: '', role: '' }),
   logout: () => {},
   setToken: () => {},
@@ -36,11 +38,13 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setTokenState] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const isHydrated = useIsHydrated();
 
   useEffect(() => {
     if (!isHydrated) return;
 
+    setIsLoading(true);
     try {
       const t = localStorage.getItem('authToken');
       const userDataString = localStorage.getItem('user');
@@ -66,6 +70,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem('user'); // ✅ ADDED
       setTokenState(null);
       setUser(null);
+    } finally {
+      setIsLoading(false);
     }
   }, [isHydrated]);
 
@@ -92,6 +98,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // ✅ CRITICAL FIX - Save user data to localStorage
     localStorage.setItem('user', JSON.stringify(userData));
 
+    // Clear logout flag on successful login
+    sessionStorage.removeItem('justLoggedOut');
+
     setToken(tokenFromRes);
     setUser(userData);
 
@@ -100,14 +109,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = () => {
     clearAllCaches();
-    setToken(null);
+    // Clear all auth-related items from localStorage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    // Set flag to indicate intentional logout (prevents error toast)
+    sessionStorage.setItem('justLoggedOut', 'true');
+    // Update state to null
+    setTokenState(null);
     setUser(null);
-    localStorage.removeItem('user'); // ✅ ADDED
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, setToken, setUser }}
+      value={{ user, token, isLoading, login, logout, setToken, setUser }}
     >
       {children}
     </AuthContext.Provider>

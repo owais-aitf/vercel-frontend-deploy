@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
@@ -22,6 +22,7 @@ import {
   LuLogOut,
 } from 'react-icons/lu';
 import { NavigationConfig } from '@/shared/config/navigation';
+import { AuthContext } from '@/context/AuthContext';
 
 interface SidebarProps {
   navigation: NavigationConfig;
@@ -63,6 +64,7 @@ export const Sidebar = ({
   const router = useRouter();
   const pathname = usePathname();
   const { t } = useTranslation('common');
+  const { logout } = useContext(AuthContext);
   const [userRole, setUserRole] = useState('User');
 
   // Determine portal translation key based on portalName
@@ -118,10 +120,8 @@ export const Sidebar = ({
   };
 
   const handleLogout = () => {
-    // Clear all auth data
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Use AuthContext logout to properly clear state and storage
+    logout();
     router.push('/login');
   };
 
