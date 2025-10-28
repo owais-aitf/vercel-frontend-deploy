@@ -222,7 +222,7 @@ export default function ViewAssignedProjects() {
           <Card.Root p={4} bg="blue.50">
             <VStack align="start" gap={2}>
               <Text fontSize="sm" color="blue.700" fontWeight="medium">
-                {t('projects.states.error')}
+                {t('projects.stats.total_projects')}
               </Text>
               <Text fontSize="2xl" fontWeight="bold" color="blue.900">
                 {projects.length}

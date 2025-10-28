@@ -147,10 +147,10 @@
 
   "attendanceHistory": {
     "page_title": "日報を更新",
-    "page_subtitle": "過去90日間の出勤記録を編集または削除",
+    "page_subtitle": "3か月間の出席記録を編集または削除します",
     "info_card": {
-      "title": "過去90日間のみ",
-      "description": "現在の日付から過去90日間の出勤記録のみを更新または削除できます"
+      "title": "3ヶ月限定",
+      "description": "過去3か月間の出席記録のみ更新または削除できます"
     },
     "filters": {
       "title": "フィルター",
@@ -200,7 +200,7 @@
     "edit_modal": {
       "title": "出勤記録を編集",
       "date_label": "日付",
-      "date_help": "過去90日間の出勤を更新できます",
+      "date_help": "過去3ヶ月間の出席状況を更新できます",
       "project_label": "プロジェクト",
       "project_placeholder": "プロジェクトを選択",
       "type_label": "出勤タイプ",

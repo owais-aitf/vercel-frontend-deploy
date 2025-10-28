@@ -147,10 +147,10 @@
 
   "attendanceHistory": {
     "page_title": "Update Daily Reports",
-    "page_subtitle": "Edit or delete your attendance records of past 90 Days",
+    "page_subtitle": "Edit or delete your attendance records of 3 Months",
     "info_card": {
-      "title": "Past 90 Days Only",
-      "description": "You can only update or delete attendance records of past 90 days from current date"
+      "title": "3 Months Only",
+      "description": "You can only update or delete attendance records of past 3 Months"
     },
     "filters": {
       "title": "Filters",
@@ -200,7 +200,7 @@
     "edit_modal": {
       "title": "Edit Attendance Record",
       "date_label": "Date",
-      "date_help": "You can update attendance for the past 90 days",
+      "date_help": "You can update attendance for the past 3 Months",
       "project_label": "Project",
       "project_placeholder": "Select Project",
       "type_label": "Attendance Type",

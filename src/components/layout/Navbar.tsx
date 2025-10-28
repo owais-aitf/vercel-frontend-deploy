@@ -36,7 +36,7 @@ export const Navbar = ({
       top={0}
       right={0}
       left={{ base: 0, lg: '240px' }}
-      h="70px"
+      h={{ base: '64px', md: '70px' }}
       bg="white"
       borderBottom="1px solid"
       borderColor="gray.200"
@@ -45,9 +45,10 @@ export const Navbar = ({
       display="flex"
       alignItems="center"
       justifyContent="space-between"
+      boxShadow="sm"
     >
       {/* Left Side - Menu Button (Mobile) + Title */}
-      <HStack gap={4}>
+      <HStack gap={{ base: 2, md: 4 }} flex={1} minW={0}>
         {/* Hamburger Menu - Mobile Only */}
         <Box
           as="button"
@@ -59,6 +60,7 @@ export const Navbar = ({
           cursor="pointer"
           _hover={{ bg: 'gray.100' }}
           borderRadius="md"
+          flexShrink={0}
         >
           <VStack gap={1}>
             <Box w="24px" h="3px" bg="gray.700" borderRadius="full" />
@@ -68,11 +70,13 @@ export const Navbar = ({
         </Box>
 
         {/* Title */}
-        <VStack align="start" gap={0}>
+        <VStack align="start" gap={0} minW={0} flex={1}>
           <Text
-            fontSize={{ base: 'lg', md: 'xl' }}
+            fontSize={{ base: 'lg', sm: 'lg', md: 'xl' }}
             fontWeight="bold"
             color="gray.800"
+            lineClamp={1}
+            w="full"
           >
             {title}
           </Text>
@@ -87,12 +91,16 @@ export const Navbar = ({
       </HStack>
 
       {/* Right Side - Actions */}
-      <HStack gap={{ base: 2, md: 4 }}>
+      <HStack gap={{ base: 1.5, sm: 2, md: 3 }} flexShrink={0}>
         {/* Language Switcher */}
-        <LanguageSwitcher />
+        <Box transform={{ base: 'scale(0.9)', md: 'scale(1)' }}>
+          {' '}
+          {/*Scale down slightly on mobile */}
+          <LanguageSwitcher />
+        </Box>
 
         {/* Notification Icon */}
-        <Box
+        {/* <Box
           position="relative"
           cursor="pointer"
           _hover={{ transform: 'scale(1.1)' }}
@@ -117,21 +125,22 @@ export const Navbar = ({
               {notificationCount}
             </Badge>
           )}
-        </Box>
+        </Box> */}
 
         {/* User Profile - Hidden on Mobile */}
         <HStack gap={2} display={{ base: 'none', sm: 'flex' }}>
           <Box
-            w="32px"
-            h="32px"
+            w={{ base: '28px', md: '32px' }}
+            h={{ base: '28px', md: '32px' }}
             borderRadius="full"
             bg="blue.500"
             color="white"
             display="flex"
             alignItems="center"
             justifyContent="center"
-            fontSize="sm"
+            fontSize={{ base: 'xs', md: 'sm' }}
             fontWeight="bold"
+            flexShrink={0}
           >
             {userInitials}
           </Box>
@@ -140,10 +149,13 @@ export const Navbar = ({
         {/* Logout Button - Mobile Only (since sidebar is hidden on mobile) */}
         <Button
           onClick={handleLogout}
-          size="sm"
+          size={{ base: 'xs', sm: 'sm' }}
           colorScheme="red"
           variant="ghost"
           display={{ base: 'flex', lg: 'none' }}
+          px={{ base: 2, sm: 3 }}
+          fontSize={{ base: 'xs', sm: 'sm' }}
+          flexShrink={0}
         >
           {t('logout')}
         </Button>
