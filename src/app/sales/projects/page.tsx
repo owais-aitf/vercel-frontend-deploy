@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -28,6 +30,7 @@ import { projectTabs } from '@/shared/config/projectTabs';
 
 export default function ViewAllProjectsPage() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('sales');
 
   // State
   const [projects, setProjects] = useState<Project[]>([]);
@@ -96,7 +99,7 @@ export default function ViewAllProjectsPage() {
       setClients(clientsRes.data || []);
     } catch (err) {
       console.error('Error fetching data:', err);
-      setError('Failed to load projects');
+      setError(t('projects.error.load_failed'));
     } finally {
       setLoading(false);
     }
@@ -270,18 +273,18 @@ export default function ViewAllProjectsPage() {
     const errors: { [key: string]: string } = {};
 
     if (!formData.projectName.trim()) {
-      errors.projectName = 'Project name is required';
+      errors.projectName = t('projects.validation.project_name_required');
     }
 
     if (!formData.startDate) {
-      errors.startDate = 'Start date is required';
+      errors.startDate = t('projects.validation.start_date_required');
     }
 
     if (
       !formData.monthlyUnitPrice ||
       parseFloat(formData.monthlyUnitPrice) <= 0
     ) {
-      errors.monthlyUnitPrice = 'Monthly unit price must be greater than 0';
+      errors.monthlyUnitPrice = t('projects.validation.monthly_price_required');
     }
 
     if (formData.settlementMethod === 'UP_DOWN') {
@@ -289,13 +292,17 @@ export default function ViewAllProjectsPage() {
         !formData.settlementRangeMin ||
         parseInt(formData.settlementRangeMin) < 0
       ) {
-        errors.settlementRangeMin = 'Settlement range minimum is required';
+        errors.settlementRangeMin = t(
+          'projects.validation.settlement_min_required'
+        );
       }
       if (
         !formData.settlementRangeMax ||
         parseInt(formData.settlementRangeMax) <= 0
       ) {
-        errors.settlementRangeMax = 'Settlement range maximum is required';
+        errors.settlementRangeMax = t(
+          'projects.validation.settlement_max_required'
+        );
       }
       if (
         formData.settlementRangeMin &&
@@ -303,7 +310,9 @@ export default function ViewAllProjectsPage() {
         parseInt(formData.settlementRangeMin) >=
           parseInt(formData.settlementRangeMax)
       ) {
-        errors.settlementRangeMax = 'Maximum must be greater than minimum';
+        errors.settlementRangeMax = t(
+          'projects.validation.settlement_max_greater'
+        );
       }
     }
 
@@ -312,7 +321,7 @@ export default function ViewAllProjectsPage() {
       formData.startDate &&
       formData.endDate < formData.startDate
     ) {
-      errors.endDate = 'End date must be after start date';
+      errors.endDate = t('projects.validation.end_date_after_start');
     }
 
     setValidationErrors(errors);
@@ -373,8 +382,7 @@ export default function ViewAllProjectsPage() {
       console.error('❌ Error updating project:', error);
       const err = error as { response?: { data?: { message?: string } } };
       setUpdateError(
-        err.response?.data?.message ||
-          'Failed to update project. Please try again.'
+        err.response?.data?.message || t('projects.error.update_failed')
       );
     } finally {
       setUpdateLoading(false);
@@ -385,8 +393,8 @@ export default function ViewAllProjectsPage() {
     <FeatureErrorBoundary featureName="View All Projects">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Projects"
-        pageSubtitle="Manage all client projects"
+        pageTitle={t('projects.title')}
+        pageSubtitle={t('projects.subtitle')}
         userName={user?.fullName || 'Sales Representative'}
         userInitials={getUserInitials()}
         notificationCount={0}
@@ -406,10 +414,10 @@ export default function ViewAllProjectsPage() {
               <Text fontSize="xl">✅</Text>
               <VStack align="start" gap={0}>
                 <Text fontWeight="bold" color="green.800" fontSize="sm">
-                  Success
+                  {t('projects.success.title')}
                 </Text>
                 <Text fontSize="xs" color="green.600">
-                  Project updated successfully
+                  {t('projects.success.message')}
                 </Text>
               </VStack>
             </HStack>
@@ -429,7 +437,7 @@ export default function ViewAllProjectsPage() {
               <Text fontSize="xl">⚠️</Text>
               <VStack align="start" gap={0}>
                 <Text fontWeight="bold" color="red.800" fontSize="sm">
-                  Error
+                  {t('projects.error.title')}
                 </Text>
                 <Text fontSize="xs" color="red.600">
                   {error}
@@ -452,7 +460,7 @@ export default function ViewAllProjectsPage() {
                 color="gray.600"
                 fontWeight="medium"
               >
-                Total Projects
+                {t('projects.stats.total_projects')}
               </Text>
               <Text
                 fontSize={{ base: '2xl', md: '3xl' }}
@@ -471,7 +479,7 @@ export default function ViewAllProjectsPage() {
                 color="gray.600"
                 fontWeight="medium"
               >
-                Active Projects
+                {t('projects.stats.active_projects')}
               </Text>
               <Text
                 fontSize={{ base: '2xl', md: '3xl' }}
@@ -490,7 +498,7 @@ export default function ViewAllProjectsPage() {
                 color="gray.600"
                 fontWeight="medium"
               >
-                Inactive Projects
+                {t('projects.stats.inactive_projects')}
               </Text>
               <Text
                 fontSize={{ base: '2xl', md: '3xl' }}
@@ -509,7 +517,7 @@ export default function ViewAllProjectsPage() {
             {/* Search Input */}
             <Box w="full">
               <Input
-                placeholder="Search projects by name..."
+                placeholder={t('projects.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 bg="white"
@@ -530,7 +538,7 @@ export default function ViewAllProjectsPage() {
                 onClick={() => setFilterStatus('all')}
                 fontSize={{ base: 'xs', md: 'sm' }}
               >
-                All ({projectStats.total})
+                {t('projects.filters.all')} ({projectStats.total})
               </Button>
               <Button
                 size={{ base: 'sm', md: 'md' }}
@@ -539,7 +547,7 @@ export default function ViewAllProjectsPage() {
                 onClick={() => setFilterStatus('active')}
                 fontSize={{ base: 'xs', md: 'sm' }}
               >
-                Active ({projectStats.active})
+                {t('projects.filters.active')} ({projectStats.active})
               </Button>
               <Button
                 size={{ base: 'sm', md: 'md' }}
@@ -548,7 +556,7 @@ export default function ViewAllProjectsPage() {
                 onClick={() => setFilterStatus('inactive')}
                 fontSize={{ base: 'xs', md: 'sm' }}
               >
-                Inactive ({projectStats.inactive})
+                {t('projects.filters.inactive')} ({projectStats.inactive})
               </Button>
             </HStack>
 
@@ -567,7 +575,7 @@ export default function ViewAllProjectsPage() {
                   cursor: 'pointer',
                 }}
               >
-                <option value="all">All Clients</option>
+                <option value="all">{t('projects.filters.all_clients')}</option>
                 {clients
                   .filter((c) => c.isActive)
                   .sort((a, b) => a.name.localeCompare(b.name))
@@ -611,7 +619,7 @@ export default function ViewAllProjectsPage() {
                   style={{ animationDelay: '0.4s' }}
                 />
               </HStack>
-              <Text color="gray.600">Loading projects...</Text>
+              <Text color="gray.600">{t('projects.loading')}</Text>
             </VStack>
           </Card.Root>
         ) : filteredProjects.length === 0 ? (
@@ -619,12 +627,12 @@ export default function ViewAllProjectsPage() {
             <VStack gap={3}>
               <Text fontSize="3xl">📭</Text>
               <Text fontSize="lg" fontWeight="bold">
-                No Projects Found
+                {t('projects.no_projects_found')}
               </Text>
               <Text fontSize="sm" color="gray.600">
                 {searchQuery || filterStatus !== 'all' || filterClient !== 'all'
-                  ? 'Try adjusting your search or filters'
-                  : 'No projects available yet'}
+                  ? t('projects.no_projects_message')
+                  : t('projects.no_projects_yet')}
               </Text>
             </VStack>
           </Card.Root>
@@ -669,14 +677,16 @@ export default function ViewAllProjectsPage() {
                         flexShrink={0}
                         fontSize="xs"
                       >
-                        {project.isActive ? 'Active' : 'Inactive'}
+                        {project.isActive
+                          ? t('projects.status.active')
+                          : t('projects.status.inactive')}
                       </Badge>
                     </HStack>
 
                     {/* Client Name */}
                     <HStack gap={2}>
                       <Text fontSize="xs" color="gray.500">
-                        Client:
+                        {t('projects.card.client')}
                       </Text>
                       <Text fontSize="xs" fontWeight="medium">
                         {project.client?.name || 'N/A'}
@@ -693,7 +703,7 @@ export default function ViewAllProjectsPage() {
                     >
                       <HStack justify="space-between">
                         <Text fontSize="xs" color="gray.500">
-                          Start Date:
+                          {t('projects.card.start_date')}
                         </Text>
                         <Text fontSize="xs" fontWeight="medium">
                           {formatDate(project.startDate)}
@@ -703,7 +713,7 @@ export default function ViewAllProjectsPage() {
                       {project.endDate && (
                         <HStack justify="space-between">
                           <Text fontSize="xs" color="gray.500">
-                            End Date:
+                            {t('projects.card.end_date')}
                           </Text>
                           <Text fontSize="xs" fontWeight="medium">
                             {formatDate(project.endDate)}
@@ -713,7 +723,7 @@ export default function ViewAllProjectsPage() {
 
                       <HStack justify="space-between">
                         <Text fontSize="xs" color="gray.500">
-                          Monthly Price:
+                          {t('projects.card.monthly_price')}
                         </Text>
                         <Text fontSize="sm" fontWeight="bold" color="green.600">
                           {formatCurrency(project.monthlyUnitPrice)}
@@ -723,7 +733,7 @@ export default function ViewAllProjectsPage() {
                       {project.hourlyUnitPrice && (
                         <HStack justify="space-between">
                           <Text fontSize="xs" color="gray.500">
-                            Hourly Price:
+                            {t('projects.card.hourly_price')}
                           </Text>
                           <Text
                             fontSize="xs"
@@ -737,19 +747,19 @@ export default function ViewAllProjectsPage() {
 
                       <HStack justify="space-between">
                         <Text fontSize="xs" color="gray.500">
-                          Settlement:
+                          {t('projects.card.settlement')}
                         </Text>
                         <Badge colorScheme="purple" fontSize="xs">
                           {project.settlementMethod === 'UP_DOWN'
-                            ? 'Up/Down'
-                            : 'Fixed'}
+                            ? t('projects.settlement_methods.up_down')
+                            : t('projects.settlement_methods.fixed')}
                         </Badge>
                       </HStack>
 
                       {project.settlementMethod === 'UP_DOWN' && (
                         <HStack justify="space-between">
                           <Text fontSize="xs" color="gray.500">
-                            Range:
+                            {t('projects.card.range')}
                           </Text>
                           <Text fontSize="xs" fontWeight="medium">
                             {project.settlementRangeMin}h -{' '}
@@ -769,7 +779,8 @@ export default function ViewAllProjectsPage() {
                       borderColor="gray.100"
                     >
                       <Text fontSize="xs" color="gray.400" flexShrink={0}>
-                        Created {formatDate(project.createdAt)}
+                        {t('projects.card.created')}{' '}
+                        {formatDate(project.createdAt)}
                       </Text>
                       <Button
                         size="md"
@@ -790,7 +801,7 @@ export default function ViewAllProjectsPage() {
                         <HStack gap={2}>
                           <LuPencil size={16} />
                           <Text fontSize="sm" fontWeight="medium">
-                            Edit
+                            {t('projects.edit_button')}
                           </Text>
                         </HStack>
                       </Button>
@@ -809,9 +820,11 @@ export default function ViewAllProjectsPage() {
                     color="gray.600"
                     textAlign={{ base: 'center', md: 'left' }}
                   >
-                    Showing {startIndex + 1} -{' '}
-                    {Math.min(endIndex, filteredProjects.length)} of{' '}
-                    {filteredProjects.length} projects
+                    {t('projects.pagination.showing', {
+                      start: startIndex + 1,
+                      end: Math.min(endIndex, filteredProjects.length),
+                      total: filteredProjects.length,
+                    })}
                   </Text>
 
                   {/* Pagination Buttons - Centered and wrapped properly */}
@@ -824,7 +837,7 @@ export default function ViewAllProjectsPage() {
                       fontSize={{ base: 'xs', md: 'sm' }}
                       px={{ base: 3, md: 4 }}
                     >
-                      Prev
+                      {t('projects.pagination.prev')}
                     </Button>
 
                     {getPageNumbers().map((page, index) =>
@@ -862,7 +875,7 @@ export default function ViewAllProjectsPage() {
                       fontSize={{ base: 'xs', md: 'sm' }}
                       px={{ base: 3, md: 4 }}
                     >
-                      Next
+                      {t('projects.pagination.next')}
                     </Button>
                   </HStack>
                 </VStack>
@@ -908,7 +921,7 @@ export default function ViewAllProjectsPage() {
                 >
                   <VStack align="start" gap={1}>
                     <Text fontSize="xl" fontWeight="bold">
-                      Edit Project
+                      {t('projects.edit_modal.title')}
                     </Text>
                     <Text fontSize="sm" color="gray.600">
                       {selectedProject.projectName}
@@ -948,10 +961,10 @@ export default function ViewAllProjectsPage() {
                   <Box>
                     <HStack mb={2}>
                       <Text fontSize="sm" fontWeight="medium">
-                        Project Name
+                        {t('projects.edit_modal.project_name')}
                       </Text>
                       <Text fontSize="sm" color="red.500">
-                        *
+                        {t('projects.edit_modal.required')}
                       </Text>
                     </HStack>
                     <Input
@@ -977,10 +990,10 @@ export default function ViewAllProjectsPage() {
                     <Box>
                       <HStack mb={2}>
                         <Text fontSize="sm" fontWeight="medium">
-                          Start Date
+                          {t('projects.edit_modal.start_date')}
                         </Text>
                         <Text fontSize="sm" color="red.500">
-                          *
+                          {t('projects.edit_modal.required')}
                         </Text>
                       </HStack>
                       <Input
@@ -1001,7 +1014,7 @@ export default function ViewAllProjectsPage() {
 
                     <Box>
                       <Text fontSize="sm" fontWeight="medium" mb={2}>
-                        End Date
+                        {t('projects.edit_modal.end_date')}
                       </Text>
                       <Input
                         name="endDate"
@@ -1020,10 +1033,10 @@ export default function ViewAllProjectsPage() {
                     <Box>
                       <HStack mb={2}>
                         <Text fontSize="sm" fontWeight="medium">
-                          Monthly Price (¥)
+                          {t('projects.edit_modal.monthly_price')}
                         </Text>
                         <Text fontSize="sm" color="red.500">
-                          *
+                          {t('projects.edit_modal.required')}
                         </Text>
                       </HStack>
                       <Input
@@ -1049,7 +1062,7 @@ export default function ViewAllProjectsPage() {
 
                     <Box>
                       <Text fontSize="sm" fontWeight="medium" mb={2}>
-                        Hourly Price (¥)
+                        {t('projects.edit_modal.hourly_price')}
                       </Text>
                       <Input
                         name="hourlyUnitPrice"
@@ -1069,7 +1082,7 @@ export default function ViewAllProjectsPage() {
                   {/* Settlement Method */}
                   <Box>
                     <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      Settlement Method
+                      {t('projects.edit_modal.settlement_method')}
                     </Text>
                     <HStack gap={3}>
                       <Button
@@ -1092,7 +1105,7 @@ export default function ViewAllProjectsPage() {
                           }))
                         }
                       >
-                        Fixed
+                        {t('projects.settlement_methods.fixed')}
                       </Button>
                       <Button
                         type="button"
@@ -1114,7 +1127,7 @@ export default function ViewAllProjectsPage() {
                           }))
                         }
                       >
-                        Up/Down
+                        {t('projects.settlement_methods.up_down')}
                       </Button>
                     </HStack>
                   </Box>
@@ -1127,7 +1140,8 @@ export default function ViewAllProjectsPage() {
                     >
                       <Box>
                         <Text fontSize="sm" fontWeight="medium" mb={2}>
-                          Min (hours) *
+                          {t('projects.edit_modal.settlement_min')}{' '}
+                          {t('projects.edit_modal.required')}
                         </Text>
                         <Input
                           name="settlementRangeMin"
@@ -1143,7 +1157,8 @@ export default function ViewAllProjectsPage() {
                       </Box>
                       <Box>
                         <Text fontSize="sm" fontWeight="medium" mb={2}>
-                          Max (hours) *
+                          {t('projects.edit_modal.settlement_max')}{' '}
+                          {t('projects.edit_modal.required')}
                         </Text>
                         <Input
                           name="settlementRangeMax"
@@ -1170,7 +1185,9 @@ export default function ViewAllProjectsPage() {
                         onChange={handleChange}
                         style={{ width: '16px', height: '16px' }}
                       />
-                      <Text fontSize="sm">Include Paid Leave</Text>
+                      <Text fontSize="sm">
+                        {t('projects.edit_modal.include_paid_leave')}
+                      </Text>
                     </HStack>
 
                     <HStack gap={2}>
@@ -1181,7 +1198,9 @@ export default function ViewAllProjectsPage() {
                         onChange={handleChange}
                         style={{ width: '16px', height: '16px' }}
                       />
-                      <Text fontSize="sm">Active</Text>
+                      <Text fontSize="sm">
+                        {t('projects.edit_modal.active')}
+                      </Text>
                     </HStack>
                   </HStack>
                 </VStack>
@@ -1200,14 +1219,16 @@ export default function ViewAllProjectsPage() {
                     onClick={() => setIsModalOpen(false)}
                     disabled={updateLoading}
                   >
-                    Cancel
+                    {t('projects.edit_modal.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     colorScheme="blue"
                     disabled={updateLoading}
                   >
-                    {updateLoading ? 'Updating...' : 'Update Project'}
+                    {updateLoading
+                      ? t('projects.edit_modal.updating')
+                      : t('projects.edit_modal.update')}
                   </Button>
                 </HStack>
               </form>

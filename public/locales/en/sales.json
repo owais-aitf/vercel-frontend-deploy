@@ -82,5 +82,121 @@
       "save": "Save Changes",
       "cancel": "Cancel"
     }
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage all client projects",
+    "stats": {
+      "total_projects": "Total Projects",
+      "active_projects": "Active Projects",
+      "inactive_projects": "Inactive Projects"
+    },
+    "search_placeholder": "Search projects by name...",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive",
+      "all_clients": "All Clients"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "card": {
+      "client": "Client:",
+      "start_date": "Start Date:",
+      "end_date": "End Date:",
+      "monthly_price": "Monthly Price:",
+      "hourly_price": "Hourly Price:",
+      "settlement": "Settlement:",
+      "range": "Range:",
+      "created": "Created"
+    },
+    "settlement_methods": {
+      "fixed": "Fixed",
+      "up_down": "Up/Down"
+    },
+    "loading": "Loading projects...",
+    "no_projects_found": "No Projects Found",
+    "no_projects_message": "Try adjusting your search or filters",
+    "no_projects_yet": "No projects available yet",
+    "pagination": {
+      "showing": "Showing {{start}} - {{end}} of {{total}} projects",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "edit_button": "Edit",
+    "success": {
+      "title": "Success",
+      "message": "Project updated successfully"
+    },
+    "error": {
+      "title": "Error",
+      "load_failed": "Failed to load projects",
+      "update_failed": "Failed to update project. Please try again."
+    },
+    "edit_modal": {
+      "title": "Edit Project",
+      "project_name": "Project Name",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "monthly_price": "Monthly Price (¥)",
+      "hourly_price": "Hourly Price (¥)",
+      "settlement_method": "Settlement Method",
+      "settlement_min": "Min (hours)",
+      "settlement_max": "Max (hours)",
+      "include_paid_leave": "Include Paid Leave",
+      "active": "Active",
+      "cancel": "Cancel",
+      "update": "Update Project",
+      "updating": "Updating...",
+      "required": "*"
+    },
+    "validation": {
+      "project_name_required": "Project name is required",
+      "start_date_required": "Start date is required",
+      "monthly_price_required": "Monthly unit price must be greater than 0",
+      "settlement_min_required": "Settlement range minimum is required",
+      "settlement_max_required": "Settlement range maximum is required",
+      "settlement_max_greater": "Maximum must be greater than minimum",
+      "end_date_after_start": "End date must be after start date",
+      "client_required": "Please select a client"
+    },
+    "add_project": {
+      "title": "Create New Project",
+      "subtitle": "Add a new project to the system",
+      "form_title": "Project Information",
+      "form_subtitle": "Enter the project details below",
+      "project_name": "Project Name",
+      "project_name_placeholder": "Enter project name",
+      "client": "Client",
+      "client_select": "-- Select a client --",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "monthly_price": "Monthly Unit Price (¥)",
+      "hourly_price": "Hourly Unit Price (¥)",
+      "settlement_method": "Settlement Method",
+      "settlement_min": "Settlement Range Min (hours)",
+      "settlement_max": "Settlement Range Max (hours)",
+      "include_paid_leave": "Include Paid Leave in Settlement",
+      "include_paid_leave_note": "Check this if paid leave should be included in settlement calculations",
+      "required": "*",
+      "buttons": {
+        "reset": "Reset",
+        "cancel": "Cancel",
+        "create": "Create Project",
+        "creating": "Creating..."
+      },
+      "success": {
+        "title": "Success!",
+        "message": "Project created successfully",
+        "redirecting": "Redirecting to projects list..."
+      },
+      "error": {
+        "title": "Creation Failed",
+        "load_clients_failed": "Failed to load clients",
+        "create_failed": "Failed to create project. Please try again."
+      }
+    }
   }
 }

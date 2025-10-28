@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Text,
@@ -27,6 +29,7 @@ import { projectTabs } from '@/shared/config/projectTabs';
 export default function AddProjectPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();
+  const { t } = useTranslation('sales');
 
   // State
   const [clients, setClients] = useState<Client[]>([]);
@@ -72,7 +75,7 @@ export default function AddProjectPage() {
       const response = await clientService.getClients();
       setClients(response.data || []);
     } catch {
-      setError('Failed to load clients');
+      setError(t('projects.add_project.error.load_clients_failed'));
     } finally {
       setLoadingClients(false);
     }
@@ -112,22 +115,22 @@ export default function AddProjectPage() {
     const errors: { [key: string]: string } = {};
 
     if (!formData.projectName.trim()) {
-      errors.projectName = 'Project name is required';
+      errors.projectName = t('projects.validation.project_name_required');
     }
 
     if (!formData.clientId) {
-      errors.clientId = 'Please select a client';
+      errors.clientId = t('projects.validation.client_required');
     }
 
     if (!formData.startDate) {
-      errors.startDate = 'Start date is required';
+      errors.startDate = t('projects.validation.start_date_required');
     }
 
     if (
       !formData.monthlyUnitPrice ||
       parseFloat(formData.monthlyUnitPrice) <= 0
     ) {
-      errors.monthlyUnitPrice = 'Monthly unit price must be greater than 0';
+      errors.monthlyUnitPrice = t('projects.validation.monthly_price_required');
     }
 
     if (formData.settlementMethod === 'UP_DOWN') {
@@ -135,13 +138,17 @@ export default function AddProjectPage() {
         !formData.settlementRangeMin ||
         parseInt(formData.settlementRangeMin) < 0
       ) {
-        errors.settlementRangeMin = 'Settlement range minimum is required';
+        errors.settlementRangeMin = t(
+          'projects.validation.settlement_min_required'
+        );
       }
       if (
         !formData.settlementRangeMax ||
         parseInt(formData.settlementRangeMax) <= 0
       ) {
-        errors.settlementRangeMax = 'Settlement range maximum is required';
+        errors.settlementRangeMax = t(
+          'projects.validation.settlement_max_required'
+        );
       }
       if (
         formData.settlementRangeMin &&
@@ -149,7 +156,9 @@ export default function AddProjectPage() {
         parseInt(formData.settlementRangeMin) >=
           parseInt(formData.settlementRangeMax)
       ) {
-        errors.settlementRangeMax = 'Maximum must be greater than minimum';
+        errors.settlementRangeMax = t(
+          'projects.validation.settlement_max_greater'
+        );
       }
     }
 
@@ -158,7 +167,7 @@ export default function AddProjectPage() {
       formData.startDate &&
       formData.endDate < formData.startDate
     ) {
-      errors.endDate = 'End date must be after start date';
+      errors.endDate = t('projects.validation.end_date_after_start');
     }
 
     setValidationErrors(errors);
@@ -215,7 +224,7 @@ export default function AddProjectPage() {
       const err = error as { response?: { data?: { message?: string } } };
       setError(
         err.response?.data?.message ||
-          'Failed to create project. Please try again.'
+          t('projects.add_project.error.create_failed')
       );
     } finally {
       setLoading(false);
@@ -260,8 +269,8 @@ export default function AddProjectPage() {
     <FeatureErrorBoundary featureName="Create New Project">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Create New Project"
-        pageSubtitle="Add a new project to the system"
+        pageTitle={t('projects.add_project.title')}
+        pageSubtitle={t('projects.add_project.subtitle')}
         userName={user?.fullName || 'Sales Representative'}
         userInitials={getUserInitials()}
         notificationCount={0}
@@ -308,13 +317,13 @@ export default function AddProjectPage() {
 
                 <VStack gap={2} textAlign="center">
                   <Text fontSize="xl" fontWeight="bold" color="gray.800">
-                    Success!
+                    {t('projects.add_project.success.title')}
                   </Text>
                   <Text fontSize="md" color="gray.600">
-                    Project created successfully
+                    {t('projects.add_project.success.message')}
                   </Text>
                   <Text fontSize="sm" color="gray.500">
-                    Redirecting to projects list...
+                    {t('projects.add_project.success.redirecting')}
                   </Text>
                 </VStack>
 
@@ -393,7 +402,7 @@ export default function AddProjectPage() {
               </Box>
               <VStack align="start" gap={0}>
                 <Text fontWeight="bold" color="red.800" fontSize="md">
-                  Creation Failed
+                  {t('projects.add_project.error.title')}
                 </Text>
                 <Text fontSize="sm" color="red.600">
                   {error}
@@ -409,10 +418,10 @@ export default function AddProjectPage() {
             <VStack align="stretch" gap={6}>
               <VStack align="start" gap={1}>
                 <Text fontSize="lg" fontWeight="bold">
-                  Project Information
+                  {t('projects.add_project.form_title')}
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  Enter the project details below
+                  {t('projects.add_project.form_subtitle')}
                 </Text>
               </VStack>
 
@@ -420,10 +429,10 @@ export default function AddProjectPage() {
               <Box>
                 <HStack mb={2}>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                    Project Name
+                    {t('projects.add_project.project_name')}
                   </Text>
                   <Text fontSize="sm" color="red.500">
-                    *
+                    {t('projects.add_project.required')}
                   </Text>
                 </HStack>
                 <Input
@@ -431,7 +440,9 @@ export default function AddProjectPage() {
                   type="text"
                   value={formData.projectName}
                   onChange={handleChange}
-                  placeholder="Enter project name"
+                  placeholder={t(
+                    'projects.add_project.project_name_placeholder'
+                  )}
                   bg="white"
                   borderColor={
                     validationErrors.projectName ? 'red.500' : 'gray.300'
@@ -448,10 +459,10 @@ export default function AddProjectPage() {
               <Box>
                 <HStack mb={2}>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                    Client
+                    {t('projects.add_project.client')}
                   </Text>
                   <Text fontSize="sm" color="red.500">
-                    *
+                    {t('projects.add_project.required')}
                   </Text>
                 </HStack>
                 <select
@@ -471,7 +482,9 @@ export default function AddProjectPage() {
                     cursor: loadingClients ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  <option value="">-- Select a client --</option>
+                  <option value="">
+                    {t('projects.add_project.client_select')}
+                  </option>
                   {clients
                     .filter((c) => c.isActive)
                     .sort((a, b) => a.name.localeCompare(b.name))
@@ -496,10 +509,10 @@ export default function AddProjectPage() {
                 <Box>
                   <HStack mb={2}>
                     <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                      Start Date
+                      {t('projects.add_project.start_date')}
                     </Text>
                     <Text fontSize="sm" color="red.500">
-                      *
+                      {t('projects.add_project.required')}
                     </Text>
                   </HStack>
                   <Input
@@ -526,7 +539,7 @@ export default function AddProjectPage() {
                     color="gray.700"
                     mb={2}
                   >
-                    End Date
+                    {t('projects.add_project.end_date')}
                   </Text>
                   <Input
                     name="endDate"
@@ -554,10 +567,10 @@ export default function AddProjectPage() {
                 <Box>
                   <HStack mb={2}>
                     <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                      Monthly Unit Price (¥)
+                      {t('projects.add_project.monthly_price')}
                     </Text>
                     <Text fontSize="sm" color="red.500">
-                      *
+                      {t('projects.add_project.required')}
                     </Text>
                   </HStack>
                   <Input
@@ -591,7 +604,7 @@ export default function AddProjectPage() {
                     color="gray.700"
                     mb={2}
                   >
-                    Hourly Unit Price (¥)
+                    {t('projects.add_project.hourly_price')}
                   </Text>
                   <Input
                     name="hourlyUnitPrice"
@@ -614,10 +627,10 @@ export default function AddProjectPage() {
               <Box>
                 <HStack mb={2}>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                    Settlement Method
+                    {t('projects.add_project.settlement_method')}
                   </Text>
                   <Text fontSize="sm" color="red.500">
-                    *
+                    {t('projects.add_project.required')}
                   </Text>
                 </HStack>
                 <HStack gap={4}>
@@ -640,7 +653,8 @@ export default function AddProjectPage() {
                     }
                     borderWidth="2px"
                   >
-                    {formData.settlementMethod === 'FIXED' && '✓ '}Fixed
+                    {formData.settlementMethod === 'FIXED' && '✓ '}
+                    {t('projects.settlement_methods.fixed')}
                   </Button>
                   <Button
                     type="button"
@@ -663,7 +677,8 @@ export default function AddProjectPage() {
                     }
                     borderWidth="2px"
                   >
-                    {formData.settlementMethod === 'UP_DOWN' && '✓ '}Up/Down
+                    {formData.settlementMethod === 'UP_DOWN' && '✓ '}
+                    {t('projects.settlement_methods.up_down')}
                   </Button>
                 </HStack>
               </Box>
@@ -677,10 +692,10 @@ export default function AddProjectPage() {
                   <Box>
                     <HStack mb={2}>
                       <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                        Settlement Range Min (hours)
+                        {t('projects.add_project.settlement_min')}
                       </Text>
                       <Text fontSize="sm" color="red.500">
-                        *
+                        {t('projects.add_project.required')}
                       </Text>
                     </HStack>
                     <Input
@@ -706,10 +721,10 @@ export default function AddProjectPage() {
                   <Box>
                     <HStack mb={2}>
                       <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                        Settlement Range Max (hours)
+                        {t('projects.add_project.settlement_max')}
                       </Text>
                       <Text fontSize="sm" color="red.500">
-                        *
+                        {t('projects.add_project.required')}
                       </Text>
                     </HStack>
                     <Input
@@ -745,12 +760,11 @@ export default function AddProjectPage() {
                     style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                   />
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                    Include Paid Leave in Settlement
+                    {t('projects.add_project.include_paid_leave')}
                   </Text>
                 </HStack>
                 <Text fontSize="xs" color="gray.500" mt={1} ml={7}>
-                  Check this if paid leave should be included in settlement
-                  calculations
+                  {t('projects.add_project.include_paid_leave_note')}
                 </Text>
               </Box>
 
@@ -768,7 +782,7 @@ export default function AddProjectPage() {
                   onClick={handleReset}
                   disabled={loading}
                 >
-                  Reset
+                  {t('projects.add_project.buttons.reset')}
                 </Button>
                 <Button
                   type="button"
@@ -776,7 +790,7 @@ export default function AddProjectPage() {
                   onClick={handleCancel}
                   disabled={loading}
                 >
-                  Cancel
+                  {t('projects.add_project.buttons.cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -784,7 +798,9 @@ export default function AddProjectPage() {
                   disabled={loading}
                   opacity={loading ? 0.6 : 1}
                 >
-                  {loading ? 'Creating...' : 'Create Project'}
+                  {loading
+                    ? t('projects.add_project.buttons.creating')
+                    : t('projects.add_project.buttons.create')}
                 </Button>
               </HStack>
             </VStack>

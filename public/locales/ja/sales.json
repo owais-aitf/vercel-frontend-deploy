@@ -78,5 +78,121 @@
       "save": "変更を保存",
       "cancel": "キャンセル"
     }
+  },
+  "projects": {
+    "title": "プロジェクト",
+    "subtitle": "すべてのクライアントプロジェクトを管理",
+    "stats": {
+      "total_projects": "プロジェクト総数",
+      "active_projects": "アクティブなプロジェクト",
+      "inactive_projects": "非アクティブなプロジェクト"
+    },
+    "search_placeholder": "プロジェクト名で検索...",
+    "filters": {
+      "all": "すべて",
+      "active": "アクティブ",
+      "inactive": "非アクティブ",
+      "all_clients": "すべてのクライアント"
+    },
+    "status": {
+      "active": "アクティブ",
+      "inactive": "非アクティブ"
+    },
+    "card": {
+      "client": "クライアント：",
+      "start_date": "開始日：",
+      "end_date": "終了日：",
+      "monthly_price": "月額料金：",
+      "hourly_price": "時間単価：",
+      "settlement": "精算方法：",
+      "range": "範囲：",
+      "created": "作成日"
+    },
+    "settlement_methods": {
+      "fixed": "固定",
+      "up_down": "上下割"
+    },
+    "loading": "プロジェクトを読み込み中...",
+    "no_projects_found": "プロジェクトが見つかりません",
+    "no_projects_message": "検索条件またはフィルターを調整してください",
+    "no_projects_yet": "まだプロジェクトがありません",
+    "pagination": {
+      "showing": "{{start}} - {{end}} / {{total}} プロジェクトを表示中",
+      "prev": "前へ",
+      "next": "次へ"
+    },
+    "edit_button": "編集",
+    "success": {
+      "title": "成功",
+      "message": "プロジェクトが正常に更新されました"
+    },
+    "error": {
+      "title": "エラー",
+      "load_failed": "プロジェクトの読み込みに失敗しました",
+      "update_failed": "プロジェクトの更新に失敗しました。もう一度お試しください。"
+    },
+    "edit_modal": {
+      "title": "プロジェクトを編集",
+      "project_name": "プロジェクト名",
+      "start_date": "開始日",
+      "end_date": "終了日",
+      "monthly_price": "月額料金（¥）",
+      "hourly_price": "時間単価（¥）",
+      "settlement_method": "精算方法",
+      "settlement_min": "最小（時間）",
+      "settlement_max": "最大（時間）",
+      "include_paid_leave": "有給休暇を含む",
+      "active": "アクティブ",
+      "cancel": "キャンセル",
+      "update": "プロジェクトを更新",
+      "updating": "更新中...",
+      "required": "*"
+    },
+    "validation": {
+      "project_name_required": "プロジェクト名は必須です",
+      "start_date_required": "開始日は必須です",
+      "monthly_price_required": "月額単価は0より大きい必要があります",
+      "settlement_min_required": "精算範囲の最小値は必須です",
+      "settlement_max_required": "精算範囲の最大値は必須です",
+      "settlement_max_greater": "最大値は最小値より大きい必要があります",
+      "end_date_after_start": "終了日は開始日より後である必要があります",
+      "client_required": "クライアントを選択してください"
+    },
+    "add_project": {
+      "title": "新しいプロジェクトを作成",
+      "subtitle": "システムに新しいプロジェクトを追加",
+      "form_title": "プロジェクト情報",
+      "form_subtitle": "以下にプロジェクトの詳細を入力してください",
+      "project_name": "プロジェクト名",
+      "project_name_placeholder": "プロジェクト名を入力",
+      "client": "クライアント",
+      "client_select": "-- クライアントを選択 --",
+      "start_date": "開始日",
+      "end_date": "終了日",
+      "monthly_price": "月額単価（¥）",
+      "hourly_price": "時間単価（¥）",
+      "settlement_method": "精算方法",
+      "settlement_min": "精算範囲最小（時間）",
+      "settlement_max": "精算範囲最大（時間）",
+      "include_paid_leave": "有給休暇を精算に含む",
+      "include_paid_leave_note": "有給休暇を精算計算に含める場合はチェックしてください",
+      "required": "*",
+      "buttons": {
+        "reset": "リセット",
+        "cancel": "キャンセル",
+        "create": "プロジェクトを作成",
+        "creating": "作成中..."
+      },
+      "success": {
+        "title": "成功！",
+        "message": "プロジェクトが正常に作成されました",
+        "redirecting": "プロジェクトリストにリダイレクト中..."
+      },
+      "error": {
+        "title": "作成失敗",
+        "load_clients_failed": "クライアントの読み込みに失敗しました",
+        "create_failed": "プロジェクトの作成に失敗しました。もう一度お試しください。"
+      }
+    }
   }
 }
