@@ -1,0 +1,42 @@
+{
+  "dashboard": {
+    "page_title": "管理者ダッシュボード",
+    "page_subtitle": "システム概要と主要指標",
+    "user_statistics": "ユーザー統計",
+    "project_statistics": "プロジェクト統計",
+    "reports_activity": "レポートとアクティビティ",
+    "loading": "ダッシュボードを読み込み中...",
+    "stats": {
+      "total_users": "総ユーザー数",
+      "engineers": "エンジニア",
+      "sales_reps": "営業担当",
+      "clients": "クライアント",
+      "active": "アクティブ",
+      "assignments": "割り当て",
+      "of_total": "/",
+      "total": "合計",
+      "total_projects": "総プロジェクト数",
+      "active_projects": "アクティブ",
+      "inactive_projects": "非アクティブ",
+      "activity_rate": "アクティビティ率",
+      "monthly_reports": "月次レポート",
+      "pending_approval": "承認待ち",
+      "approved": "承認済み",
+      "total_reports": "総レポート数",
+      "system_overview": "システム概要",
+      "active_users": "アクティブユーザー",
+      "active_clients": "アクティブクライアント",
+      "running_projects": "稼働中プロジェクト",
+      "system_health": "システム状態",
+      "healthy": "正常",
+      "idle": "待機中"
+    },
+    "chatbot": {
+      "ai": "AI"
+    },
+    "errors": {
+      "title": "エラー",
+      "load_failed": "ダッシュボードデータの読み込みに失敗しました"
+    }
+  }
+}

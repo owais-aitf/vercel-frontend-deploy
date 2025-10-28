@@ -34,7 +34,8 @@ import adminService, {
 } from '@/shared/service/adminService';
 import { toaster } from '@/components/ui/toaster';
 import { SalesAdminChatbotModal } from '@/components/chatbot/SalesAdminChatbotModal';
-
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 export default function AdminDashboard() {
   // const router = useRouter();
   const { user } = useContext(AuthContext);
@@ -44,6 +45,7 @@ export default function AdminDashboard() {
   const hasFetched = useRef(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { t } = useTranslation('admin');
 
   useEffect(() => {
     if (user && !hasFetched.current) {
@@ -73,9 +75,9 @@ export default function AdminDashboard() {
       console.error('❌ Dashboard fetch error:', error);
       const err = error as { response?: { data?: { error?: string } } };
       toaster.create({
-        title: 'Error',
+        title: t('dashboard.errors.title'),
         description:
-          err?.response?.data?.error || 'Failed to load dashboard data',
+          err?.response?.data?.error || t('dashboard.errors.load_failed'),
         type: 'error',
       });
     } finally {
@@ -97,8 +99,8 @@ export default function AdminDashboard() {
     <FeatureErrorBoundary featureName="Admin Dashboard">
       <DashboardLayout
         navigation={adminNavigation}
-        pageTitle="Admin Dashboard"
-        pageSubtitle="System overview and key metrics"
+        pageTitle={t('dashboard.page_title')}
+        pageSubtitle={t('dashboard.page_subtitle')}
         userName={user?.fullName || 'Admin User'}
         userInitials={getUserInitials()}
         notificationCount={stats?.pendingReports || 0}
@@ -108,14 +110,14 @@ export default function AdminDashboard() {
           <Card.Root p={8}>
             <VStack gap={4}>
               <Spinner size="xl" color="blue.500" />
-              <Text color="gray.600">Loading dashboard...</Text>
+              <Text color="gray.600">{t('dashboard.loading')}</Text>
             </VStack>
           </Card.Root>
         ) : (
           <>
             {/* Primary Stats - User Statistics */}
             <Text fontSize="lg" fontWeight="bold" mb={3}>
-              User Statistics
+              {t('dashboard.user_statistics')}
             </Text>
             <Grid
               templateColumns={{
@@ -136,7 +138,7 @@ export default function AdminDashboard() {
                         color="blue.700"
                         fontWeight="medium"
                       >
-                        Total Users
+                        {t('dashboard.stats.total_users')}
                       </Text>
                       <Box color="blue.500">
                         <LuUsers size={18} />
@@ -163,7 +165,7 @@ export default function AdminDashboard() {
                         color="purple.700"
                         fontWeight="medium"
                       >
-                        Engineers
+                        {t('dashboard.stats.engineers')}
                       </Text>
                       <Box color="purple.500">
                         <LuUserCog size={18} />
@@ -190,7 +192,7 @@ export default function AdminDashboard() {
                         color="green.700"
                         fontWeight="medium"
                       >
-                        Sales Reps
+                        {t('dashboard.stats.sales_reps')}
                       </Text>
                       <Box color="green.500">
                         <LuUserCheck size={18} />
@@ -217,7 +219,7 @@ export default function AdminDashboard() {
                         color="orange.700"
                         fontWeight="medium"
                       >
-                        Clients
+                        {t('dashboard.stats.clients')}
                       </Text>
                       <Box color="orange.500">
                         <LuBuilding2 size={18} />
@@ -231,7 +233,7 @@ export default function AdminDashboard() {
                       {stats?.totalClients || 0}
                     </Text>
                     <Text fontSize="2xs" color="orange.700">
-                      {stats?.activeClients || 0} active
+                      {stats?.activeClients || 0} {t('dashboard.stats.active')}
                     </Text>
                   </VStack>
                 </Card.Body>
@@ -247,7 +249,7 @@ export default function AdminDashboard() {
                         color="cyan.700"
                         fontWeight="medium"
                       >
-                        Assignments
+                        {t('dashboard.stats.assignments')}
                       </Text>
                       <Box color="cyan.500">
                         <LuTrendingUp size={18} />
@@ -261,7 +263,9 @@ export default function AdminDashboard() {
                       {stats?.activeAssignments || 0}
                     </Text>
                     <Text fontSize="2xs" color="cyan.700">
-                      of {stats?.totalAssignments || 0} total
+                      {t('dashboard.stats.of_total')}{' '}
+                      {stats?.totalAssignments || 0}{' '}
+                      {t('dashboard.stats.total')}
                     </Text>
                   </VStack>
                 </Card.Body>
@@ -270,7 +274,7 @@ export default function AdminDashboard() {
 
             {/* Project Stats - Row 2 */}
             <Text fontSize="lg" fontWeight="bold" mb={3} mt={6}>
-              Project Statistics
+              {t('dashboard.project_statistics')}
             </Text>
             <Grid
               templateColumns={{
@@ -290,7 +294,7 @@ export default function AdminDashboard() {
                         color="indigo.700"
                         fontWeight="medium"
                       >
-                        Total Projects
+                        {t('dashboard.stats.total_projects')}
                       </Text>
                       <Box color="indigo.500">
                         <LuClipboardList size={18} />
@@ -317,7 +321,7 @@ export default function AdminDashboard() {
                         color="green.700"
                         fontWeight="medium"
                       >
-                        Active
+                        {t('dashboard.stats.active_projects')}
                       </Text>
                       <Box color="green.500">
                         <LuFolderCheck size={18} />
@@ -344,7 +348,7 @@ export default function AdminDashboard() {
                         color="gray.700"
                         fontWeight="medium"
                       >
-                        Inactive
+                        {t('dashboard.stats.inactive_projects')}
                       </Text>
                       <Box color="gray.500">
                         <LuFolderX size={18} />
@@ -371,7 +375,7 @@ export default function AdminDashboard() {
                         color="blue.700"
                         fontWeight="medium"
                       >
-                        Activity Rate
+                        {t('dashboard.stats.activity_rate')}
                       </Text>
                       <Box color="blue.500">
                         <LuActivity size={18} />
@@ -396,7 +400,7 @@ export default function AdminDashboard() {
 
             {/* Reports & Overview - Row 3 */}
             <Text fontSize="lg" fontWeight="bold" mb={3} mt={6}>
-              Reports & Activity
+              {t('dashboard.reports_activity')}
             </Text>
             <Grid
               templateColumns={{
@@ -412,7 +416,7 @@ export default function AdminDashboard() {
                   <VStack align="stretch" gap={3}>
                     <HStack justify="space-between">
                       <Text fontSize="sm" fontWeight="bold" color="yellow.900">
-                        Monthly Reports
+                        {t('dashboard.stats.monthly_reports')}
                       </Text>
                       <Box color="yellow.500">
                         <LuFileCheck size={24} />
@@ -423,7 +427,7 @@ export default function AdminDashboard() {
                         <HStack gap={2}>
                           <LuClock size={16} color="orange" />
                           <Text fontSize="xs" color="gray.600">
-                            Pending Approval
+                            {t('dashboard.stats.pending_approval')}
                           </Text>
                         </HStack>
                         <Text
@@ -438,7 +442,7 @@ export default function AdminDashboard() {
                         <HStack gap={2}>
                           <LuFileCheck size={16} color="green" />
                           <Text fontSize="xs" color="gray.600">
-                            Approved
+                            {t('dashboard.stats.approved')}
                           </Text>
                         </HStack>
                         <Text fontSize="lg" fontWeight="bold" color="green.600">
@@ -452,7 +456,7 @@ export default function AdminDashboard() {
                         borderColor="yellow.200"
                       >
                         <Text fontSize="xs" color="gray.700" fontWeight="bold">
-                          Total Reports
+                          {t('dashboard.stats.total_reports')}
                         </Text>
                         <Text
                           fontSize="md"
@@ -472,12 +476,12 @@ export default function AdminDashboard() {
                 <Card.Body p={{ base: 4, md: 5 }}>
                   <VStack align="stretch" gap={3}>
                     <Text fontSize="sm" fontWeight="bold">
-                      System Overview
+                      {t('dashboard.stats.system_overview')}
                     </Text>
                     <VStack align="stretch" gap={2}>
                       <HStack justify="space-between">
                         <Text fontSize="xs" color="gray.600">
-                          Active Users
+                          {t('dashboard.stats.active_users')}
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold">
                           {stats?.totalUsers || 0}
@@ -485,7 +489,7 @@ export default function AdminDashboard() {
                       </HStack>
                       <HStack justify="space-between">
                         <Text fontSize="xs" color="gray.600">
-                          Active Clients
+                          {t('dashboard.stats.active_clients')}
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold">
                           {stats?.activeClients || 0}
@@ -493,7 +497,7 @@ export default function AdminDashboard() {
                       </HStack>
                       <HStack justify="space-between">
                         <Text fontSize="xs" color="gray.600">
-                          Running Projects
+                          {t('dashboard.stats.running_projects')}
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold">
                           {stats?.activeProjects || 0}
@@ -506,12 +510,12 @@ export default function AdminDashboard() {
                         borderColor="gray.200"
                       >
                         <Text fontSize="xs" color="gray.700" fontWeight="bold">
-                          System Health
+                          {t('dashboard.stats.system_health')}
                         </Text>
                         <Text fontSize="md" fontWeight="bold" color="green.600">
                           {stats?.activeProjects && stats.activeProjects > 0
-                            ? 'Healthy'
-                            : 'Idle'}
+                            ? t('dashboard.stats.healthy')
+                            : t('dashboard.stats.idle')}
                         </Text>
                       </HStack>
                     </VStack>
@@ -613,7 +617,7 @@ export default function AdminDashboard() {
             <VStack gap={0}>
               <LuBot size={24} />
               <Text fontSize="2xs" fontWeight="bold">
-                AI
+                {t('dashboard.chatbot.ai')}
               </Text>
             </VStack>
           </Button>

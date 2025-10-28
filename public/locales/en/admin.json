@@ -1,0 +1,42 @@
+{
+  "dashboard": {
+    "page_title": "Admin Dashboard",
+    "page_subtitle": "System overview and key metrics",
+    "user_statistics": "User Statistics",
+    "project_statistics": "Project Statistics",
+    "reports_activity": "Reports & Activity",
+    "loading": "Loading dashboard...",
+    "stats": {
+      "total_users": "Total Users",
+      "engineers": "Engineers",
+      "sales_reps": "Sales Reps",
+      "clients": "Clients",
+      "active": "active",
+      "assignments": "Assignments",
+      "of_total": "of",
+      "total": "total",
+      "total_projects": "Total Projects",
+      "active_projects": "Active",
+      "inactive_projects": "Inactive",
+      "activity_rate": "Activity Rate",
+      "monthly_reports": "Monthly Reports",
+      "pending_approval": "Pending Approval",
+      "approved": "Approved",
+      "total_reports": "Total Reports",
+      "system_overview": "System Overview",
+      "active_users": "Active Users",
+      "active_clients": "Active Clients",
+      "running_projects": "Running Projects",
+      "system_health": "System Health",
+      "healthy": "Healthy",
+      "idle": "Idle"
+    },
+    "chatbot": {
+      "ai": "AI"
+    },
+    "errors": {
+      "title": "Error",
+      "load_failed": "Failed to load dashboard data"
+    }
+  }
+}
