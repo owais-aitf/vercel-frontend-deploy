@@ -311,5 +311,27 @@
     "errors": {
       "fetch_failed": "Failed to fetch attendance"
     }
+  },
+
+  "slack": {
+    "card_title": "Slack Integration",
+    "connected_status": "Connected",
+    "not_connected_status": "Not Connected",
+    "connected_description": "Your Slack account is connected. You can now use Slack commands like /log-work and /my-attendance.",
+    "not_connected_description": "Connect your Slack account to receive attendance reminders and use slash commands directly in Slack.",
+    "connect_button": "Connect to Slack",
+    "disconnect_button": "Disconnect",
+    "refresh_button": "Refresh",
+    "loading_status": "Loading connection status...",
+    "success_title": "Slack Connected Successfully!",
+    "success_description": "You can now use Slack commands like /log-work and /my-attendance.",
+    "linking_required_title": "Slack Bot Installed Successfully!",
+    "linking_required_description": "Your workspace \"{{teamName}}\" now has the attendance bot. To connect your account, simply use /log-work in any Slack channel. You'll be automatically linked on first use!",
+    "error_title": "Slack Connection Failed",
+    "error_description": "Failed to connect your Slack account. Please try again.",
+    "auto_redirect_message": "Redirecting to dashboard in",
+    "go_to_dashboard": "Go to Dashboard",
+    "stay_here": "Stay Here",
+    "close_button": "Close"
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect, useContext, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
 import {
@@ -11,6 +12,7 @@ import {
   HStack,
   Card,
   Button,
+  Spinner,
 } from '@chakra-ui/react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { engineerNavigation } from '@/shared/config/navigation';
@@ -23,12 +25,15 @@ import {
 import { getUserCacheKey, CACHE_KEYS } from '@/shared/utils/cache';
 import { LuBot } from 'react-icons/lu';
 import { ChatbotModal } from '@/components/chatbot/ChatbotModal';
+import { SlackConnectionCard } from '@/components/slack/SlackConnectionCard';
+import { SlackConnectionModal } from '@/components/slack/SlackConnectionModal';
 
 // Cache duration: 2 minutes
 const CACHE_DURATION = 2 * 60 * 1000;
 
-export default function EngineerDashboard() {
+function EngineerDashboardContent() {
   const { user } = useContext(AuthContext);
+  const searchParams = useSearchParams();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>(
     []
@@ -41,8 +46,50 @@ export default function EngineerDashboard() {
   const isFetching = useRef<boolean>(false);
   const { t } = useTranslation('engineer');
 
+  // Slack integration state
+  const [slackModalOpen, setSlackModalOpen] = useState(false);
+  const [slackModalStatus, setSlackModalStatus] = useState<
+    'success' | 'linking_required' | 'error' | null
+  >(null);
+  const [slackModalMessage, setSlackModalMessage] = useState('');
+  const [slackTeamName, setSlackTeamName] = useState('');
+
   // Get current month in YYYY-MM format
   const currentMonth = new Date().toISOString().slice(0, 7);
+
+  // Handle Slack OAuth callback
+  useEffect(() => {
+    const slackOAuth = searchParams.get('slack_oauth');
+
+    if (slackOAuth) {
+      // Clean URL immediately
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+
+      switch (slackOAuth) {
+        case 'success':
+          setSlackModalStatus('success');
+          setSlackModalMessage('');
+          setSlackModalOpen(true);
+          break;
+
+        case 'linking_required':
+          const teamName = searchParams.get('team_name') || 'Your workspace';
+          setSlackModalStatus('linking_required');
+          setSlackTeamName(teamName);
+          setSlackModalOpen(true);
+          break;
+
+        case 'error':
+          const errorMessage =
+            searchParams.get('error_message') || 'Unknown error occurred';
+          setSlackModalStatus('error');
+          setSlackModalMessage(errorMessage);
+          setSlackModalOpen(true);
+          break;
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     // Don't try to load cache if no user is logged in
@@ -216,6 +263,7 @@ export default function EngineerDashboard() {
     }
     return user.fullName.slice(0, 2).toUpperCase();
   };
+
   return (
     <DashboardLayout
       navigation={engineerNavigation}
@@ -328,6 +376,11 @@ export default function EngineerDashboard() {
           </VStack>
         </Card.Root>
       </Grid>
+
+      {/* Slack Integration Card */}
+      <Box mb={{ base: 4, md: 6 }}>
+        <SlackConnectionCard />
+      </Box>
 
       {/* Recent Activities & Upcoming Tasks - Responsive Grid */}
       <Grid
@@ -571,6 +624,35 @@ export default function EngineerDashboard() {
         isOpen={isChatbotOpen}
         onClose={() => setIsChatbotOpen(false)}
       />
+
+      {/* Slack Connection Modal */}
+      <SlackConnectionModal
+        isOpen={slackModalOpen}
+        onClose={() => setSlackModalOpen(false)}
+        status={slackModalStatus}
+        message={slackModalMessage}
+        teamName={slackTeamName}
+        autoRedirect={true}
+      />
     </DashboardLayout>
+  );
+}
+
+export default function EngineerDashboard() {
+  return (
+    <Suspense
+      fallback={
+        <Box
+          minH="100vh"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Spinner size="xl" color="blue.500" />
+        </Box>
+      }
+    >
+      <EngineerDashboardContent />
+    </Suspense>
   );
 }
