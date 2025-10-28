@@ -17,6 +17,8 @@ import {
 } from '@chakra-ui/react';
 import authService from '@/shared/service/authService';
 import { toaster } from '@/components/ui/toaster';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
 // SVG Icons
 const LockIcon = () => (
@@ -45,6 +47,7 @@ const CheckIcon = ({ color = '#10B981' }: { color?: string }) => (
 
 export default function FirstLoginResetPage() {
   const router = useRouter();
+  const { t } = useTranslation('auth');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -93,12 +96,14 @@ export default function FirstLoginResetPage() {
   }, [router]);
 
   const validatePassword = (password: string): string => {
-    if (password.length < 8) return 'Password must be at least 8 characters';
+    if (password.length < 8)
+      return t('firstLoginReset.validation.password_min');
     if (!/[A-Z]/.test(password))
-      return 'Password must contain an uppercase letter';
+      return t('firstLoginReset.validation.password_uppercase');
     if (!/[a-z]/.test(password))
-      return 'Password must contain a lowercase letter';
-    if (!/[0-9]/.test(password)) return 'Password must contain a number';
+      return t('firstLoginReset.validation.password_lowercase');
+    if (!/[0-9]/.test(password))
+      return t('firstLoginReset.validation.password_number');
     return '';
   };
 
@@ -118,7 +123,7 @@ export default function FirstLoginResetPage() {
     if (!currentPassword) {
       setErrors((prev) => ({
         ...prev,
-        current: 'Current password is required',
+        current: t('firstLoginReset.validation.password_required'),
       }));
       hasError = true;
     }
@@ -130,7 +135,10 @@ export default function FirstLoginResetPage() {
     }
 
     if (newPassword !== confirmPassword) {
-      setErrors((prev) => ({ ...prev, confirm: 'Passwords do not match' }));
+      setErrors((prev) => ({
+        ...prev,
+        confirm: t('firstLoginReset.validation.passwords_mismatch'),
+      }));
       hasError = true;
     }
 
@@ -146,8 +154,8 @@ export default function FirstLoginResetPage() {
       );
 
       toaster.create({
-        title: 'Password Updated',
-        description: 'Your password has been successfully updated',
+        title: t('firstLoginReset.toast.success_title'),
+        description: t('firstLoginReset.toast.success_desc'),
         type: 'success',
         duration: 3000,
       });
@@ -184,7 +192,8 @@ export default function FirstLoginResetPage() {
               }
             ).response?.data?.message
           : undefined;
-      const finalMessage = errorMessage || 'Failed to update password';
+      const finalMessage =
+        errorMessage || t('firstLoginReset.toast.error_desc');
 
       toaster.create({
         title: 'Error',
@@ -370,7 +379,7 @@ export default function FirstLoginResetPage() {
                 opacity={isCardVisible ? 1 : 0}
                 transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s"
               >
-                First Login - Reset Password
+                {t('firstLoginReset.title')}
               </Heading>
               <Text
                 color="gray.600"
@@ -380,7 +389,7 @@ export default function FirstLoginResetPage() {
                 opacity={isCardVisible ? 1 : 0}
                 transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s"
               >
-                Please change your password to continue
+                {t('firstLoginReset.subtitle')}
               </Text>
             </VStack>
 
@@ -440,7 +449,7 @@ export default function FirstLoginResetPage() {
                       pointerEvents="none"
                       transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                     >
-                      Current Password
+                      {t('firstLoginReset.current_password')}
                     </Text>
 
                     {/* Left Icon */}
@@ -627,7 +636,7 @@ export default function FirstLoginResetPage() {
                       pointerEvents="none"
                       transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                     >
-                      New Password
+                      {t('firstLoginReset.new_password')}
                     </Text>
 
                     {/* Left Icon */}
@@ -813,7 +822,7 @@ export default function FirstLoginResetPage() {
                       pointerEvents="none"
                       transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                     >
-                      Confirm New Password
+                      {t('firstLoginReset.confirm_password')}
                     </Text>
 
                     {/* Left Icon */}
@@ -980,17 +989,17 @@ export default function FirstLoginResetPage() {
                     color="blue.700"
                     mb={2}
                   >
-                    Password Requirements:
+                    {t('firstLoginReset.requirements_title')}
                   </Text>
                   <VStack align="start" gap={1}>
                     <Text fontSize="sm" color="blue.600">
-                      • At least 8 characters long
+                      • {t('firstLoginReset.req_length')}
                     </Text>
                     <Text fontSize="sm" color="blue.600">
-                      • Contains uppercase and lowercase letters
+                      • {t('firstLoginReset.req_case')}
                     </Text>
                     <Text fontSize="sm" color="blue.600">
-                      • Contains at least one number
+                      • {t('firstLoginReset.req_number')}
                     </Text>
                   </VStack>
                 </Box>
@@ -1062,7 +1071,11 @@ export default function FirstLoginResetPage() {
                         }}
                       />
                     )}
-                    <Text>{loading ? 'Updating...' : 'Update Password'}</Text>
+                    <Text>
+                      {loading
+                        ? t('firstLoginReset.updating')
+                        : t('firstLoginReset.update_button')}
+                    </Text>
                   </HStack>
                 </Button>
               </VStack>
