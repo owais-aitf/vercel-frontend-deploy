@@ -38,5 +38,68 @@
       "title": "Error",
       "load_failed": "Failed to load dashboard data"
     }
+  },
+
+  "registerUser": {
+    "page_title": "Register New User",
+    "page_subtitle": "Create a new engineer or sales representative account",
+    "back": "Back",
+    "user_information": "User Information",
+    "complete_fields": "Complete required fields to create account",
+    "form": {
+      "full_name": "Full Name",
+      "email": "Email Address",
+      "user_role": "User Role",
+      "slack_user_id": "Slack User ID",
+      "optional": "(Optional)",
+      "annual_leave": "Annual Paid Leave (days)",
+      "placeholder_name": "John Doe",
+      "placeholder_email": "john.doe@example.com",
+      "placeholder_slack": "U01ABC123XY",
+      "slack_help": "Leave empty if user doesn't use Slack",
+      "leave_help": "Default is 10 days. Adjustable later."
+    },
+    "roles": {
+      "engineer": "Engineer",
+      "engineer_desc": "Field worker",
+      "sales": "Sales Rep",
+      "sales_desc": "Client manager",
+      "admin": "Admin",
+      "admin_desc": "System admin"
+    },
+    "validation": {
+      "name_required": "Full name is required",
+      "name_min_length": "Full name must be at least 2 characters",
+      "email_required": "Email is required",
+      "email_invalid": "Please enter a valid email address",
+      "validation_error_title": "Validation Error",
+      "validation_error_desc": "Please fix the errors in the form"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "create_user": "Create User",
+      "creating": "Creating..."
+    },
+    "info_banner": "A secure temporary password will be generated automatically. The password will be displayed once, and the user must change it on first login.",
+    "success": {
+      "title": "User Created Successfully!",
+      "subtitle": "Save the temporary password below",
+      "name": "Name:",
+      "email": "Email:",
+      "role": "Role:",
+      "temp_password": "Temporary Password",
+      "save_warning": "⚠️ Save this password. User must change it on first login.",
+      "create_another": "Create Another",
+      "user_registered": "has been registered"
+    },
+    "toast": {
+      "copied_title": "Copied!",
+      "copied_desc": "Password copied to clipboard",
+      "copy_failed_title": "Failed to copy",
+      "copy_failed_desc": "Please copy manually",
+      "success_title": "User Created Successfully",
+      "failed_title": "Registration Failed",
+      "failed_desc": "Failed to register user"
+    }
   }
 }

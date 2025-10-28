@@ -36,6 +36,8 @@ import { adminNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
 import { AuthContext } from '@/context/AuthContext';
 import userService from '@/shared/service/userService';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { toaster } from '@/components/ui/toaster';
 
 export default function RegisterUserPage() {
@@ -51,6 +53,7 @@ export default function RegisterUserPage() {
     email: '',
     role: '',
   });
+  const { t } = useTranslation('admin');
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -79,19 +82,19 @@ export default function RegisterUserPage() {
     let isValid = true;
 
     if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
+      newErrors.fullName = t('registerUser.validation.name_required');
       isValid = false;
     } else if (formData.fullName.trim().length < 2) {
-      newErrors.fullName = 'Full name must be at least 2 characters';
+      newErrors.fullName = t('registerUser.validation.name_min_length');
       isValid = false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('registerUser.validation.email_required');
       isValid = false;
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('registerUser.validation.email_invalid');
       isValid = false;
     }
 
@@ -104,16 +107,16 @@ export default function RegisterUserPage() {
       await navigator.clipboard.writeText(temporaryPassword);
       setCopied(true);
       toaster.create({
-        title: 'Copied!',
-        description: 'Password copied to clipboard',
+        title: t('registerUser.toast.copied_title'),
+        description: t('registerUser.toast.copied_desc'),
         type: 'success',
         duration: 2000,
       });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toaster.create({
-        title: 'Failed to copy',
-        description: 'Please copy manually',
+        title: t('registerUser.toast.copy_failed_title'),
+        description: t('registerUser.toast.copy_failed_desc'),
         type: 'error',
         duration: 3000,
       });
@@ -125,8 +128,8 @@ export default function RegisterUserPage() {
 
     if (!validateForm()) {
       toaster.create({
-        title: 'Validation Error',
-        description: 'Please fix the errors in the form',
+        title: t('registerUser.validation.validation_error_title'),
+        description: t('registerUser.validation.validation_error_desc'),
         type: 'error',
         duration: 4000,
       });
@@ -158,8 +161,8 @@ export default function RegisterUserPage() {
         setShowModal(true);
 
         toaster.create({
-          title: 'User Created Successfully',
-          description: `${formData.fullName} has been registered`,
+          title: t('registerUser.toast.success_title'),
+          description: `${formData.fullName} ${t('registerUser.success.user_registered')}`,
           type: 'success',
           duration: 5000,
         });
@@ -171,10 +174,10 @@ export default function RegisterUserPage() {
       const errorMessage =
         err?.response?.data?.error ||
         err?.response?.data?.message ||
-        'Failed to register user';
+        t('registerUser.toast.failed_desc');
 
       toaster.create({
-        title: 'Registration Failed',
+        title: t('registerUser.toast.failed_title'),
         description: errorMessage,
         type: 'error',
         duration: 5000,
@@ -222,8 +225,8 @@ export default function RegisterUserPage() {
     <FeatureErrorBoundary featureName="Register User">
       <DashboardLayout
         navigation={adminNavigation}
-        pageTitle="Register New User"
-        pageSubtitle="Create a new engineer or sales representative account"
+        pageTitle={t('registerUser.page_title')}
+        pageSubtitle={t('registerUser.page_subtitle')}
         userName={user?.fullName || 'Admin User'}
         userInitials={getUserInitials()}
         notificationCount={0}
@@ -231,7 +234,7 @@ export default function RegisterUserPage() {
         <Button variant="ghost" size="sm" onClick={() => router.back()} mb={3}>
           <HStack gap={2}>
             <LuArrowLeft size={16} />
-            <Text fontSize="sm">Back</Text>
+            <Text fontSize="sm">{t('registerUser.back')}</Text>
           </HStack>
         </Button>
 
@@ -243,10 +246,10 @@ export default function RegisterUserPage() {
                 {/* Compact Header */}
                 <VStack align="start" gap={0}>
                   <Text fontSize="lg" fontWeight="bold">
-                    User Information
+                    {t('registerUser.user_information')}
                   </Text>
                   <Text fontSize="xs" color="gray.500">
-                    Complete required fields to create account
+                    {t('registerUser.complete_fields')}
                   </Text>
                 </VStack>
 
@@ -260,7 +263,7 @@ export default function RegisterUserPage() {
                     <Fieldset.Legend fontSize="xs" fontWeight="600" mb={1}>
                       <HStack gap={1}>
                         <LuUser size={14} />
-                        <Text>Full Name *</Text>
+                        <Text>{t('registerUser.form.full_name')} *</Text>
                       </HStack>
                     </Fieldset.Legend>
                     <Input
@@ -269,7 +272,7 @@ export default function RegisterUserPage() {
                       onChange={(e) =>
                         handleInputChange('fullName', e.target.value)
                       }
-                      placeholder="John Doe"
+                      placeholder={t('registerUser.form.placeholder_name')}
                       size="md"
                       _focus={{ borderColor: 'blue.500' }}
                     />
@@ -285,7 +288,7 @@ export default function RegisterUserPage() {
                     <Fieldset.Legend fontSize="xs" fontWeight="600" mb={1}>
                       <HStack gap={1}>
                         <LuMail size={14} />
-                        <Text>Email Address *</Text>
+                        <Text>{t('registerUser.form.email')} *</Text>
                       </HStack>
                     </Fieldset.Legend>
                     <Input
@@ -294,7 +297,7 @@ export default function RegisterUserPage() {
                       onChange={(e) =>
                         handleInputChange('email', e.target.value)
                       }
-                      placeholder="john.doe@example.com"
+                      placeholder={t('registerUser.form.placeholder_email')}
                       size="md"
                       _focus={{ borderColor: 'blue.500' }}
                     />
@@ -311,7 +314,7 @@ export default function RegisterUserPage() {
                   <Fieldset.Legend fontSize="xs" fontWeight="600" mb={1.5}>
                     <HStack gap={1}>
                       <LuBriefcase size={14} />
-                      <Text>User Role *</Text>
+                      <Text>{t('registerUser.form.user_role')} *</Text>
                     </HStack>
                   </Fieldset.Legend>
                   <Grid templateColumns="repeat(3, 1fr)" gap={2}>
@@ -352,10 +355,10 @@ export default function RegisterUserPage() {
                           </Box>
                           <VStack gap={0} align="start">
                             <Text fontSize="xs" fontWeight="bold">
-                              Engineer
+                              {t('registerUser.roles.engineer')}
                             </Text>
                             <Text fontSize="2xs" color="gray.600">
-                              Field worker
+                              {t('registerUser.roles.engineer_desc')}
                             </Text>
                           </VStack>
                           {formData.role === 'ENGINEER' && (
@@ -401,10 +404,10 @@ export default function RegisterUserPage() {
                           </Box>
                           <VStack gap={0} align="start">
                             <Text fontSize="xs" fontWeight="bold">
-                              Sales Rep
+                              {t('registerUser.roles.sales')}
                             </Text>
                             <Text fontSize="2xs" color="gray.600">
-                              Client manager
+                              {t('registerUser.roles.sales_desc')}
                             </Text>
                           </VStack>
                           {formData.role === 'SALES' && (
@@ -450,10 +453,10 @@ export default function RegisterUserPage() {
                           </Box>
                           <VStack gap={0} align="start">
                             <Text fontSize="xs" fontWeight="bold">
-                              Admin
+                              {t('registerUser.roles.admin')}
                             </Text>
                             <Text fontSize="2xs" color="gray.600">
-                              System admin
+                              {t('registerUser.roles.admin_desc')}
                             </Text>
                           </VStack>
                           {formData.role === 'ADMIN' && (
@@ -477,9 +480,9 @@ export default function RegisterUserPage() {
                     <Fieldset.Legend fontSize="xs" fontWeight="600" mb={1}>
                       <HStack gap={1}>
                         <LuMessageSquare size={14} />
-                        <Text>Slack User ID</Text>
+                        <Text>{t('registerUser.form.slack_user_id')}</Text>
                         <Text fontSize="2xs" color="gray.400">
-                          (Optional)
+                          {t('registerUser.form.optional')}
                         </Text>
                       </HStack>
                     </Fieldset.Legend>
@@ -489,12 +492,12 @@ export default function RegisterUserPage() {
                       onChange={(e) =>
                         handleInputChange('slackUserId', e.target.value)
                       }
-                      placeholder="U01ABC123XY"
+                      placeholder={t('registerUser.form.placeholder_slack')}
                       size="md"
                       _focus={{ borderColor: 'blue.500' }}
                     />
                     <Text fontSize="2xs" color="gray.500" mt={0.5}>
-                      Leave empty if user doesn&apos;t use Slack
+                      {t('registerUser.form.slack_help')}
                     </Text>
                   </Fieldset.Root>
 
@@ -503,7 +506,7 @@ export default function RegisterUserPage() {
                     <Fieldset.Legend fontSize="xs" fontWeight="600" mb={1}>
                       <HStack gap={1}>
                         <LuCalendarDays size={14} />
-                        <Text>Annual Paid Leave (days)</Text>
+                        <Text>{t('registerUser.form.annual_leave')}</Text>
                       </HStack>
                     </Fieldset.Legend>
                     <Input
@@ -521,7 +524,7 @@ export default function RegisterUserPage() {
                       _focus={{ borderColor: 'blue.500' }}
                     />
                     <Text fontSize="2xs" color="gray.500" mt={0.5}>
-                      Default is 10 days. Adjustable later.
+                      {t('registerUser.form.leave_help')}
                     </Text>
                   </Fieldset.Root>
                 </Grid>
@@ -540,7 +543,7 @@ export default function RegisterUserPage() {
                     onClick={() => router.back()}
                     disabled={loading}
                   >
-                    Cancel
+                    {t('registerUser.buttons.cancel')}
                   </Button>
                   <Button
                     type="submit"
@@ -551,12 +554,12 @@ export default function RegisterUserPage() {
                     {loading ? (
                       <HStack gap={2}>
                         <Spinner size="sm" />
-                        <Text>Creating...</Text>
+                        <Text>{t('registerUser.buttons.creating')}</Text>
                       </HStack>
                     ) : (
                       <HStack gap={2}>
                         <LuSave size={18} />
-                        <Text>Create User</Text>
+                        <Text>{t('registerUser.buttons.create_user')}</Text>
                       </HStack>
                     )}
                   </Button>
@@ -581,9 +584,7 @@ export default function RegisterUserPage() {
                 <LuShieldCheck size={16} />
               </Box>
               <Text fontSize="2xs" color="blue.800" lineHeight="1.5">
-                A secure temporary password will be generated automatically. The
-                password will be displayed once, and the user must change it on
-                first login.
+                {t('registerUser.info_banner')}
               </Text>
             </HStack>
           </Card.Body>
@@ -632,10 +633,10 @@ export default function RegisterUserPage() {
 
                     <VStack gap={1}>
                       <Text fontSize="xl" fontWeight="bold" color="green.700">
-                        User Created Successfully!
+                        {t('registerUser.success.title')}
                       </Text>
                       <Text fontSize="xs" color="gray.600" textAlign="center">
-                        Save the temporary password below
+                        {t('registerUser.success.subtitle')}
                       </Text>
                     </VStack>
 
@@ -644,7 +645,7 @@ export default function RegisterUserPage() {
                         <VStack align="stretch" gap={1.5}>
                           <HStack justify="space-between">
                             <Text fontSize="xs" color="gray.600">
-                              Name:
+                              {t('registerUser.success.name')}
                             </Text>
                             <Text fontSize="xs" fontWeight="bold">
                               {createdUserData.fullName}
@@ -652,7 +653,7 @@ export default function RegisterUserPage() {
                           </HStack>
                           <HStack justify="space-between">
                             <Text fontSize="xs" color="gray.600">
-                              Email:
+                              {t('registerUser.success.email')}
                             </Text>
                             <Text fontSize="xs" fontWeight="bold">
                               {createdUserData.email}
@@ -660,7 +661,7 @@ export default function RegisterUserPage() {
                           </HStack>
                           <HStack justify="space-between">
                             <Text fontSize="xs" color="gray.600">
-                              Role:
+                              {t('registerUser.success.role')}
                             </Text>
                             <Text fontSize="xs" fontWeight="bold">
                               {createdUserData.role}
@@ -684,7 +685,7 @@ export default function RegisterUserPage() {
                               fontWeight="bold"
                               color="yellow.900"
                             >
-                              Temporary Password
+                              {t('registerUser.success.temp_password')}
                             </Text>
                           </HStack>
 
@@ -733,8 +734,7 @@ export default function RegisterUserPage() {
                           </Box>
 
                           <Text fontSize="2xs" color="yellow.800">
-                            ⚠️ Save this password. User must change it on first
-                            login.
+                            {t('registerUser.success.save_warning')}
                           </Text>
                         </VStack>
                       </Card.Body>
@@ -748,7 +748,9 @@ export default function RegisterUserPage() {
                       >
                         <HStack gap={2}>
                           <LuUser size={16} />
-                          <Text fontSize="sm">Create Another</Text>
+                          <Text fontSize="sm">
+                            {t('registerUser.success.create_another')}
+                          </Text>
                         </HStack>
                       </Button>
                       {/* <Button

@@ -38,5 +38,68 @@
       "title": "エラー",
       "load_failed": "ダッシュボードデータの読み込みに失敗しました"
     }
+  },
+
+  "registerUser": {
+    "page_title": "新規ユーザー登録",
+    "page_subtitle": "エンジニアまたは営業担当の新しいアカウントを作成",
+    "back": "戻る",
+    "user_information": "ユーザー情報",
+    "complete_fields": "アカウント作成に必要な項目を入力してください",
+    "form": {
+      "full_name": "氏名",
+      "email": "メールアドレス",
+      "user_role": "ユーザー役割",
+      "slack_user_id": "Slack ユーザーID",
+      "optional": "（任意）",
+      "annual_leave": "年次有給休暇（日数）",
+      "placeholder_name": "山田 太郎",
+      "placeholder_email": "taro.yamada@example.com",
+      "placeholder_slack": "U01ABC123XY",
+      "slack_help": "Slackを使用しない場合は空白のままにしてください",
+      "leave_help": "デフォルトは10日です。後で調整可能です。"
+    },
+    "roles": {
+      "engineer": "エンジニア",
+      "engineer_desc": "現場作業者",
+      "sales": "営業担当",
+      "sales_desc": "クライアント管理",
+      "admin": "管理者",
+      "admin_desc": "システム管理者"
+    },
+    "validation": {
+      "name_required": "氏名は必須です",
+      "name_min_length": "氏名は2文字以上である必要があります",
+      "email_required": "メールアドレスは必須です",
+      "email_invalid": "有効なメールアドレスを入力してください",
+      "validation_error_title": "入力エラー",
+      "validation_error_desc": "フォームのエラーを修正してください"
+    },
+    "buttons": {
+      "cancel": "キャンセル",
+      "create_user": "ユーザー作成",
+      "creating": "作成中..."
+    },
+    "info_banner": "安全な仮パスワードが自動的に生成されます。パスワードは一度だけ表示され、ユーザーは初回ログイン時に変更する必要があります。",
+    "success": {
+      "title": "ユーザー作成成功！",
+      "subtitle": "以下の仮パスワードを保存してください",
+      "name": "名前：",
+      "email": "メール：",
+      "role": "役割：",
+      "temp_password": "仮パスワード",
+      "save_warning": "⚠️ このパスワードを保存してください。ユーザーは初回ログイン時に変更する必要があります。",
+      "create_another": "さらに作成",
+      "user_registered": "が登録されました"
+    },
+    "toast": {
+      "copied_title": "コピー完了！",
+      "copied_desc": "パスワードをクリップボードにコピーしました",
+      "copy_failed_title": "コピー失敗",
+      "copy_failed_desc": "手動でコピーしてください",
+      "success_title": "ユーザー作成成功",
+      "failed_title": "登録失敗",
+      "failed_desc": "ユーザーの登録に失敗しました"
+    }
   }
 }
