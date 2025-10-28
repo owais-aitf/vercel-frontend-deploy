@@ -1,10 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
 import { Box, Text, VStack, HStack, Badge, Button } from '@chakra-ui/react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { AuthContext } from '@/context/AuthContext';
 
 interface NavbarProps {
   title: string;
@@ -24,9 +26,11 @@ export const Navbar = ({
 }: NavbarProps) => {
   const router = useRouter();
   const { t } = useTranslation('common');
+  const { logout } = useContext(AuthContext);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    // Use AuthContext logout to properly clear state and storage
+    logout();
     router.push('/login');
   };
 
