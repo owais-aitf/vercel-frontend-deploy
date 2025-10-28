@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Heading,
@@ -27,6 +29,7 @@ function VerifyOTPContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
+  const { t } = useTranslation('auth');
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
@@ -59,8 +62,8 @@ function VerifyOTPContent() {
     try {
       await authService.forgotPassword(email);
       toaster.create({
-        title: 'OTP Resent',
-        description: 'A new OTP has been sent to your email',
+        title: t('verifyOTP.toast.resent_title'),
+        description: t('verifyOTP.toast.resent_desc'),
         type: 'success',
         duration: 3000,
       });
@@ -69,8 +72,8 @@ function VerifyOTPContent() {
       setOtp(['', '', '', '', '', '']);
     } catch {
       toaster.create({
-        title: 'Error',
-        description: 'Failed to resend OTP. Please try again.',
+        title: t('verifyOTP.toast.error_title'),
+        description: t('verifyOTP.toast.resend_error'),
         type: 'error',
         duration: 3000,
       });
@@ -108,8 +111,8 @@ function VerifyOTPContent() {
 
     if (otpString.length !== 6) {
       toaster.create({
-        title: 'Invalid OTP',
-        description: 'Please enter all 6 digits',
+        title: t('verifyOTP.toast.invalid_otp_title'),
+        description: t('verifyOTP.toast.invalid_otp_desc'),
         type: 'error',
         duration: 3000,
       });
@@ -118,8 +121,8 @@ function VerifyOTPContent() {
 
     if (isExpired) {
       toaster.create({
-        title: 'OTP Expired',
-        description: 'Please request a new OTP',
+        title: t('verifyOTP.toast.expired_title'),
+        description: t('verifyOTP.toast.expired_desc'),
         type: 'error',
         duration: 3000,
       });
@@ -137,8 +140,8 @@ function VerifyOTPContent() {
       sessionStorage.setItem('resetOTP', otpString);
 
       toaster.create({
-        title: 'OTP Verified',
-        description: 'Please enter your new password',
+        title: t('verifyOTP.toast.verified_title'),
+        description: t('verifyOTP.toast.verified_desc'),
         type: 'success',
         duration: 3000,
       });
@@ -159,10 +162,10 @@ function VerifyOTPContent() {
               }
             ).response?.data?.message
           : undefined;
-      const finalMessage = errorMessage || 'Invalid OTP. Please try again.';
+      const finalMessage = errorMessage || t('verifyOTP.toast.verify_error');
 
       toaster.create({
-        title: 'Verification Failed',
+        title: t('verifyOTP.toast.verify_failed'),
         description: finalMessage,
         type: 'error',
         duration: 3000,
@@ -208,10 +211,10 @@ function VerifyOTPContent() {
                 <ShieldIcon />
               </Box>
               <Heading size="xl" textAlign="center" color="blue.700">
-                Verify OTP
+                {t('verifyOTP.title')}
               </Heading>
               <Text color="gray.600" textAlign="center" fontSize="sm">
-                Enter the 6-digit code sent to
+                {t('verifyOTP.subtitle')}
               </Text>
               <Text
                 color="blue.600"
@@ -237,7 +240,9 @@ function VerifyOTPContent() {
                   color={isExpired ? 'red.700' : 'blue.700'}
                   fontWeight="semibold"
                 >
-                  {isExpired ? 'OTP Expired' : 'Time Remaining'}
+                  {isExpired
+                    ? t('verifyOTP.otp_expired')
+                    : t('verifyOTP.time_remaining')}
                 </Text>
                 <Text
                   fontSize="3xl"
@@ -259,7 +264,7 @@ function VerifyOTPContent() {
                   color="gray.700"
                   textAlign="center"
                 >
-                  Enter OTP
+                  {t('verifyOTP.enter_otp')}
                 </Text>
                 <HStack gap={2} justify="center">
                   {[0, 1, 2, 3, 4, 5].map((index) => (
@@ -308,17 +313,17 @@ function VerifyOTPContent() {
                 {loading ? (
                   <HStack gap={2}>
                     <Spinner size="sm" />
-                    <Text>Verifying...</Text>
+                    <Text>{t('verifyOTP.verifying')}</Text>
                   </HStack>
                 ) : (
-                  <Text>Verify OTP</Text>
+                  <Text>{t('verifyOTP.verify_button')}</Text>
                 )}
               </Button>
 
               {/* Resend */}
               <VStack gap={2}>
                 <Text fontSize="sm" color="gray.600">
-                  Didn&apos;t receive the code?
+                  {t('verifyOTP.didnt_receive')}
                 </Text>
                 <Button
                   variant="ghost"
@@ -327,7 +332,9 @@ function VerifyOTPContent() {
                   disabled={resending || (!isExpired && timeLeft > 60)}
                   color="blue.600"
                 >
-                  {resending ? 'Resending...' : 'Resend OTP'}
+                  {resending
+                    ? t('verifyOTP.resending')
+                    : t('verifyOTP.resend_otp')}
                 </Button>
               </VStack>
 
@@ -339,7 +346,7 @@ function VerifyOTPContent() {
                 onClick={() => router.push('/login')}
                 color="blue.600"
               >
-                Back to Login
+                {t('verifyOTP.back_to_login')}
               </Button>
             </VStack>
           </VStack>
