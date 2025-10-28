@@ -371,6 +371,194 @@
     "view_all_clients": "すべてのクライアントを表示",
     "add_new_client": "新しいクライアントを追加",
     "update_client_info": "クライアント情報を更新",
-    "client_projects": "クライアントプロジェクト"
+    "client_projects": "クライアントプロジェクト",
+    "view_all_engineers": "すべてのエンジニアを表示",
+    "create_engineer": "エンジニアを作成",
+    "update_engineer": "エンジニア情報を更新",
+    "engineer_attendance": "エンジニア出勤管理"
+  },
+  "engineers": {
+    "title": "エンジニア管理",
+    "subtitle": "エンジニアと出勤記録を管理",
+    "stats": {
+      "total_engineers": "エンジニア総数",
+      "active_engineers": "アクティブなエンジニア",
+      "inactive_engineers": "非アクティブなエンジニア",
+      "total_leave_used": "使用済み休暇総数",
+      "days": "日"
+    },
+    "filters": {
+      "search_placeholder": "名前、メール、またはSlack IDで検索...",
+      "all_engineers": "すべてのエンジニア",
+      "active_only": "アクティブのみ",
+      "inactive_only": "非アクティブのみ",
+      "showing": "<strong>{{count}}</strong> エンジニアを表示中"
+    },
+    "loading": "エンジニアを読み込み中...",
+    "error_title": "エラー",
+    "no_engineers_found": "エンジニアが見つかりません",
+    "no_engineers_message": "検索またはフィルターに一致するエンジニアがありません。",
+    "table": {
+      "name": "名前",
+      "email": "メール",
+      "slack_id": "Slack ID",
+      "leave": "休暇",
+      "status": "ステータス",
+      "actions": "アクション"
+    },
+    "status": {
+      "active": "アクティブ",
+      "inactive": "非アクティブ"
+    },
+    "buttons": {
+      "send_reminder": "リマインダーを送信",
+      "edit": "編集",
+      "view_details": "詳細を表示"
+    },
+    "pagination": {
+      "showing": "{{start}} ～ {{end}} / {{total}} エンジニアを表示中",
+      "previous": "← 前へ",
+      "next": "次へ →",
+      "page": "ページ {{current}} / {{total}}"
+    },
+    "modal": {
+      "title": "エンジニア詳細",
+      "full_name": "氏名",
+      "email": "メール",
+      "slack_user_id": "Slack ユーザーID",
+      "leave_allowance": "年次有給休暇",
+      "leave_used": "使用済み休暇",
+      "leave_remaining": "残り休暇",
+      "status": "ステータス",
+      "created_at": "作成日時",
+      "last_updated": "最終更新日時",
+      "engineer_id": "エンジニアID",
+      "not_provided": "未提供",
+      "close": "閉じる",
+      "days": "日"
+    }
+  },
+  "create_engineer": {
+    "title": "新しいエンジニアアカウントを作成",
+    "subtitle": "詳細を入力して新しいエンジニアアカウントを作成してください。一時パスワードが自動的に生成されます。",
+    "form": {
+      "email": "メールアドレス",
+      "full_name": "氏名",
+      "slack_user_id": "Slack ユーザーID",
+      "email_placeholder": "engineer@example.com",
+      "full_name_placeholder": "山田 太郎",
+      "slack_user_id_placeholder": "U01234ABCDE",
+      "required": "*",
+      "optional": "（任意）"
+    },
+    "buttons": {
+      "reset": "リセット",
+      "create": "エンジニアを作成",
+      "creating": "作成中..."
+    },
+    "validation": {
+      "title": "検証エラー",
+      "email_required": "メールアドレスと氏名は必須です"
+    },
+    "success": {
+      "title": "エンジニアが正常に作成されました！",
+      "description": "{{name}} のアカウントが作成されました"
+    },
+    "error": {
+      "title": "エラー",
+      "create_failed": "エンジニアの作成に失敗しました"
+    },
+    "password": {
+      "title": "✅ エンジニアが正常に作成されました！",
+      "subtitle": "重要：この一時パスワードを保存してください",
+      "label": "一時パスワード",
+      "copy": "📋 パスワードをコピー",
+      "copied_title": "パスワードがコピーされました！",
+      "copied_description": "一時パスワードがクリップボードにコピーされました",
+      "warning": "⚠️ このパスワードを保存してください！再表示されません。認証情報はエンジニアにメールで送信されました。"
+    },
+    "info": {
+      "title": "使い方",
+      "item1": "• 一時パスワードが自動的に生成されます",
+      "item2": "• エンジニアにはメールでログイン認証情報が送信されます",
+      "item3": "• 初回ログイン時にパスワードを変更する必要があります",
+      "item4": "• Slack連携はオプションですが推奨されます"
+    }
+  },
+  "attendance": {
+    "title": "出勤管理",
+    "subtitle": "エンジニアの出勤記録を表示・管理",
+    "select_engineer": "エンジニアを選択して出勤記録を表示",
+    "search_placeholder": "エンジニアを検索...",
+    "no_engineers": "エンジニアが見つかりません",
+    "loading": "出勤記録を読み込み中...",
+    "error_title": "エラー",
+    "error_fetch": "出勤記録の取得に失敗しました",
+    "error_save": "出勤記録の保存に失敗しました",
+    "error_delete": "出勤記録の削除に失敗しました",
+    "stats": {
+      "work_days": "勤務日数",
+      "leave_days": "休暇日数",
+      "absent_days": "欠勤日数",
+      "total_hours": "総勤務時間"
+    },
+    "project_filter": "プロジェクト：",
+    "all_projects": "すべてのプロジェクト",
+    "calendar": {
+      "today": "今日",
+      "previous_month": "前月",
+      "next_month": "翌月",
+      "current_month": "今月",
+      "months": {
+        "january": "1月",
+        "february": "2月",
+        "march": "3月",
+        "april": "4月",
+        "may": "5月",
+        "june": "6月",
+        "july": "7月",
+        "august": "8月",
+        "september": "9月",
+        "october": "10月",
+        "november": "11月",
+        "december": "12月"
+      }
+    },
+    "edit": {
+      "title": "出勤記録を編集",
+      "close": "閉じる",
+      "client": "クライアント",
+      "attendance_type": "出勤タイプ",
+      "attendance_type_required": "出勤タイプ *",
+      "work_location": "勤務場所",
+      "work_location_select": "勤務場所を選択",
+      "work_hours": "勤務時間",
+      "start_time": "開始時刻",
+      "end_time": "終了時刻",
+      "break_hours": "休憩時間",
+      "description": "説明",
+      "description_placeholder": "実施した作業または休暇の理由を記入してください...",
+      "project": "プロジェクト",
+      "buttons": {
+        "save": "変更を保存",
+        "saving": "保存中...",
+        "cancel": "キャンセル",
+        "delete": "記録を削除"
+      }
+    },
+    "types": {
+      "PRESENT": "出勤",
+      "PAID_LEAVE": "有給休暇",
+      "ABSENT": "欠勤",
+      "LEGAL_HOLIDAY": "祝日"
+    },
+    "locations": {
+      "OFFICE": "オフィス",
+      "REMOTE": "リモート",
+      "CLIENT_SITE": "クライアント先",
+      "HYBRID": "ハイブリッド",
+      "FIELD_WORK": "現場作業",
+      "OTHER": "その他"
+    }
   }
 }

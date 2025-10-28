@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useContext, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { Box, Flex, Text, VStack, Card, HStack } from '@chakra-ui/react';
-import { LuUsers } from 'react-icons/lu';
+import { LuUsers, LuUserPlus, LuCalendar } from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
@@ -11,7 +13,6 @@ import { AuthContext } from '@/context/AuthContext';
 import { engineerService, Engineer } from '@/shared/service/engineerService';
 import { attendanceService } from '@/shared/service/attendanceService';
 import { toaster } from '@/components/ui/toaster';
-import { engineerTabs } from '@/shared/config/engineerTabs';
 import { EngineerSidebar } from './components/EngineerSidebar';
 import { CalendarHeader } from './components/CalendarHeader';
 import { CalendarView } from './components/CalendarView';
@@ -48,6 +49,7 @@ interface EditFormData {
 
 export default function ManageAttendancePage() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('sales');
 
   // Core state
   const [engineers, setEngineers] = useState<Engineer[]>([]);
@@ -127,8 +129,8 @@ export default function ManageAttendancePage() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to fetch engineers',
+        title: t('attendance.error_title'),
+        description: errorMessage || t('attendance.error_fetch'),
         type: 'error',
       });
     } finally {
@@ -569,8 +571,8 @@ export default function ManageAttendancePage() {
     <FeatureErrorBoundary featureName="Manage Attendance">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Engineer Management"
-        pageSubtitle="Manage engineers and their attendance records"
+        pageTitle={t('engineers.title')}
+        pageSubtitle={t('engineers.subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -582,7 +584,25 @@ export default function ManageAttendancePage() {
         notificationCount={0}
       >
         {/* Tab Navigation */}
-        <TabNavigation tabs={engineerTabs} />
+        <TabNavigation
+          tabs={[
+            {
+              label: t('tabs.view_all_engineers'),
+              href: '/sales/engineers',
+              icon: LuUsers,
+            },
+            {
+              label: t('tabs.create_engineer'),
+              href: '/sales/engineers/create',
+              icon: LuUserPlus,
+            },
+            {
+              label: t('tabs.engineer_attendance'),
+              href: '/sales/engineers/attendance',
+              icon: LuCalendar,
+            },
+          ]}
+        />
 
         {/* Modern Split-View Layout */}
         <Flex h="calc(100vh - 250px)" overflow="hidden">
@@ -611,7 +631,7 @@ export default function ManageAttendancePage() {
                 <VStack gap={3}>
                   <LuUsers size={48} color="#A0AEC0" />
                   <Text color="gray.500" fontSize="lg">
-                    Select an engineer to view attendance
+                    {t('attendance.select_engineer')}
                   </Text>
                 </VStack>
               </Box>
@@ -636,7 +656,7 @@ export default function ManageAttendancePage() {
                         color="gray.700"
                         minW="100px"
                       >
-                        Project:
+                        {t('attendance.project_filter')}
                       </Text>
                       <select
                         value={selectedProject}

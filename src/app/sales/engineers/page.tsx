@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -20,7 +22,7 @@ import { TabNavigation } from '@/components/ui/TabNavigation';
 import { AuthContext } from '@/context/AuthContext';
 import { engineerService, Engineer } from '@/shared/service/engineerService';
 import { toaster } from '@/components/ui/toaster';
-import { engineerTabs } from '@/shared/config/engineerTabs';
+import { LuUsers, LuUserPlus, LuCalendar } from 'react-icons/lu';
 import {
   LuMail,
   LuMessageSquare,
@@ -32,6 +34,7 @@ import {
 
 export default function EngineersPage() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('sales');
   const [engineers, setEngineers] = useState<Engineer[]>([]);
   const [filteredEngineers, setFilteredEngineers] = useState<Engineer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -261,8 +264,8 @@ export default function EngineersPage() {
     <FeatureErrorBoundary featureName="Engineers">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Engineer Management"
-        pageSubtitle="Manage engineers and their attendance records"
+        pageTitle={t('engineers.title')}
+        pageSubtitle={t('engineers.subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -274,7 +277,25 @@ export default function EngineersPage() {
         notificationCount={0}
       >
         {/* Tab Navigation */}
-        <TabNavigation tabs={engineerTabs} />
+        <TabNavigation
+          tabs={[
+            {
+              label: t('tabs.view_all_engineers'),
+              href: '/sales/engineers',
+              icon: LuUsers,
+            },
+            {
+              label: t('tabs.create_engineer'),
+              href: '/sales/engineers/create',
+              icon: LuUserPlus,
+            },
+            {
+              label: t('tabs.engineer_attendance'),
+              href: '/sales/engineers/attendance',
+              icon: LuCalendar,
+            },
+          ]}
+        />
 
         {/* Stats Cards */}
         <Grid
@@ -293,7 +314,7 @@ export default function EngineersPage() {
                 color="blue.700"
                 fontWeight="medium"
               >
-                Total Engineers
+                {t('engineers.stats.total_engineers')}
               </Text>
               <Text
                 fontSize={{ base: 'xl', md: '2xl' }}
@@ -312,7 +333,7 @@ export default function EngineersPage() {
                 color="green.700"
                 fontWeight="medium"
               >
-                Active Engineers
+                {t('engineers.stats.active_engineers')}
               </Text>
               <Text
                 fontSize={{ base: 'xl', md: '2xl' }}
@@ -331,7 +352,7 @@ export default function EngineersPage() {
                 color="red.700"
                 fontWeight="medium"
               >
-                Inactive Engineers
+                {t('engineers.stats.inactive_engineers')}
               </Text>
               <Text
                 fontSize={{ base: 'xl', md: '2xl' }}
@@ -350,14 +371,14 @@ export default function EngineersPage() {
                 color="purple.700"
                 fontWeight="medium"
               >
-                Total Leave Used
+                {t('engineers.stats.total_leave_used')}
               </Text>
               <Text
                 fontSize={{ base: 'xl', md: '2xl' }}
                 fontWeight="bold"
                 color="purple.900"
               >
-                {totalLeaveUsed} days
+                {totalLeaveUsed} {t('engineers.stats.days')}
               </Text>
             </VStack>
           </Card.Root>
@@ -368,7 +389,7 @@ export default function EngineersPage() {
           <Card.Root p={8}>
             <VStack gap={4}>
               <Text fontSize="2xl">⏳</Text>
-              <Text color="gray.600">Loading engineers...</Text>
+              <Text color="gray.600">{t('engineers.loading')}</Text>
             </VStack>
           </Card.Root>
         )}
@@ -379,7 +400,7 @@ export default function EngineersPage() {
               <Text fontSize="2xl">⚠️</Text>
               <VStack align="start" gap={1}>
                 <Text fontWeight="bold" color="red.700">
-                  Error
+                  {t('engineers.error_title')}
                 </Text>
                 <Text fontSize="sm" color="red.600">
                   {error}
@@ -394,7 +415,7 @@ export default function EngineersPage() {
             <VStack gap={4}>
               <Text fontSize="4xl">👨‍💼</Text>
               <Text fontSize="lg" fontWeight="bold">
-                No Engineers Found
+                {t('engineers.no_engineers_found')}
               </Text>
               <Text color="gray.600">
                 {engineers.length === 0
@@ -435,7 +456,7 @@ export default function EngineersPage() {
                       type="text"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search by name, email, or Slack ID..."
+                      placeholder={t('engineers.filters.search_placeholder')}
                       size="sm"
                       bg="white"
                       fontSize="sm"
@@ -470,9 +491,15 @@ export default function EngineersPage() {
                         cursor: 'pointer',
                       }}
                     >
-                      <option value="all">All Engineers</option>
-                      <option value="active">Active Only</option>
-                      <option value="inactive">Inactive Only</option>
+                      <option value="all">
+                        {t('engineers.filters.all_engineers')}
+                      </option>
+                      <option value="active">
+                        {t('engineers.filters.active_only')}
+                      </option>
+                      <option value="inactive">
+                        {t('engineers.filters.inactive_only')}
+                      </option>
                     </select>
                   </Box>
                 </Grid>
@@ -506,22 +533,22 @@ export default function EngineersPage() {
                 <Table.Header>
                   <Table.Row bg="white">
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Engineer
+                      {t('engineers.table.name')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Slack ID
+                      {t('engineers.table.slack_id')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Leave Status
+                      {t('engineers.table.leave')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
                       Last Login
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Status
+                      {t('engineers.table.status')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Actions
+                      {t('engineers.table.actions')}
                     </Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
@@ -573,7 +600,9 @@ export default function EngineersPage() {
                           colorScheme={engineer.isActive ? 'green' : 'red'}
                           fontSize="xs"
                         >
-                          {engineer.isActive ? 'Active' : 'Inactive'}
+                          {engineer.isActive
+                            ? t('engineers.status.active')
+                            : t('engineers.status.inactive')}
                         </Badge>
                       </Table.Cell>
                       <Table.Cell>
@@ -584,7 +613,7 @@ export default function EngineersPage() {
                             variant="outline"
                             onClick={() => openEngineerModal(engineer)}
                           >
-                            View
+                            {t('engineers.buttons.view_details')}
                           </Button>
                           <Button
                             size="xs"
@@ -592,7 +621,7 @@ export default function EngineersPage() {
                             variant="outline"
                             onClick={() => handleEditClick(engineer)}
                           >
-                            Edit
+                            {t('engineers.buttons.edit')}
                           </Button>
                           <Button
                             size="xs"
@@ -601,7 +630,7 @@ export default function EngineersPage() {
                             onClick={() =>
                               handleSendReminder(engineer.id, engineer.fullName)
                             }
-                            title="Send Reminder"
+                            title={t('engineers.buttons.send_reminder')}
                           >
                             <LuBell size={16} />
                           </Button>
@@ -648,7 +677,9 @@ export default function EngineersPage() {
                         colorScheme={engineer.isActive ? 'green' : 'red'}
                         fontSize="xs"
                       >
-                        {engineer.isActive ? 'Active' : 'Inactive'}
+                        {engineer.isActive
+                          ? t('engineers.status.active')
+                          : t('engineers.status.inactive')}
                       </Badge>
                     </HStack>
 

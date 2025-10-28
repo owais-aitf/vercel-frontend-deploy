@@ -8,6 +8,8 @@ import {
   Button,
   IconButton,
 } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   LuX,
   LuCalendar,
@@ -71,25 +73,32 @@ export function EditSlideOver({
   onDelete,
   saving = false,
 }: EditSlideOverProps) {
+  const { t } = useTranslation('sales');
+
   if (!isOpen || !record) return null;
 
   const attendanceTypes = [
     {
       value: 'PRESENT',
-      label: 'Present',
+      label: t('attendance.types.PRESENT'),
       icon: <LuCheck size={20} />,
       color: 'green',
     },
     {
       value: 'PAID_LEAVE',
-      label: 'Paid Leave',
+      label: t('attendance.types.PAID_LEAVE'),
       icon: <LuPlane size={20} />,
       color: 'blue',
     },
-    { value: 'ABSENT', label: 'Absent', icon: <LuX size={20} />, color: 'red' },
+    {
+      value: 'ABSENT',
+      label: t('attendance.types.ABSENT'),
+      icon: <LuX size={20} />,
+      color: 'red',
+    },
     {
       value: 'LEGAL_HOLIDAY',
-      label: 'Holiday',
+      label: t('attendance.types.LEGAL_HOLIDAY'),
       icon: <LuCalendarDays size={20} />,
       color: 'purple',
     },
@@ -146,10 +155,10 @@ export function EditSlideOver({
           >
             <HStack justify="space-between" mb={4}>
               <Text fontSize="xl" fontWeight="bold">
-                Edit Attendance
+                {t('attendance.edit.title')}
               </Text>
               <IconButton
-                aria-label="Close"
+                aria-label={t('attendance.edit.close')}
                 onClick={onClose}
                 variant="ghost"
                 size="sm"
@@ -180,7 +189,8 @@ export function EditSlideOver({
                     {record.projectAssignment.project.projectName}
                   </Text>
                   <Text fontSize="xs" color="green.700">
-                    Client: {record.projectAssignment.project.client.name}
+                    {t('attendance.edit.client')}:{' '}
+                    {record.projectAssignment.project.client.name}
                   </Text>
                 </VStack>
               </HStack>
@@ -193,7 +203,7 @@ export function EditSlideOver({
               {/* Attendance Type */}
               <Box>
                 <Text fontSize="sm" mb={3} fontWeight="semibold">
-                  Attendance Type *
+                  {t('attendance.edit.attendance_type_required')}
                 </Text>
                 <Grid templateColumns="repeat(2, 1fr)" gap={3}>
                   {attendanceTypes.map((type) => (
@@ -239,7 +249,7 @@ export function EditSlideOver({
                   <HStack mb={2}>
                     <LuMapPin size={16} />
                     <Text fontSize="sm" fontWeight="semibold">
-                      Work Location
+                      {t('attendance.edit.work_location')}
                     </Text>
                   </HStack>
                   <select
@@ -258,13 +268,27 @@ export function EditSlideOver({
                       cursor: 'pointer',
                     }}
                   >
-                    <option value="">Select work location</option>
-                    <option value="OFFICE">Office</option>
-                    <option value="REMOTE">Remote</option>
-                    <option value="CLIENT_SITE">Client Site</option>
-                    <option value="HYBRID">Hybrid</option>
-                    <option value="FIELD_WORK">Field Work</option>
-                    <option value="OTHER">Other</option>
+                    <option value="">
+                      {t('attendance.edit.work_location_select')}
+                    </option>
+                    <option value="OFFICE">
+                      {t('attendance.locations.OFFICE')}
+                    </option>
+                    <option value="REMOTE">
+                      {t('attendance.locations.REMOTE')}
+                    </option>
+                    <option value="CLIENT_SITE">
+                      {t('attendance.locations.CLIENT_SITE')}
+                    </option>
+                    <option value="HYBRID">
+                      {t('attendance.locations.HYBRID')}
+                    </option>
+                    <option value="FIELD_WORK">
+                      {t('attendance.locations.FIELD_WORK')}
+                    </option>
+                    <option value="OTHER">
+                      {t('attendance.locations.OTHER')}
+                    </option>
                   </select>
                 </Box>
               )}
@@ -275,13 +299,13 @@ export function EditSlideOver({
                   <HStack mb={2}>
                     <LuClock size={16} />
                     <Text fontSize="sm" fontWeight="semibold">
-                      Work Hours
+                      {t('attendance.edit.work_hours')}
                     </Text>
                   </HStack>
                   <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                     <Box>
                       <Text fontSize="xs" mb={1} color="gray.600">
-                        Start Time
+                        {t('attendance.edit.start_time')}
                       </Text>
                       <Input
                         type="time"
@@ -293,7 +317,7 @@ export function EditSlideOver({
                     </Box>
                     <Box>
                       <Text fontSize="xs" mb={1} color="gray.600">
-                        End Time
+                        {t('attendance.edit.end_time')}
                       </Text>
                       <Input
                         type="time"
@@ -311,7 +335,7 @@ export function EditSlideOver({
               {formData.attendanceType === 'PRESENT' && (
                 <Box>
                   <Text fontSize="sm" mb={2} fontWeight="semibold">
-                    Break Hours
+                    {t('attendance.edit.break_hours')}
                   </Text>
                   <Input
                     type="number"
@@ -333,7 +357,7 @@ export function EditSlideOver({
                 <HStack mb={2}>
                   <LuFileText size={16} />
                   <Text fontSize="sm" fontWeight="semibold">
-                    Description
+                    {t('attendance.edit.description')}
                   </Text>
                 </HStack>
                 <textarea
@@ -341,7 +365,7 @@ export function EditSlideOver({
                   onChange={(e) =>
                     onFormChange({ workDescription: e.target.value })
                   }
-                  placeholder="Describe the work done or reason for leave..."
+                  placeholder={t('attendance.edit.description_placeholder')}
                   rows={4}
                   style={{
                     width: '100%',
@@ -362,12 +386,12 @@ export function EditSlideOver({
             <VStack gap={3}>
               <HStack justify="flex-end" w="full" gap={3}>
                 <Button onClick={onClose} variant="outline">
-                  Cancel
+                  {t('attendance.edit.buttons.cancel')}
                 </Button>
                 <Button onClick={onSave} colorScheme="blue" loading={saving}>
                   <HStack gap={2}>
                     <LuSave size={16} />
-                    <Text>Save Changes</Text>
+                    <Text>{t('attendance.edit.buttons.save')}</Text>
                   </HStack>
                 </Button>
               </HStack>
@@ -380,7 +404,7 @@ export function EditSlideOver({
               >
                 <HStack gap={2}>
                   <LuTrash2 size={16} />
-                  <Text>Delete Record</Text>
+                  <Text>{t('attendance.edit.buttons.delete')}</Text>
                 </HStack>
               </Button>
             </VStack>

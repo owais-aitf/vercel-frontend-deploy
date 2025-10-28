@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -19,11 +21,12 @@ import { AuthContext } from '@/context/AuthContext';
 import { engineerService } from '@/shared/service/engineerService';
 import { toaster } from '@/components/ui/toaster';
 import { useRouter } from 'next/navigation';
-import { engineerTabs } from '@/shared/config/engineerTabs';
+import { LuUsers, LuUserPlus, LuCalendar } from 'react-icons/lu';
 
 export default function CreateEngineerPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();
+  const { t } = useTranslation('sales');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -37,8 +40,8 @@ export default function CreateEngineerPage() {
 
     if (!formData.email || !formData.fullName) {
       toaster.create({
-        title: 'Validation Error',
-        description: 'Email and Full Name are required',
+        title: t('create_engineer.validation.title'),
+        description: t('create_engineer.validation.email_required'),
         type: 'error',
         duration: 3000,
       });
@@ -57,8 +60,10 @@ export default function CreateEngineerPage() {
       if (response.success) {
         setCreatedPassword(response.data.temporaryPassword);
         toaster.create({
-          title: 'Engineer created successfully!',
-          description: `Account created for ${formData.fullName}`,
+          title: t('create_engineer.success.title'),
+          description: t('create_engineer.success.description', {
+            name: formData.fullName,
+          }),
           type: 'success',
           duration: 4000,
         });
@@ -77,8 +82,8 @@ export default function CreateEngineerPage() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to create engineer',
+        title: t('create_engineer.error.title'),
+        description: errorMessage || t('create_engineer.error.create_failed'),
         type: 'error',
         duration: 5000,
       });
@@ -90,8 +95,8 @@ export default function CreateEngineerPage() {
   const handleCopyPassword = () => {
     navigator.clipboard.writeText(createdPassword);
     toaster.create({
-      title: 'Password copied!',
-      description: 'Temporary password copied to clipboard',
+      title: t('create_engineer.password.copied_title'),
+      description: t('create_engineer.password.copied_description'),
       type: 'success',
       duration: 2000,
     });
@@ -101,8 +106,8 @@ export default function CreateEngineerPage() {
     <FeatureErrorBoundary featureName="Create Engineer">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Engineer Management"
-        pageSubtitle="Manage engineers and their attendance records"
+        pageTitle={t('engineers.title')}
+        pageSubtitle={t('engineers.subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -114,7 +119,25 @@ export default function CreateEngineerPage() {
         notificationCount={0}
       >
         {/* Tab Navigation */}
-        <TabNavigation tabs={engineerTabs} />
+        <TabNavigation
+          tabs={[
+            {
+              label: t('tabs.view_all_engineers'),
+              href: '/sales/engineers',
+              icon: LuUsers,
+            },
+            {
+              label: t('tabs.create_engineer'),
+              href: '/sales/engineers/create',
+              icon: LuUserPlus,
+            },
+            {
+              label: t('tabs.engineer_attendance'),
+              href: '/sales/engineers/attendance',
+              icon: LuCalendar,
+            },
+          ]}
+        />
 
         <Grid templateColumns={{ base: '1fr', lg: '2fr 1fr' }} gap={6}>
           {/* Create Form */}
@@ -122,11 +145,10 @@ export default function CreateEngineerPage() {
             <VStack align="stretch" gap={6}>
               <Box>
                 <Text fontSize="xl" fontWeight="bold" mb={2}>
-                  ➕ Create New Engineer Account
+                  ➕ {t('create_engineer.title')}
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  Fill in the details to create a new engineer account. A
-                  temporary password will be generated automatically.
+                  {t('create_engineer.subtitle')}
                 </Text>
               </Box>
 
@@ -140,9 +162,9 @@ export default function CreateEngineerPage() {
                       fontWeight="medium"
                       color="gray.700"
                     >
-                      Email Address{' '}
+                      {t('create_engineer.form.email')}{' '}
                       <Text as="span" color="red.500">
-                        *
+                        {t('create_engineer.form.required')}
                       </Text>
                     </Text>
                     <Input
@@ -151,7 +173,7 @@ export default function CreateEngineerPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })
                       }
-                      placeholder="engineer@example.com"
+                      placeholder={t('create_engineer.form.email_placeholder')}
                       required
                       size="lg"
                     />
@@ -165,9 +187,9 @@ export default function CreateEngineerPage() {
                       fontWeight="medium"
                       color="gray.700"
                     >
-                      Full Name{' '}
+                      {t('create_engineer.form.full_name')}{' '}
                       <Text as="span" color="red.500">
-                        *
+                        {t('create_engineer.form.required')}
                       </Text>
                     </Text>
                     <Input
@@ -176,7 +198,9 @@ export default function CreateEngineerPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, fullName: e.target.value })
                       }
-                      placeholder="John Doe"
+                      placeholder={t(
+                        'create_engineer.form.full_name_placeholder'
+                      )}
                       required
                       size="lg"
                     />
@@ -201,11 +225,13 @@ export default function CreateEngineerPage() {
                           slackUserId: e.target.value,
                         })
                       }
-                      placeholder="U123456789"
+                      placeholder={t(
+                        'create_engineer.form.slack_user_id_placeholder'
+                      )}
                       size="lg"
                     />
                     <Text fontSize="xs" color="gray.500" mt={1}>
-                      Used for Slack notifications and reminders
+                      {t('create_engineer.form.slack_user_id_description')}
                     </Text>
                   </Box>
 
@@ -216,10 +242,12 @@ export default function CreateEngineerPage() {
                       colorScheme="blue"
                       size="lg"
                       loading={loading}
-                      loadingText="Creating..."
+                      loadingText={t('create_engineer.buttons.creating')}
                       flex={1}
                     >
-                      ➕ Create Engineer
+                      {loading
+                        ? t('create_engineer.buttons.creating')
+                        : t('create_engineer.buttons.create')}
                     </Button>
                     <Button
                       type="button"
@@ -227,7 +255,7 @@ export default function CreateEngineerPage() {
                       size="lg"
                       onClick={() => router.push('/sales/engineers')}
                     >
-                      Cancel
+                      {t('create_engineer.buttons.reset')}
                     </Button>
                   </HStack>
                 </VStack>
@@ -243,14 +271,14 @@ export default function CreateEngineerPage() {
                 <HStack gap={2}>
                   <Text fontSize="lg">ℹ️</Text>
                   <Text fontSize="md" fontWeight="bold" color="blue.900">
-                    Important Information
+                    {t('create_engineer.info.title')}
                   </Text>
                 </HStack>
                 <VStack align="stretch" gap={2} fontSize="sm" color="blue.800">
-                  <Text>• A temporary password will be auto-generated</Text>
-                  <Text>• Credentials will be emailed to the engineer</Text>
-                  <Text>• Engineer must reset password on first login</Text>
-                  <Text>• Default annual leave allowance: 10 days</Text>
+                  <Text>{t('create_engineer.info.item1')}</Text>
+                  <Text>{t('create_engineer.info.item2')}</Text>
+                  <Text>{t('create_engineer.info.item3')}</Text>
+                  <Text>{t('create_engineer.info.item4')}</Text>
                 </VStack>
               </VStack>
             </Card.Root>
@@ -267,11 +295,13 @@ export default function CreateEngineerPage() {
                   <HStack gap={2}>
                     <Text fontSize="lg">✅</Text>
                     <Text fontSize="md" fontWeight="bold" color="green.900">
-                      Engineer Created!
+                      {t('create_engineer.success.title')}
                     </Text>
                   </HStack>
                   <Text fontSize="sm" color="green.800">
-                    Temporary password generated:
+                    {t('create_engineer.success.description', {
+                      name: formData.fullName,
+                    })}
                   </Text>
                   <Box
                     p={3}
@@ -295,11 +325,10 @@ export default function CreateEngineerPage() {
                     colorScheme="green"
                     onClick={handleCopyPassword}
                   >
-                    📋 Copy Password
+                    {t('create_engineer.password.copy')}
                   </Button>
                   <Text fontSize="xs" color="green.700">
-                    ⚠️ Save this password! It won&apos;t be shown again. The
-                    credentials have also been emailed to the engineer.
+                    {t('create_engineer.password.warning')}
                   </Text>
                 </VStack>
               </Card.Root>

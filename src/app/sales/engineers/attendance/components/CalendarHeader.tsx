@@ -8,6 +8,8 @@ import {
 } from '@chakra-ui/react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { Engineer } from '@/shared/service/engineerService';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
 interface CalendarHeaderProps {
   engineer: Engineer;
@@ -28,19 +30,21 @@ export function CalendarHeader({
   onNavigateMonth,
   stats,
 }: CalendarHeaderProps) {
+  const { t } = useTranslation('sales');
+
   const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    t('attendance.calendar.months.january'),
+    t('attendance.calendar.months.february'),
+    t('attendance.calendar.months.march'),
+    t('attendance.calendar.months.april'),
+    t('attendance.calendar.months.may'),
+    t('attendance.calendar.months.june'),
+    t('attendance.calendar.months.july'),
+    t('attendance.calendar.months.august'),
+    t('attendance.calendar.months.september'),
+    t('attendance.calendar.months.october'),
+    t('attendance.calendar.months.november'),
+    t('attendance.calendar.months.december'),
   ];
 
   const isCurrentMonth = () => {
@@ -66,7 +70,7 @@ export function CalendarHeader({
         {/* Month Navigation */}
         <HStack gap={4}>
           <IconButton
-            aria-label="Previous month"
+            aria-label={t('attendance.calendar.previous_month')}
             onClick={() => onNavigateMonth('prev')}
             variant="outline"
             size="sm"
@@ -80,13 +84,13 @@ export function CalendarHeader({
             </Text>
             {isCurrentMonth() && (
               <Badge colorScheme="blue" fontSize="2xs">
-                Current Month
+                {t('attendance.calendar.current_month')}
               </Badge>
             )}
           </VStack>
 
           <IconButton
-            aria-label="Next month"
+            aria-label={t('attendance.calendar.next_month')}
             onClick={() => onNavigateMonth('next')}
             variant="outline"
             size="sm"
@@ -102,7 +106,7 @@ export function CalendarHeader({
               {stats.totalWorkDays}
             </Text>
             <Text fontSize="xs" color="gray.600" textAlign="center">
-              Work Days
+              {t('attendance.stats.work_days')}
             </Text>
           </VStack>
           <VStack gap={0} minW="50px">
@@ -110,7 +114,7 @@ export function CalendarHeader({
               {stats.totalLeave}
             </Text>
             <Text fontSize="xs" color="gray.600" textAlign="center">
-              Leave
+              {t('attendance.stats.leave_days')}
             </Text>
           </VStack>
           <VStack gap={0} minW="50px">
@@ -118,7 +122,7 @@ export function CalendarHeader({
               {stats.totalAbsent}
             </Text>
             <Text fontSize="xs" color="gray.600" textAlign="center">
-              Absent
+              {t('attendance.stats.absent_days')}
             </Text>
           </VStack>
         </HStack>

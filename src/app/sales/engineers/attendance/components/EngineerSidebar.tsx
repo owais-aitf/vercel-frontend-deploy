@@ -2,6 +2,8 @@ import { Box, Input, VStack, Text, HStack, Badge } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
 import { Engineer } from '@/shared/service/engineerService';
 import { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
 interface EngineerSidebarProps {
   engineers: Engineer[];
@@ -30,6 +32,7 @@ export function EngineerSidebar({
   stats,
   projectCounts,
 }: EngineerSidebarProps) {
+  const { t } = useTranslation('sales');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef<number>(0);
 
@@ -82,7 +85,7 @@ export function EngineerSidebar({
             <LuSearch size={18} />
           </Box>
           <Input
-            placeholder="Search engineers..."
+            placeholder={t('attendance.search_placeholder')}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             pl="40px"

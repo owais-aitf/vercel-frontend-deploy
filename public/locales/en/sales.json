@@ -375,6 +375,194 @@
     "view_all_clients": "View All Clients",
     "add_new_client": "Add New Client",
     "update_client_info": "Update Client Info",
-    "client_projects": "Client Projects"
+    "client_projects": "Client Projects",
+    "view_all_engineers": "View All Engineers",
+    "create_engineer": "Create Engineer",
+    "update_engineer": "Update Engineer",
+    "engineer_attendance": "Engineer Attendance"
+  },
+  "engineers": {
+    "title": "Engineer Management",
+    "subtitle": "Manage engineers and their attendance records",
+    "stats": {
+      "total_engineers": "Total Engineers",
+      "active_engineers": "Active Engineers",
+      "inactive_engineers": "Inactive Engineers",
+      "total_leave_used": "Total Leave Used",
+      "days": "days"
+    },
+    "filters": {
+      "search_placeholder": "Search by name, email, or Slack ID...",
+      "all_engineers": "All Engineers",
+      "active_only": "Active Only",
+      "inactive_only": "Inactive Only",
+      "showing": "Showing <strong>{{count}}</strong> engineers"
+    },
+    "loading": "Loading engineers...",
+    "error_title": "Error",
+    "no_engineers_found": "No Engineers Found",
+    "no_engineers_message": "No engineers match your search or filters.",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "slack_id": "Slack ID",
+      "leave": "Leave",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "buttons": {
+      "send_reminder": "Send Reminder",
+      "edit": "Edit",
+      "view_details": "View Details"
+    },
+    "pagination": {
+      "showing": "Showing {{start}} to {{end}} of {{total}} engineers",
+      "previous": "← Previous",
+      "next": "Next →",
+      "page": "Page {{current}} of {{total}}"
+    },
+    "modal": {
+      "title": "Engineer Details",
+      "full_name": "Full Name",
+      "email": "Email",
+      "slack_user_id": "Slack User ID",
+      "leave_allowance": "Annual Leave Allowance",
+      "leave_used": "Leave Used",
+      "leave_remaining": "Leave Remaining",
+      "status": "Status",
+      "created_at": "Created At",
+      "last_updated": "Last Updated",
+      "engineer_id": "Engineer ID",
+      "not_provided": "Not provided",
+      "close": "Close",
+      "days": "days"
+    }
+  },
+  "create_engineer": {
+    "title": "Create New Engineer Account",
+    "subtitle": "Fill in the details to create a new engineer account. A temporary password will be generated automatically.",
+    "form": {
+      "email": "Email Address",
+      "full_name": "Full Name",
+      "slack_user_id": "Slack User ID",
+      "email_placeholder": "engineer@example.com",
+      "full_name_placeholder": "John Doe",
+      "slack_user_id_placeholder": "U01234ABCDE",
+      "required": "*",
+      "optional": "(Optional)"
+    },
+    "buttons": {
+      "reset": "Reset",
+      "create": "Create Engineer",
+      "creating": "Creating..."
+    },
+    "validation": {
+      "title": "Validation Error",
+      "email_required": "Email and Full Name are required"
+    },
+    "success": {
+      "title": "Engineer created successfully!",
+      "description": "Account created for {{name}}"
+    },
+    "error": {
+      "title": "Error",
+      "create_failed": "Failed to create engineer"
+    },
+    "password": {
+      "title": "✅ Engineer Created Successfully!",
+      "subtitle": "Important: Save this temporary password",
+      "label": "Temporary Password",
+      "copy": "📋 Copy Password",
+      "copied_title": "Password copied!",
+      "copied_description": "Temporary password copied to clipboard",
+      "warning": "⚠️ Save this password! It won't be shown again. The credentials have also been emailed to the engineer."
+    },
+    "info": {
+      "title": "How It Works",
+      "item1": "• A temporary password will be generated automatically",
+      "item2": "• The engineer will receive login credentials via email",
+      "item3": "• They must change their password on first login",
+      "item4": "• Slack integration is optional but recommended"
+    }
+  },
+  "attendance": {
+    "title": "Manage Attendance",
+    "subtitle": "View and manage engineer attendance records",
+    "select_engineer": "Select an engineer to view attendance",
+    "search_placeholder": "Search engineers...",
+    "no_engineers": "No engineers found",
+    "loading": "Loading attendance...",
+    "error_title": "Error",
+    "error_fetch": "Failed to fetch attendance records",
+    "error_save": "Failed to save attendance record",
+    "error_delete": "Failed to delete attendance record",
+    "stats": {
+      "work_days": "Work Days",
+      "leave_days": "Leave Days",
+      "absent_days": "Absent Days",
+      "total_hours": "Total Hours"
+    },
+    "project_filter": "Project:",
+    "all_projects": "All Projects",
+    "calendar": {
+      "today": "Today",
+      "previous_month": "Previous Month",
+      "next_month": "Next Month",
+      "current_month": "Current Month",
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      }
+    },
+    "edit": {
+      "title": "Edit Attendance",
+      "close": "Close",
+      "client": "Client",
+      "attendance_type": "Attendance Type",
+      "attendance_type_required": "Attendance Type *",
+      "work_location": "Work Location",
+      "work_location_select": "Select work location",
+      "work_hours": "Work Hours",
+      "start_time": "Start Time",
+      "end_time": "End Time",
+      "break_hours": "Break Hours",
+      "description": "Description",
+      "description_placeholder": "Describe the work done or reason for leave...",
+      "project": "Project",
+      "buttons": {
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "delete": "Delete Record"
+      }
+    },
+    "types": {
+      "PRESENT": "Present",
+      "PAID_LEAVE": "Paid Leave",
+      "ABSENT": "Absent",
+      "LEGAL_HOLIDAY": "Holiday"
+    },
+    "locations": {
+      "OFFICE": "Office",
+      "REMOTE": "Remote",
+      "CLIENT_SITE": "Client Site",
+      "HYBRID": "Hybrid",
+      "FIELD_WORK": "Field Work",
+      "OTHER": "Other"
+    }
   }
 }
