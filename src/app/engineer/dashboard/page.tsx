@@ -540,10 +540,10 @@ function EngineerDashboardContent() {
                 fontWeight="bold"
                 color="gray.800"
               >
-                ⚡ Quick Actions
+                ⚡ {t('quick_actions.title')}
               </Text>
               <Text fontSize="xs" color="gray.600">
-                Frequently used features
+                {t('quick_actions.subtitle')}
               </Text>
             </VStack>
 
@@ -565,7 +565,7 @@ function EngineerDashboardContent() {
               >
                 <LuCalendarCheck size={20} />
                 <Text fontSize="xs" fontWeight="medium" textAlign="center">
-                  Mark Attendance
+                  {t('quick_actions.mark_attendance')}
                 </Text>
               </Button>
 
@@ -586,7 +586,7 @@ function EngineerDashboardContent() {
               >
                 <LuFileText size={20} />
                 <Text fontSize="xs" fontWeight="medium" textAlign="center">
-                  View Records
+                  {t('quick_actions.view_records')}
                 </Text>
               </Button>
 
@@ -607,7 +607,7 @@ function EngineerDashboardContent() {
               >
                 <LuClock size={20} />
                 <Text fontSize="xs" fontWeight="medium" textAlign="center">
-                  Update Reports
+                  {t('quick_actions.update_reports')}
                 </Text>
               </Button>
 
@@ -628,7 +628,7 @@ function EngineerDashboardContent() {
               >
                 <LuFolderOpen size={20} />
                 <Text fontSize="xs" fontWeight="medium" textAlign="center">
-                  My Projects
+                  {t('quick_actions.my_projects')}
                 </Text>
               </Button>
             </Grid>

@@ -27,6 +27,14 @@
       "due": "期限"
     }
   },
+  "quick_actions": {
+    "title": "クイックアクション",
+    "subtitle": "よく使う機能",
+    "mark_attendance": "出勤を記録",
+    "view_records": "記録を表示",
+    "update_reports": "レポートを更新",
+    "my_projects": "マイプロジェクト"
+  },
 
   "attendance": {
     "page_title": "出勤管理",

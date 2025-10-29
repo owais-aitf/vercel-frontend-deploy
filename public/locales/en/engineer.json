@@ -27,7 +27,14 @@
       "due": "Due"
     }
   },
-
+  "quick_actions": {
+    "title": "Quick Actions",
+    "subtitle": "Frequently used features",
+    "mark_attendance": "Mark Attendance",
+    "view_records": "View Records",
+    "update_reports": "Update Reports",
+    "my_projects": "My Projects"
+  },
   "attendance": {
     "page_title": "Attendance",
     "page_subtitle": "Manage your daily attendance",
