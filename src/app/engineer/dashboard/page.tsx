@@ -63,8 +63,8 @@ function EngineerDashboardContent() {
 
     if (slackOAuth) {
       // Clean URL immediately
-      const cleanUrl = window.location.pathname;
-      window.history.replaceState({}, '', cleanUrl);
+      // const cleanUrl = window.location.pathname;
+      // window.history.replaceState({}, '', cleanUrl);
 
       switch (slackOAuth) {
         case 'success':
