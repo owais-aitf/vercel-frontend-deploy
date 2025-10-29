@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -36,6 +38,7 @@ import { assignmentTabs } from '@/shared/config/assignmentTabs';
 
 export default function AssignmentsPage() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('sales');
   const [assignments, setAssignments] = useState<ProjectAssignment[]>([]);
   const [filteredAssignments, setFilteredAssignments] = useState<
     ProjectAssignment[]
@@ -115,11 +118,7 @@ export default function AssignmentsPage() {
   }, [searchTerm, statusFilter, assignments]);
 
   const handleEndAssignment = async (id: string, engineerName: string) => {
-    if (
-      !confirm(
-        `Are you sure you want to end the assignment for ${engineerName}?`
-      )
-    ) {
+    if (!confirm(t('assignments.confirm_end', { name: engineerName }))) {
       return;
     }
 
@@ -130,8 +129,8 @@ export default function AssignmentsPage() {
       });
 
       toaster.create({
-        title: 'Assignment ended',
-        description: `Assignment for ${engineerName} has been ended`,
+        title: t('assignments.end_success'),
+        description: t('assignments.end_description', { name: engineerName }),
         type: 'success',
         duration: 3000,
       });
@@ -144,8 +143,8 @@ export default function AssignmentsPage() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to end assignment',
+        title: t('assignments.error'),
+        description: errorMessage || t('assignments.error_ending'),
         type: 'error',
         duration: 4000,
       });
@@ -153,11 +152,7 @@ export default function AssignmentsPage() {
   };
 
   const handleDeleteAssignment = async (id: string, engineerName: string) => {
-    if (
-      !confirm(
-        `Are you sure you want to delete the assignment for ${engineerName}? This action cannot be undone.`
-      )
-    ) {
+    if (!confirm(t('assignments.confirm_delete', { name: engineerName }))) {
       return;
     }
 
@@ -165,8 +160,10 @@ export default function AssignmentsPage() {
       await assignmentService.deleteAssignment(id);
 
       toaster.create({
-        title: 'Assignment deleted',
-        description: `Assignment for ${engineerName} has been deleted`,
+        title: t('assignments.delete_success'),
+        description: t('assignments.delete_description', {
+          name: engineerName,
+        }),
         type: 'success',
         duration: 3000,
       });
@@ -179,8 +176,8 @@ export default function AssignmentsPage() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to delete assignment',
+        title: t('assignments.error'),
+        description: errorMessage || t('assignments.error_deleting'),
         type: 'error',
         duration: 4000,
       });
@@ -210,8 +207,10 @@ export default function AssignmentsPage() {
       });
 
       toaster.create({
-        title: 'Assignment updated successfully!',
-        description: `Updated assignment for ${selectedAssignment.engineer.fullName}`,
+        title: t('assignments.update_success'),
+        description: t('assignments.update_description', {
+          name: selectedAssignment.engineer.fullName,
+        }),
         type: 'success',
         duration: 3000,
       });
@@ -226,8 +225,8 @@ export default function AssignmentsPage() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to update assignment',
+        title: t('assignments.error'),
+        description: errorMessage || t('assignments.error_updating'),
         type: 'error',
         duration: 4000,
       });
@@ -252,8 +251,8 @@ export default function AssignmentsPage() {
     <FeatureErrorBoundary featureName="Assignments">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Project Assignment Management"
-        pageSubtitle="Link engineers to projects for attendance tracking and billing"
+        pageTitle={t('assignments.page_title')}
+        pageSubtitle={t('assignments.page_subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -285,7 +284,7 @@ export default function AssignmentsPage() {
                   color="blue.700"
                   fontWeight="medium"
                 >
-                  Total
+                  {t('assignments.stats.total')}
                 </Text>
                 <Text
                   fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
@@ -317,7 +316,7 @@ export default function AssignmentsPage() {
                   color="green.700"
                   fontWeight="medium"
                 >
-                  Active
+                  {t('assignments.stats.active')}
                 </Text>
                 <Text
                   fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
@@ -348,7 +347,7 @@ export default function AssignmentsPage() {
                   color="purple.700"
                   fontWeight="medium"
                 >
-                  Engineers
+                  {t('assignments.stats.engineers')}
                 </Text>
                 <Text
                   fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
@@ -379,7 +378,7 @@ export default function AssignmentsPage() {
                   color="orange.700"
                   fontWeight="medium"
                 >
-                  Projects
+                  {t('assignments.stats.projects')}
                 </Text>
                 <Text
                   fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
@@ -433,9 +432,11 @@ export default function AssignmentsPage() {
                 />
               </HStack>
               <Text fontSize="lg" fontWeight="bold">
-                Loading...
+                {t('assignments.loading')}
               </Text>
-              <Text color="gray.600">Loading assignments...</Text>
+              <Text color="gray.600">
+                {t('assignments.loading_assignments')}
+              </Text>
             </VStack>
 
             {/* Add CSS */}
@@ -458,11 +459,11 @@ export default function AssignmentsPage() {
           <Card.Root p={6} bg="red.50">
             <HStack gap={3}>
               <Text fontSize="lg" fontWeight="bold" color="red.600">
-                Error
+                {t('assignments.error')}
               </Text>
               <VStack align="start" gap={1}>
                 <Text fontWeight="bold" color="red.700">
-                  Error
+                  {t('assignments.error')}
                 </Text>
                 <Text fontSize="sm" color="red.600">
                   {error}
@@ -477,15 +478,15 @@ export default function AssignmentsPage() {
             <VStack gap={4}>
               <LuClipboard size={48} color="gray" />
               <Text fontSize="lg" fontWeight="bold" color="gray.500">
-                No Data
+                {t('assignments.no_data')}
               </Text>
               <Text fontSize="lg" fontWeight="bold">
-                No Assignments Found
+                {t('assignments.no_assignments')}
               </Text>
               <Text color="gray.600" textAlign="center">
                 {assignments.length === 0
-                  ? 'No assignments have been created yet. Create your first assignment to link engineers to projects.'
-                  : 'No assignments match your filters.'}
+                  ? t('assignments.no_assignments_created')
+                  : t('assignments.no_assignments_match')}
               </Text>
             </VStack>
           </Card.Root>
@@ -511,7 +512,7 @@ export default function AssignmentsPage() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search by engineer, project, or client..."
+                    placeholder={t('assignments.search_placeholder')}
                     size="sm"
                     bg="white"
                     flex={1}
@@ -539,15 +540,21 @@ export default function AssignmentsPage() {
                         cursor: 'pointer',
                       }}
                     >
-                      <option value="all">All Assignments</option>
-                      <option value="active">Active Only</option>
-                      <option value="inactive">Inactive Only</option>
+                      <option value="all">{t('assignments.filter_all')}</option>
+                      <option value="active">
+                        {t('assignments.filter_active')}
+                      </option>
+                      <option value="inactive">
+                        {t('assignments.filter_inactive')}
+                      </option>
                     </select>
                   </Box>
 
                   <HStack gap={3}>
                     <Text fontSize="xs" color="gray.600">
-                      {filteredAssignments.length} results
+                      {t('assignments.results', {
+                        count: filteredAssignments.length,
+                      })}
                     </Text>
                     <Button
                       onClick={fetchAssignments}
@@ -556,7 +563,7 @@ export default function AssignmentsPage() {
                       colorScheme="blue"
                       fontSize="xs"
                     >
-                      Refresh
+                      {t('assignments.refresh')}
                     </Button>
                   </HStack>
                 </HStack>
@@ -569,25 +576,25 @@ export default function AssignmentsPage() {
                 <Table.Header>
                   <Table.Row bg="white">
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Engineer
+                      {t('assignments.engineer')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Project
+                      {t('assignments.project')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Client
+                      {t('assignments.client')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Start Date
+                      {t('assignments.start_date')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      End Date
+                      {t('assignments.end_date')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Status
+                      {t('assignments.status')}
                     </Table.ColumnHeader>
                     <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
-                      Actions
+                      {t('assignments.actions')}
                     </Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
@@ -635,7 +642,9 @@ export default function AssignmentsPage() {
                           colorScheme={assignment.isActive ? 'green' : 'gray'}
                           fontSize="xs"
                         >
-                          {assignment.isActive ? 'Active' : 'Ended'}
+                          {assignment.isActive
+                            ? t('assignments.active')
+                            : t('assignments.ended')}
                         </Badge>
                       </Table.Cell>
                       <Table.Cell>
@@ -651,7 +660,7 @@ export default function AssignmentsPage() {
                               size={14}
                               style={{ marginRight: '6px' }}
                             />
-                            Edit
+                            {t('assignments.edit')}
                           </Button>
                           {assignment.isActive && (
                             <Button
@@ -664,9 +673,9 @@ export default function AssignmentsPage() {
                                   assignment.engineer.fullName
                                 )
                               }
-                              title="End this assignment"
+                              title={t('assignments.end')}
                             >
-                              End
+                              {t('assignments.end')}
                             </Button>
                           )}
                           <Button
@@ -716,7 +725,9 @@ export default function AssignmentsPage() {
                           colorScheme={assignment.isActive ? 'green' : 'gray'}
                           fontSize="2xs"
                         >
-                          {assignment.isActive ? 'Active' : 'Ended'}
+                          {assignment.isActive
+                            ? t('assignments.active')
+                            : t('assignments.ended')}
                         </Badge>
                       </HStack>
 
@@ -724,7 +735,7 @@ export default function AssignmentsPage() {
                       <VStack align="stretch" gap={1}>
                         <HStack justify="space-between">
                           <Text fontSize="2xs" color="gray.500">
-                            Project:
+                            {t('assignments.project')}:
                           </Text>
                           <Text fontSize="xs" fontWeight="medium">
                             {assignment.project.projectName}
@@ -732,7 +743,7 @@ export default function AssignmentsPage() {
                         </HStack>
                         <HStack justify="space-between">
                           <Text fontSize="2xs" color="gray.500">
-                            Client:
+                            {t('assignments.client')}:
                           </Text>
                           <Text fontSize="xs">
                             {assignment.project.client.name}
@@ -751,7 +762,9 @@ export default function AssignmentsPage() {
                           colorScheme={assignment.isActive ? 'green' : 'gray'}
                           fontSize="xs"
                         >
-                          {assignment.isActive ? 'Active' : 'Ended'}
+                          {assignment.isActive
+                            ? t('assignments.active')
+                            : t('assignments.ended')}
                         </Badge>
                         <HStack gap={2}>
                           <Button
@@ -766,7 +779,7 @@ export default function AssignmentsPage() {
                               size={14}
                               style={{ marginRight: '6px' }}
                             />
-                            Edit
+                            {t('assignments.edit')}
                           </Button>
                           {assignment.isActive && (
                             <Button
@@ -781,9 +794,9 @@ export default function AssignmentsPage() {
                                 )
                               }
                               fontSize="xs"
-                              title="End this assignment"
+                              title={t('assignments.end')}
                             >
-                              End
+                              {t('assignments.end')}
                             </Button>
                           )}
                           <Button
@@ -818,9 +831,11 @@ export default function AssignmentsPage() {
               >
                 <HStack justify="space-between" flexWrap="wrap" gap={3}>
                   <Text fontSize={{ base: '2xs', md: 'xs' }} color="gray.600">
-                    Showing {startIndex + 1}-
-                    {Math.min(endIndex, filteredAssignments.length)} of{' '}
-                    {filteredAssignments.length}
+                    {t('assignments.pagination.showing', {
+                      start: startIndex + 1,
+                      end: Math.min(endIndex, filteredAssignments.length),
+                      total: filteredAssignments.length,
+                    })}
                   </Text>
 
                   <HStack gap={2}>
@@ -833,7 +848,7 @@ export default function AssignmentsPage() {
                       variant="outline"
                       fontSize={{ base: '2xs', md: 'xs' }}
                     >
-                      Previous
+                      {t('assignments.pagination.previous')}
                     </Button>
 
                     <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
@@ -884,7 +899,7 @@ export default function AssignmentsPage() {
                       variant="outline"
                       fontSize={{ base: '2xs', md: 'xs' }}
                     >
-                      Next
+                      {t('assignments.pagination.next')}
                     </Button>
                   </HStack>
                 </HStack>
@@ -930,10 +945,10 @@ export default function AssignmentsPage() {
                 >
                   <VStack align="start" gap={1}>
                     <Text fontSize="xl" fontWeight="bold">
-                      Edit Assignment
+                      {t('assignments.edit_modal.title')}
                     </Text>
                     <Text fontSize="sm" color="gray.600">
-                      Update assignment dates or end the assignment
+                      {t('assignments.edit_modal.subtitle')}
                     </Text>
                   </VStack>
                   <Button
@@ -957,7 +972,7 @@ export default function AssignmentsPage() {
                             fontWeight="bold"
                             color="gray.700"
                           >
-                            Engineer:
+                            {t('assignments.edit_modal.engineer_label')}
                           </Text>
                           <Text fontSize="sm" color="gray.600">
                             {selectedAssignment.engineer.fullName}
@@ -969,7 +984,7 @@ export default function AssignmentsPage() {
                             fontWeight="bold"
                             color="gray.700"
                           >
-                            Project:
+                            {t('assignments.edit_modal.project_label')}
                           </Text>
                           <Text fontSize="sm" color="gray.600">
                             {selectedAssignment.project.projectName}
@@ -981,7 +996,7 @@ export default function AssignmentsPage() {
                             fontWeight="bold"
                             color="gray.700"
                           >
-                            Client:
+                            {t('assignments.edit_modal.client_label')}
                           </Text>
                           <Text fontSize="sm" color="gray.600">
                             {selectedAssignment.project.client.name}
@@ -993,14 +1008,16 @@ export default function AssignmentsPage() {
                             fontWeight="bold"
                             color="gray.700"
                           >
-                            Status:
+                            {t('assignments.edit_modal.status_label')}
                           </Text>
                           <Badge
                             colorScheme={
                               selectedAssignment.isActive ? 'green' : 'gray'
                             }
                           >
-                            {selectedAssignment.isActive ? 'Active' : 'Ended'}
+                            {selectedAssignment.isActive
+                              ? t('assignments.active')
+                              : t('assignments.ended')}
                           </Badge>
                         </HStack>
                       </VStack>
@@ -1016,9 +1033,9 @@ export default function AssignmentsPage() {
                             fontWeight="medium"
                             color="gray.700"
                           >
-                            Assignment Start Date{' '}
+                            {t('assignments.edit_modal.start_date_label')}{' '}
                             <Text as="span" color="red.500">
-                              *
+                              {t('assignments.edit_modal.required')}
                             </Text>
                           </Text>
                           <Input
@@ -1043,7 +1060,7 @@ export default function AssignmentsPage() {
                             fontWeight="medium"
                             color="gray.700"
                           >
-                            Assignment End Date (Optional)
+                            {t('assignments.edit_modal.end_date_label')}
                           </Text>
                           <Input
                             type="date"
@@ -1058,7 +1075,7 @@ export default function AssignmentsPage() {
                             min={formData.assignmentStart}
                           />
                           <Text fontSize="xs" color="gray.500" mt={1}>
-                            Leave empty if the assignment is ongoing
+                            {t('assignments.edit_modal.end_date_note')}
                           </Text>
                         </Box>
 
@@ -1069,10 +1086,10 @@ export default function AssignmentsPage() {
                             colorScheme="blue"
                             size="lg"
                             loading={updating}
-                            loadingText="Updating..."
+                            loadingText={t('assignments.edit_modal.updating')}
                             flex={1}
                           >
-                            Update Assignment
+                            {t('assignments.edit_modal.update')}
                           </Button>
                           {selectedAssignment.isActive && (
                             <Button
@@ -1088,7 +1105,7 @@ export default function AssignmentsPage() {
                                 setSelectedAssignment(null);
                               }}
                             >
-                              End Assignment
+                              {t('assignments.edit_modal.end_assignment')}
                             </Button>
                           )}
                         </HStack>
@@ -1108,7 +1125,7 @@ export default function AssignmentsPage() {
                           fontWeight="bold"
                           color="yellow.700"
                         >
-                          Warning:
+                          {t('assignments.edit_modal.warning_title')}
                         </Text>
                         <VStack align="start" gap={1}>
                           <Text
@@ -1116,13 +1133,14 @@ export default function AssignmentsPage() {
                             fontWeight="bold"
                             color="yellow.900"
                           >
-                            Important
+                            {t('assignments.edit_modal.warning_subtitle')}
                           </Text>
                           <Text fontSize="xs" color="yellow.800">
-                            • Changing dates affects billing calculations
+                            {t('assignments.edit_modal.warning_dates')}
                             <br />
-                            • Ending assignment sets end date to today
-                            <br />• Ended assignments cannot be reactivated
+                            {t('assignments.edit_modal.warning_end')}
+                            <br />
+                            {t('assignments.edit_modal.warning_reactivate')}
                           </Text>
                         </VStack>
                       </HStack>
