@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   Box,
   Grid,
@@ -25,6 +27,7 @@ import { assignmentTabs } from '@/shared/config/assignmentTabs';
 
 export default function CreateAssignmentPage() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation('sales');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [engineers, setEngineers] = useState<Engineer[]>([]);
@@ -67,8 +70,8 @@ export default function CreateAssignmentPage() {
       setProjects(activeProjects);
     } catch {
       toaster.create({
-        title: 'Error',
-        description: 'Failed to load engineers and projects',
+        title: t('assignments.error'),
+        description: t('assignments.create.error_load'),
         type: 'error',
         duration: 4000,
       });
@@ -98,8 +101,8 @@ export default function CreateAssignmentPage() {
       !formData.assignmentStart
     ) {
       toaster.create({
-        title: 'Validation Error',
-        description: 'Engineer, Project, and Start Date are required',
+        title: t('assignments.create.validation_error'),
+        description: t('assignments.create.validation_message'),
         type: 'error',
         duration: 3000,
       });
@@ -118,8 +121,11 @@ export default function CreateAssignmentPage() {
       // Check if response indicates success
       if (response.success || response.data) {
         toaster.create({
-          title: 'Assignment created successfully!',
-          description: `${selectedEngineer?.fullName} assigned to ${selectedProject?.projectName}`,
+          title: t('assignments.create.success_title'),
+          description: t('assignments.create.success_description', {
+            engineer: selectedEngineer?.fullName,
+            project: selectedProject?.projectName,
+          }),
           type: 'success',
           duration: 4000,
         });
@@ -159,7 +165,9 @@ export default function CreateAssignmentPage() {
 
       // Show appropriate toast message
       toaster.create({
-        title: isDuplicateError ? '⚠️ Duplicate Assignment' : 'Error',
+        title: isDuplicateError
+          ? t('assignments.create.duplicate_title')
+          : t('assignments.create.error_title'),
         description: errorMessage,
         type: 'error',
         duration: isDuplicateError ? 8000 : 5000,
@@ -176,8 +184,8 @@ export default function CreateAssignmentPage() {
     <FeatureErrorBoundary featureName="Create Assignment">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Project Assignment Management"
-        pageSubtitle="Link engineers to projects for attendance tracking and billing"
+        pageTitle={t('assignments.page_title')}
+        pageSubtitle={t('assignments.page_subtitle')}
         userName={user?.fullName || 'User'}
         userInitials={
           user?.fullName
@@ -197,18 +205,17 @@ export default function CreateAssignmentPage() {
             <VStack align="stretch" gap={6}>
               <Box>
                 <Text fontSize="xl" fontWeight="bold" mb={2}>
-                  ➕ Create New Assignment
+                  {t('assignments.create.title')}
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  Link an engineer to a project to enable attendance tracking
-                  and billing integration.
+                  {t('assignments.create.subtitle')}
                 </Text>
               </Box>
 
               {loadingData ? (
                 <VStack py={8}>
                   <Text fontSize="2xl">⏳</Text>
-                  <Text color="gray.600">Loading data...</Text>
+                  <Text color="gray.600">{t('assignments.loading_data')}</Text>
                 </VStack>
               ) : (
                 <form onSubmit={handleSubmit}>
@@ -221,9 +228,9 @@ export default function CreateAssignmentPage() {
                         fontWeight="medium"
                         color="gray.700"
                       >
-                        Select Engineer{' '}
+                        {t('assignments.create.select_engineer')}{' '}
                         <Text as="span" color="red.500">
-                          *
+                          {t('assignments.create.required')}
                         </Text>
                       </Text>
                       <Box position="relative">
@@ -245,7 +252,11 @@ export default function CreateAssignmentPage() {
                             color: '#2D3748',
                           }}
                         >
-                          <option value="">-- Select Engineer --</option>
+                          <option value="">
+                            {t(
+                              'assignments.create.select_engineer_placeholder'
+                            )}
+                          </option>
                           {engineers.map((engineer) => (
                             <option key={engineer.id} value={engineer.id}>
                               {engineer.fullName} ({engineer.email})
@@ -261,7 +272,7 @@ export default function CreateAssignmentPage() {
                               fontWeight="bold"
                               color="blue.900"
                             >
-                              Selected Engineer:
+                              {t('assignments.create.selected_engineer')}
                             </Text>
                             <Text fontSize="sm" color="blue.800">
                               {selectedEngineer.fullName}
@@ -282,9 +293,9 @@ export default function CreateAssignmentPage() {
                         fontWeight="medium"
                         color="gray.700"
                       >
-                        Select Project{' '}
+                        {t('assignments.create.select_project')}{' '}
                         <Text as="span" color="red.500">
-                          *
+                          {t('assignments.create.required')}
                         </Text>
                       </Text>
                       <Box position="relative">
@@ -306,7 +317,9 @@ export default function CreateAssignmentPage() {
                             color: '#2D3748',
                           }}
                         >
-                          <option value="">-- Select Project --</option>
+                          <option value="">
+                            {t('assignments.create.select_project_placeholder')}
+                          </option>
                           {projects.map((project) => (
                             <option key={project.id} value={project.id}>
                               {project.projectName} - {project.client?.name}
@@ -322,18 +335,20 @@ export default function CreateAssignmentPage() {
                               fontWeight="bold"
                               color="green.900"
                             >
-                              Selected Project:
+                              {t('assignments.create.selected_project')}
                             </Text>
                             <Text fontSize="sm" color="green.800">
                               {selectedProject.projectName}
                             </Text>
                             <Text fontSize="xs" color="green.700">
-                              Client: {selectedProject.client?.name}
+                              {t('assignments.client')}:{' '}
+                              {selectedProject.client?.name}
                             </Text>
                             <Text fontSize="xs" color="green.700">
-                              Unit Price: ¥
-                              {selectedProject.monthlyUnitPrice?.toLocaleString()}
-                              /month
+                              {t('assignments.create.monthly_price', {
+                                price:
+                                  selectedProject.monthlyUnitPrice?.toLocaleString(),
+                              })}
                             </Text>
                           </VStack>
                         </Card.Root>
@@ -348,9 +363,9 @@ export default function CreateAssignmentPage() {
                         fontWeight="medium"
                         color="gray.700"
                       >
-                        Assignment Start Date{' '}
+                        {t('assignments.create.start_date')}{' '}
                         <Text as="span" color="red.500">
-                          *
+                          {t('assignments.create.required')}
                         </Text>
                       </Text>
                       <Input
@@ -366,8 +381,7 @@ export default function CreateAssignmentPage() {
                         size="lg"
                       />
                       <Text fontSize="xs" color="gray.500" mt={1}>
-                        The date from which this engineer starts working on the
-                        project
+                        {t('assignments.create.start_date_note')}
                       </Text>
                     </Box>
 
@@ -379,7 +393,7 @@ export default function CreateAssignmentPage() {
                         fontWeight="medium"
                         color="gray.700"
                       >
-                        Assignment End Date (Optional)
+                        {t('assignments.create.end_date')}
                       </Text>
                       <Input
                         type="date"
@@ -402,8 +416,12 @@ export default function CreateAssignmentPage() {
                       />
                       <Text fontSize="xs" color="gray.500" mt={1}>
                         {selectedProject?.endDate
-                          ? `Must be on or before project end date: ${new Date(selectedProject.endDate).toLocaleDateString()}`
-                          : 'Leave empty if the assignment is ongoing'}
+                          ? t('assignments.create.end_date_note_project', {
+                              date: new Date(
+                                selectedProject.endDate
+                              ).toLocaleDateString(),
+                            })
+                          : t('assignments.create.end_date_note')}
                       </Text>
                     </Box>
 
@@ -414,10 +432,10 @@ export default function CreateAssignmentPage() {
                         colorScheme="blue"
                         size="lg"
                         loading={loading}
-                        loadingText="Creating..."
+                        loadingText={t('assignments.create.creating')}
                         flex={1}
                       >
-                        ➕ Create Assignment
+                        {t('assignments.create.create_button')}
                       </Button>
                       <Button
                         type="button"
@@ -425,7 +443,7 @@ export default function CreateAssignmentPage() {
                         size="lg"
                         onClick={() => router.push('/sales/assignments')}
                       >
-                        Cancel
+                        {t('assignments.create.cancel')}
                       </Button>
                     </HStack>
                   </VStack>
@@ -442,14 +460,14 @@ export default function CreateAssignmentPage() {
                 <HStack gap={2}>
                   <Text fontSize="lg">ℹ️</Text>
                   <Text fontSize="md" fontWeight="bold" color="blue.900">
-                    Assignment Purpose
+                    {t('assignments.create.info_title')}
                   </Text>
                 </HStack>
                 <VStack align="stretch" gap={2} fontSize="sm" color="blue.800">
-                  <Text>• Links engineer attendance to specific project</Text>
-                  <Text>• Enables automatic billing calculation</Text>
-                  <Text>• Connects work hours to client invoicing</Text>
-                  <Text>• Required for monthly report generation</Text>
+                  <Text>{t('assignments.create.info_1')}</Text>
+                  <Text>{t('assignments.create.info_2')}</Text>
+                  <Text>{t('assignments.create.info_3')}</Text>
+                  <Text>{t('assignments.create.info_4')}</Text>
                 </VStack>
               </VStack>
             </Card.Root>
@@ -460,7 +478,7 @@ export default function CreateAssignmentPage() {
                 <HStack gap={2}>
                   <Text fontSize="lg">⚠️</Text>
                   <Text fontSize="md" fontWeight="bold" color="yellow.900">
-                    Important Notes
+                    {t('assignments.create.notes_title')}
                   </Text>
                 </HStack>
                 <VStack
@@ -469,12 +487,10 @@ export default function CreateAssignmentPage() {
                   fontSize="sm"
                   color="yellow.800"
                 >
-                  <Text>• Engineer can be assigned to multiple projects</Text>
-                  <Text>
-                    • Attendance must specify which project assignment
-                  </Text>
-                  <Text>• End date can be updated later if needed</Text>
-                  <Text>• Only active engineers and projects are shown</Text>
+                  <Text>{t('assignments.create.notes_1')}</Text>
+                  <Text>{t('assignments.create.notes_2')}</Text>
+                  <Text>{t('assignments.create.notes_3')}</Text>
+                  <Text>{t('assignments.create.notes_4')}</Text>
                 </VStack>
               </VStack>
             </Card.Root>
@@ -483,15 +499,15 @@ export default function CreateAssignmentPage() {
             <Card.Root p={5}>
               <VStack align="stretch" gap={3}>
                 <Text fontSize="md" fontWeight="bold">
-                  📊 Available Data
+                  {t('assignments.create.data_summary')}
                 </Text>
                 <VStack align="stretch" gap={2} fontSize="sm" color="gray.700">
                   <HStack justify="space-between">
-                    <Text>Active Engineers:</Text>
+                    <Text>{t('assignments.create.active_engineers')}</Text>
                     <Text fontWeight="bold">{engineers.length}</Text>
                   </HStack>
                   <HStack justify="space-between">
-                    <Text>Active Projects:</Text>
+                    <Text>{t('assignments.create.active_projects')}</Text>
                     <Text fontWeight="bold">{projects.length}</Text>
                   </HStack>
                 </VStack>

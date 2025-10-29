@@ -2,19 +2,19 @@ import { LuClipboardList, LuPlus } from 'react-icons/lu';
 import { IconType } from 'react-icons';
 
 interface Tab {
-  label: string;
+  labelKey: string;
   href: string;
   icon: IconType;
 }
 
 export const assignmentTabs: Tab[] = [
   {
-    label: 'View All Assignments',
+    labelKey: 'sales:assignments.tabs.view_all',
     href: '/sales/assignments',
     icon: LuClipboardList,
   },
   {
-    label: 'Create Assignment',
+    labelKey: 'sales:assignments.tabs.create',
     href: '/sales/assignments/create',
     icon: LuPlus,
   },

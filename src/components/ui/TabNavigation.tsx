@@ -5,10 +5,13 @@ import Link from 'next/link';
 import { Box } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { IconType } from 'react-icons';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
-// UPDATED: Accept both string and React Icon component
+// UPDATED: Accept both string and React Icon component, and translation keys
 interface Tab {
-  label: string;
+  label?: string;
+  labelKey?: string; // Translation key (e.g., 'sales:assignments.tabs.view_all')
   href: string;
   icon?: string | IconType; // Can be string (emoji) or React Icon component
 }
@@ -19,12 +22,21 @@ interface TabNavigationProps {
 
 export function TabNavigation({ tabs }: TabNavigationProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeTabRef = useRef<HTMLAnchorElement>(null);
   const [isNavigating, setIsNavigating] = useState(false);
 
   // Find the index of the current active tab
   const activeIndex = tabs.findIndex((tab) => pathname === tab.href);
+
+  // Helper function to get tab label (either from translation key or direct label)
+  const getTabLabel = (tab: Tab): string => {
+    if (tab.labelKey) {
+      return t(tab.labelKey);
+    }
+    return tab.label || '';
+  };
 
   // Scroll active tab into view on mount and when active tab changes
   useEffect(() => {
@@ -181,7 +193,7 @@ export function TabNavigation({ tabs }: TabNavigationProps) {
                 transition="all 0.3s ease"
                 className="tab-text"
               >
-                {tab.label}
+                {getTabLabel(tab)}
               </Box>
             </Link>
           );
