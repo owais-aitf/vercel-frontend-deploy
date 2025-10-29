@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   VStack,
   HStack,
@@ -39,6 +41,7 @@ interface Project {
 }
 
 export function ViewAllReports() {
+  const { t } = useTranslation('sales');
   const [reports, setReports] = useState<MonthlyReport[]>([]);
   const [engineers, setEngineers] = useState<Engineer[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -113,8 +116,8 @@ export function ViewAllReports() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to fetch reports',
+        title: t('reports.view_all.error'),
+        description: errorMessage || t('reports.view_all.error_fetch'),
         type: 'error',
       });
     } finally {
@@ -145,8 +148,8 @@ export function ViewAllReports() {
 
       if (response.success) {
         toaster.create({
-          title: 'Success',
-          description: 'Report status updated successfully',
+          title: t('reports.view_all.success_update'),
+          description: t('reports.view_all.success_update'),
           type: 'success',
         });
         setIsStatusModalOpen(false);
@@ -159,8 +162,8 @@ export function ViewAllReports() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to update status',
+        title: t('reports.view_all.error'),
+        description: errorMessage || t('reports.view_all.error_update'),
         type: 'error',
       });
     } finally {
@@ -185,8 +188,8 @@ export function ViewAllReports() {
       document.body.removeChild(a);
 
       toaster.create({
-        title: 'Success',
-        description: `Report downloaded successfully`,
+        title: t('reports.view_all.success_download'),
+        description: t('reports.view_all.success_download'),
         type: 'success',
       });
     } catch (error) {
@@ -196,8 +199,8 @@ export function ViewAllReports() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to download report',
+        title: t('reports.view_all.error'),
+        description: errorMessage || t('reports.view_all.error_download'),
         type: 'error',
       });
     }
@@ -206,11 +209,7 @@ export function ViewAllReports() {
   const handleDeleteReport = async () => {
     if (!selectedReport) return;
 
-    if (
-      !confirm(
-        'Are you sure you want to delete this report? This action cannot be undone.'
-      )
-    ) {
+    if (!confirm(t('reports.view_all.confirm_delete'))) {
       return;
     }
 
@@ -219,8 +218,8 @@ export function ViewAllReports() {
       await salesService.deleteReport(selectedReport.id);
 
       toaster.create({
-        title: 'Success',
-        description: 'Report deleted successfully',
+        title: t('reports.view_all.success_delete'),
+        description: t('reports.view_all.success_delete'),
         type: 'success',
       });
 
@@ -234,8 +233,8 @@ export function ViewAllReports() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to delete report',
+        title: t('reports.view_all.error'),
+        description: errorMessage || t('reports.view_all.error_delete'),
         type: 'error',
       });
     } finally {
@@ -264,6 +263,19 @@ export function ViewAllReports() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'DRAFT':
+        return t('reports.view_all.status.draft');
+      case 'SUBMITTED':
+        return t('reports.view_all.status.submitted');
+      case 'APPROVED':
+        return t('reports.view_all.status.approved');
+      default:
+        return status;
+    }
+  };
+
   const formatCurrency = (value: string | number) => {
     return new Intl.NumberFormat('ja-JP', {
       style: 'currency',
@@ -273,35 +285,35 @@ export function ViewAllReports() {
 
   const formatMonth = (month: number) => {
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      t('reports.months_short.jan'),
+      t('reports.months_short.feb'),
+      t('reports.months_short.mar'),
+      t('reports.months_short.apr'),
+      t('reports.months_short.may'),
+      t('reports.months_short.jun'),
+      t('reports.months_short.jul'),
+      t('reports.months_short.aug'),
+      t('reports.months_short.sep'),
+      t('reports.months_short.oct'),
+      t('reports.months_short.nov'),
+      t('reports.months_short.dec'),
     ];
     return months[month - 1];
   };
 
   const months = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' },
+    { value: 1, label: t('reports.months.january') },
+    { value: 2, label: t('reports.months.february') },
+    { value: 3, label: t('reports.months.march') },
+    { value: 4, label: t('reports.months.april') },
+    { value: 5, label: t('reports.months.may') },
+    { value: 6, label: t('reports.months.june') },
+    { value: 7, label: t('reports.months.july') },
+    { value: 8, label: t('reports.months.august') },
+    { value: 9, label: t('reports.months.september') },
+    { value: 10, label: t('reports.months.october') },
+    { value: 11, label: t('reports.months.november') },
+    { value: 12, label: t('reports.months.december') },
   ];
 
   const currentYear = new Date().getFullYear();
@@ -317,12 +329,12 @@ export function ViewAllReports() {
               <HStack gap={2}>
                 <LuFilter size={20} />
                 <Text fontSize="lg" fontWeight="bold">
-                  Filters
+                  {t('reports.view_all.filters.title')}
                 </Text>
               </HStack>
               <Button size="sm" variant="ghost" onClick={clearFilters}>
                 <LuRefreshCw size={14} />
-                Clear All
+                {t('reports.view_all.filters.clear')}
               </Button>
             </HStack>
 
@@ -333,7 +345,7 @@ export function ViewAllReports() {
             >
               <Box flex={1}>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Engineer
+                  {t('reports.view_all.filters.engineer')}
                 </Text>
                 <select
                   value={filterEngineer}
@@ -349,7 +361,9 @@ export function ViewAllReports() {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="">All Engineers</option>
+                  <option value="">
+                    {t('reports.view_all.filters.engineer_all')}
+                  </option>
                   {engineers.map((eng) => (
                     <option key={eng.id} value={eng.id}>
                       {eng.fullName}
@@ -360,7 +374,7 @@ export function ViewAllReports() {
 
               <Box flex={1}>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Project
+                  {t('reports.view_all.filters.project')}
                 </Text>
                 <select
                   value={filterProject}
@@ -376,7 +390,9 @@ export function ViewAllReports() {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="">All Projects</option>
+                  <option value="">
+                    {t('reports.view_all.filters.project_all')}
+                  </option>
                   {projects.map((proj) => (
                     <option key={proj.id} value={proj.id}>
                       {proj.projectName}
@@ -387,7 +403,7 @@ export function ViewAllReports() {
 
               <Box flex={1}>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Status
+                  {t('reports.view_all.filters.status')}
                 </Text>
                 <select
                   value={filterStatus}
@@ -403,16 +419,24 @@ export function ViewAllReports() {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="">All Statuses</option>
-                  <option value="DRAFT">Draft</option>
-                  <option value="SUBMITTED">Submitted</option>
-                  <option value="APPROVED">Approved</option>
+                  <option value="">
+                    {t('reports.view_all.filters.status_all')}
+                  </option>
+                  <option value="DRAFT">
+                    {t('reports.view_all.status.draft')}
+                  </option>
+                  <option value="SUBMITTED">
+                    {t('reports.view_all.status.submitted')}
+                  </option>
+                  <option value="APPROVED">
+                    {t('reports.view_all.status.approved')}
+                  </option>
                 </select>
               </Box>
 
               <Box flex={1}>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Year
+                  {t('reports.view_all.filters.year')}
                 </Text>
                 <select
                   value={filterYear}
@@ -428,7 +452,9 @@ export function ViewAllReports() {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="">All Years</option>
+                  <option value="">
+                    {t('reports.view_all.filters.year_all')}
+                  </option>
                   {years.map((y) => (
                     <option key={y} value={y}>
                       {y}
@@ -439,7 +465,7 @@ export function ViewAllReports() {
 
               <Box flex={1}>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Month
+                  {t('reports.view_all.filters.month')}
                 </Text>
                 <select
                   value={filterMonth}
@@ -455,7 +481,9 @@ export function ViewAllReports() {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="">All Months</option>
+                  <option value="">
+                    {t('reports.view_all.filters.month_all')}
+                  </option>
                   {months.map((m) => (
                     <option key={m.value} value={m.value}>
                       {m.label}
@@ -474,15 +502,15 @@ export function ViewAllReports() {
           {loading ? (
             <HStack justify="center" p={8}>
               <Spinner size="lg" />
-              <Text>Loading reports...</Text>
+              <Text>{t('reports.view_all.loading')}</Text>
             </HStack>
           ) : reports.length === 0 ? (
             <VStack p={8} gap={2}>
               <Text fontSize="lg" color="gray.500">
-                No reports found
+                {t('reports.view_all.no_reports')}
               </Text>
               <Text fontSize="sm" color="gray.400">
-                Try adjusting your filters or generate a new report
+                {t('reports.view_all.no_reports_message')}
               </Text>
             </VStack>
           ) : (
@@ -492,19 +520,29 @@ export function ViewAllReports() {
                 <Table.Root size="sm">
                   <Table.Header>
                     <Table.Row bg="gray.50">
-                      <Table.ColumnHeader>Period</Table.ColumnHeader>
-                      <Table.ColumnHeader>Engineer</Table.ColumnHeader>
-                      <Table.ColumnHeader>Project</Table.ColumnHeader>
-                      <Table.ColumnHeader>Client</Table.ColumnHeader>
-                      <Table.ColumnHeader textAlign="right">
-                        Hours
+                      <Table.ColumnHeader>
+                        {t('reports.view_all.table.period')}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t('reports.view_all.table.engineer')}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t('reports.view_all.table.project')}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t('reports.view_all.table.client')}
                       </Table.ColumnHeader>
                       <Table.ColumnHeader textAlign="right">
-                        Amount
+                        {t('reports.view_all.table.total_hours')}
                       </Table.ColumnHeader>
-                      <Table.ColumnHeader>Status</Table.ColumnHeader>
+                      <Table.ColumnHeader textAlign="right">
+                        {t('reports.view_all.table.amount')}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>
+                        {t('reports.view_all.table.status')}
+                      </Table.ColumnHeader>
                       <Table.ColumnHeader textAlign="center">
-                        Actions
+                        {t('reports.view_all.table.actions')}
                       </Table.ColumnHeader>
                     </Table.Row>
                   </Table.Header>
@@ -541,7 +579,7 @@ export function ViewAllReports() {
                         </Table.Cell>
                         <Table.Cell>
                           <Badge colorPalette={getStatusColor(report.status)}>
-                            {report.status}
+                            {getStatusLabel(report.status)}
                           </Badge>
                         </Table.Cell>
                         <Table.Cell>

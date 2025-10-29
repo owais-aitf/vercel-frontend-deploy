@@ -7,7 +7,7 @@ import { IconType } from 'react-icons';
 
 export interface ReportTab {
   id: string;
-  label: string;
+  labelKey: string;
   description: string;
   icon: IconType;
 }
@@ -15,13 +15,13 @@ export interface ReportTab {
 export const reportTabs: ReportTab[] = [
   {
     id: 'view-all',
-    label: 'View All Reports',
+    labelKey: 'sales:reports.tabs.view_all',
     description: 'View and manage all monthly reports',
     icon: LuFileText,
   },
   {
     id: 'generate',
-    label: 'Generate Report',
+    labelKey: 'sales:reports.tabs.generate',
     description: 'Generate new monthly report for an assignment',
     icon: LuPlus,
   },

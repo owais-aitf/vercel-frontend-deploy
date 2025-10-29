@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import {
   VStack,
   HStack,
@@ -32,6 +34,7 @@ interface Assignment {
 }
 
 export function GenerateReport() {
+  const { t } = useTranslation('sales');
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [selectedAssignment, setSelectedAssignment] = useState('');
   const [year, setYear] = useState(new Date().getFullYear());
@@ -52,8 +55,8 @@ export function GenerateReport() {
       }
     } catch {
       toaster.create({
-        title: 'Error',
-        description: 'Failed to fetch assignments',
+        title: t('reports.generate.error_title'),
+        description: t('reports.generate.error_fetch'),
         type: 'error',
       });
     } finally {
@@ -64,8 +67,8 @@ export function GenerateReport() {
   const handleGenerate = async () => {
     if (!selectedAssignment) {
       toaster.create({
-        title: 'Validation Error',
-        description: 'Please select an assignment',
+        title: t('reports.generate.validation_error'),
+        description: t('reports.generate.validation_message'),
         type: 'error',
       });
       return;
@@ -81,8 +84,9 @@ export function GenerateReport() {
 
       if (response.success) {
         toaster.create({
-          title: 'Success',
-          description: response.message || 'Report generated successfully',
+          title: t('reports.generate.success_title'),
+          description:
+            response.message || t('reports.generate.success_message'),
           type: 'success',
         });
         // Reset form
@@ -97,8 +101,8 @@ export function GenerateReport() {
               ?.data?.error
           : undefined;
       toaster.create({
-        title: 'Error',
-        description: errorMessage || 'Failed to generate report',
+        title: t('reports.generate.error_title'),
+        description: errorMessage || t('reports.generate.error_generate'),
         type: 'error',
       });
     } finally {
@@ -111,18 +115,18 @@ export function GenerateReport() {
   );
 
   const months = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' },
+    { value: 1, label: t('reports.months.january') },
+    { value: 2, label: t('reports.months.february') },
+    { value: 3, label: t('reports.months.march') },
+    { value: 4, label: t('reports.months.april') },
+    { value: 5, label: t('reports.months.may') },
+    { value: 6, label: t('reports.months.june') },
+    { value: 7, label: t('reports.months.july') },
+    { value: 8, label: t('reports.months.august') },
+    { value: 9, label: t('reports.months.september') },
+    { value: 10, label: t('reports.months.october') },
+    { value: 11, label: t('reports.months.november') },
+    { value: 12, label: t('reports.months.december') },
   ];
 
   const currentYear = new Date().getFullYear();
@@ -135,11 +139,10 @@ export function GenerateReport() {
           {/* Header */}
           <VStack align="start" gap={2}>
             <Text fontSize="xl" fontWeight="bold">
-              Generate Monthly Report
+              {t('reports.generate.title')}
             </Text>
             <Text color="gray.600" fontSize="sm">
-              Select an assignment and period to generate a monthly billing
-              report
+              {t('reports.generate.subtitle')}
             </Text>
           </VStack>
 
@@ -148,15 +151,17 @@ export function GenerateReport() {
             {/* Assignment Selection */}
             <Box>
               <Text fontSize="sm" mb={2} fontWeight="medium">
-                Assignment{' '}
+                {t('reports.generate.assignment_label')}{' '}
                 <Text as="span" color="red.500">
-                  *
+                  {t('reports.generate.assignment_required')}
                 </Text>
               </Text>
               {fetchingAssignments ? (
                 <HStack p={3} borderWidth="1px" borderRadius="md">
                   <Spinner size="sm" />
-                  <Text fontSize="sm">Loading assignments...</Text>
+                  <Text fontSize="sm">
+                    {t('reports.generate.loading_assignments')}
+                  </Text>
                 </HStack>
               ) : (
                 <select
@@ -174,7 +179,9 @@ export function GenerateReport() {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="">Select assignment</option>
+                  <option value="">
+                    {t('reports.generate.assignment_placeholder')}
+                  </option>
                   {assignments.map((assignment) => (
                     <option key={assignment.id} value={assignment.id}>
                       {assignment.engineer.fullName} -{' '}
@@ -192,12 +199,12 @@ export function GenerateReport() {
                 <Card.Body p={4}>
                   <VStack align="start" gap={2}>
                     <Text fontSize="sm" fontWeight="bold" color="blue.900">
-                      Selected Assignment Details
+                      {t('reports.generate.selected_details')}
                     </Text>
                     <HStack gap={4} flexWrap="wrap">
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color="blue.700">
-                          Engineer
+                          {t('reports.generate.engineer')}
                         </Text>
                         <Text fontSize="sm" fontWeight="medium">
                           {selectedAssignmentData.engineer.fullName}
@@ -205,7 +212,7 @@ export function GenerateReport() {
                       </VStack>
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color="blue.700">
-                          Project
+                          {t('reports.generate.project')}
                         </Text>
                         <Text fontSize="sm" fontWeight="medium">
                           {selectedAssignmentData.project.projectName}
@@ -213,7 +220,7 @@ export function GenerateReport() {
                       </VStack>
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color="blue.700">
-                          Client
+                          {t('reports.generate.client')}
                         </Text>
                         <Text fontSize="sm" fontWeight="medium">
                           {selectedAssignmentData.project.client.name}
@@ -229,9 +236,9 @@ export function GenerateReport() {
             <HStack gap={4} align="start">
               <Box flex={1}>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Year{' '}
+                  {t('reports.generate.year_label')}{' '}
                   <Text as="span" color="red.500">
-                    *
+                    {t('reports.generate.year_required')}
                   </Text>
                 </Text>
                 <select
@@ -259,9 +266,9 @@ export function GenerateReport() {
 
               <Box flex={1}>
                 <Text fontSize="sm" mb={2} fontWeight="medium">
-                  Month{' '}
+                  {t('reports.generate.month_label')}{' '}
                   <Text as="span" color="red.500">
-                    *
+                    {t('reports.generate.month_required')}
                   </Text>
                 </Text>
                 <select
@@ -289,29 +296,39 @@ export function GenerateReport() {
             </HStack>
 
             {/* Info Box */}
-            <Card.Root bg="gray.50" borderColor="gray.200">
+            <Card.Root bg="blue.50" borderColor="blue.200">
               <Card.Body p={4}>
-                <VStack align="start" gap={2}>
-                  <Text fontSize="sm" fontWeight="bold" color="gray.700">
-                    ℹ️ Report Generation Notes
+                <VStack align="start" gap={3}>
+                  <Text fontSize="sm" fontWeight="bold" color="blue.900">
+                    ℹ️ {t('reports.generate.info_title')}
                   </Text>
-                  <VStack align="start" gap={1} fontSize="xs" color="gray.600">
-                    <Text>
-                      • Report will be generated based on attendance records for
-                      the selected period
-                    </Text>
-                    <Text>
-                      • If a report already exists, it will be regenerated with
-                      status reset to DRAFT
-                    </Text>
-                    <Text>
-                      • Settlement calculations will be based on the
-                      project&apos;s billing configuration
-                    </Text>
-                    <Text>
-                      • Generated reports can be reviewed and approved from the
-                      &quot;View All Reports&quot; tab
-                    </Text>
+                  <VStack align="start" gap={1} fontSize="xs" color="blue.800">
+                    <Text>{t('reports.generate.info_1')}</Text>
+                    <Text>{t('reports.generate.info_2')}</Text>
+                    <Text>{t('reports.generate.info_3')}</Text>
+                    <Text>{t('reports.generate.info_4')}</Text>
+                  </VStack>
+                </VStack>
+              </Card.Body>
+            </Card.Root>
+
+            {/* Important Notes */}
+            <Card.Root bg="yellow.50" borderColor="yellow.200">
+              <Card.Body p={4}>
+                <VStack align="start" gap={3}>
+                  <Text fontSize="sm" fontWeight="bold" color="yellow.900">
+                    ⚠️ {t('reports.generate.notes_title')}
+                  </Text>
+                  <VStack
+                    align="start"
+                    gap={1}
+                    fontSize="xs"
+                    color="yellow.800"
+                  >
+                    <Text>{t('reports.generate.notes_1')}</Text>
+                    <Text>{t('reports.generate.notes_2')}</Text>
+                    <Text>{t('reports.generate.notes_3')}</Text>
+                    <Text>{t('reports.generate.notes_4')}</Text>
                   </VStack>
                 </VStack>
               </Card.Body>
@@ -329,15 +346,16 @@ export function GenerateReport() {
               }}
               disabled={loading}
             >
-              Reset
+              {t('reports.generate.cancel')}
             </Button>
             <Button
               colorScheme="blue"
               onClick={handleGenerate}
               loading={loading}
+              loadingText={t('reports.generate.generating')}
               disabled={!selectedAssignment || loading}
             >
-              Generate Report
+              {t('reports.generate.generate_button')}
             </Button>
           </HStack>
         </VStack>

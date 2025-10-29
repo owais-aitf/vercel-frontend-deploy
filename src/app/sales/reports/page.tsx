@@ -1,6 +1,8 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { Box, HStack } from '@chakra-ui/react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
@@ -12,7 +14,21 @@ import { GenerateReport } from './components/GenerateReport';
 
 export default function ReportsPage() {
   const { user } = useContext(AuthContext);
-  const [activeTab, setActiveTab] = useState('view-all');
+  const { t, i18n } = useTranslation('sales');
+  const [activeTab, setActiveTab] = useState(() => {
+    // Initialize from sessionStorage to persist across language changes
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('reports-active-tab') || 'view-all';
+    }
+    return 'view-all';
+  });
+
+  // Persist active tab to sessionStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('reports-active-tab', activeTab);
+    }
+  }, [activeTab]);
 
   const getUserInitials = () => {
     if (!user?.fullName) return 'SU';
@@ -38,8 +54,8 @@ export default function ReportsPage() {
     <FeatureErrorBoundary featureName="Reports">
       <DashboardLayout
         navigation={salesNavigation}
-        pageTitle="Reports"
-        pageSubtitle="Generate and manage monthly billing reports"
+        pageTitle={t('reports.page_title')}
+        pageSubtitle={t('reports.page_subtitle')}
         userName={user?.fullName || 'Sales User'}
         userInitials={getUserInitials()}
         notificationCount={0}
@@ -91,7 +107,7 @@ export default function ReportsPage() {
               >
                 <HStack gap={2}>
                   <Icon size={16} />
-                  <span>{tab.label}</span>
+                  <span>{t(tab.labelKey)}</span>
                 </HStack>
               </Box>
             );
