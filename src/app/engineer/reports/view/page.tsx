@@ -11,6 +11,16 @@ import {
   Input,
   Button,
 } from '@chakra-ui/react';
+import {
+  LuSearch,
+  LuCalendar,
+  LuFolderOpen,
+  LuCheck,
+  LuMapPin,
+  LuCoffee,
+  LuPencil,
+  LuTrash2,
+} from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { engineerNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
@@ -304,13 +314,13 @@ export default function ViewAttendance() {
                       🔍 {t('viewAttendance.filters.all_types')}
                     </option>
                     <option value="PRESENT">
-                      ✅ {t('viewAttendance.filters.present')}
+                      ✓ {t('viewAttendance.filters.present')}
                     </option>
                     <option value="PAID_LEAVE">
-                      🏖️ {t('viewAttendance.filters.paid_leave')}
+                      🏖 {t('viewAttendance.filters.paid_leave')}
                     </option>
                     <option value="ABSENT">
-                      ❌ {t('viewAttendance.filters.absent')}
+                      ✗ {t('viewAttendance.filters.absent')}
                     </option>
                     <option value="LEGAL_HOLIDAY">
                       🎉 {t('viewAttendance.filters.legal_holiday')}
@@ -708,11 +718,11 @@ export default function ViewAttendance() {
                       flexWrap="wrap"
                     >
                       <HStack gap={1}>
-                        <Text>📍</Text>
+                        <LuMapPin size={14} />
                         <Text>{record.workLocation || 'N/A'}</Text>
                       </HStack>
                       <HStack gap={1}>
-                        <Text>☕</Text>
+                        <LuCoffee size={14} />
                         <Text>{record.breakHours}h</Text>
                       </HStack>
                     </HStack>

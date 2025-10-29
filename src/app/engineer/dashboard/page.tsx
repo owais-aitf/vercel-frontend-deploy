@@ -29,6 +29,8 @@ import {
   LuFileText,
   LuFolderOpen,
   LuClock,
+  LuClipboardList,
+  LuBriefcase,
 } from 'react-icons/lu';
 import { ChatbotModal } from '@/components/chatbot/ChatbotModal';
 import { SlackConnectionCard } from '@/components/slack/SlackConnectionCard';
@@ -299,7 +301,7 @@ function EngineerDashboardContent() {
               <Text fontSize="sm" color="gray.600">
                 {t('dashboard.hours_this_month')}
               </Text>
-              <Text fontSize={{ base: '20px', md: '24px' }}>🕐</Text>
+              <LuClock size={24} color="#3182CE" />
             </HStack>
             <VStack align="start" gap={1} w="full" minH="56px">
               <Text fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold">
@@ -333,7 +335,7 @@ function EngineerDashboardContent() {
               <Text fontSize="sm" color="gray.600">
                 {t('dashboard.attendance_rate')}
               </Text>
-              <Text fontSize={{ base: '20px', md: '24px' }}>📋</Text>
+              <LuClipboardList size={24} color="#3182CE" />
             </HStack>
             <VStack align="start" gap={1} w="full" minH="56px">
               <Text fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold">
@@ -362,7 +364,7 @@ function EngineerDashboardContent() {
               <Text fontSize="sm" color="gray.600">
                 {t('dashboard.active_projects')}
               </Text>
-              <Text fontSize={{ base: '20px', md: '24px' }}>💼</Text>
+              <LuBriefcase size={24} color="#3182CE" />
             </HStack>
             <Box minH="56px" display="flex" alignItems="start">
               <Text fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold">

@@ -11,6 +11,13 @@ import {
   Button,
   Badge,
 } from '@chakra-ui/react';
+import {
+  LuFolderOpen,
+  LuCheck,
+  LuX,
+  LuBuilding2,
+  LuCalendar,
+} from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { engineerNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
@@ -305,10 +312,10 @@ export default function ViewAssignedProjects() {
                       📁 {t('projects.filters.all_projects')}
                     </option>
                     <option value="active">
-                      ✅ {t('projects.filters.active')}
+                      ✓ {t('projects.filters.active')}
                     </option>
                     <option value="inactive">
-                      ❌ {t('projects.filters.inactive')}
+                      ✗ {t('projects.filters.inactive')}
                     </option>
                   </select>
 
@@ -481,8 +488,9 @@ export default function ViewAssignedProjects() {
                       </HStack>
 
                       <HStack gap={2}>
+                        <LuBuilding2 size={14} color="#718096" />
                         <Text fontSize="sm" color="gray.500">
-                          🏢 {t('projects.labels.client')}:
+                          {t('projects.labels.client')}:
                         </Text>
                         <Text fontSize="sm" fontWeight="medium">
                           {project.project.client.name}
@@ -499,8 +507,9 @@ export default function ViewAssignedProjects() {
                       </HStack>
 
                       <HStack gap={2}>
+                        <LuCalendar size={14} color="#718096" />
                         <Text fontSize="sm" color="gray.500">
-                          📅 {t('projects.labels.duration')}:
+                          {t('projects.labels.duration')}:
                         </Text>
                         <Text fontSize="sm">
                           {calculateDuration(

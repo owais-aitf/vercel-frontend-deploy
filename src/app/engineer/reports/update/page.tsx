@@ -12,6 +12,17 @@ import {
   Button,
   Textarea,
 } from '@chakra-ui/react';
+import {
+  LuCalendar,
+  LuFolderOpen,
+  LuCheck,
+  LuMapPin,
+  LuClock,
+  LuCoffee,
+  LuBriefcase,
+  LuPencil,
+  LuTrash2,
+} from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { engineerNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
@@ -533,13 +544,13 @@ export default function UpdateAttendance() {
                       🔍 {t('attendanceHistory.filters.all_types')}
                     </option>
                     <option value="PRESENT">
-                      ✅ {t('attendanceHistory.filters.present')}
+                      ✓ {t('attendanceHistory.filters.present')}
                     </option>
                     <option value="PAID_LEAVE">
-                      🏖️ {t('attendanceHistory.filters.paid_leave')}
+                      🏖 {t('attendanceHistory.filters.paid_leave')}
                     </option>
                     <option value="ABSENT">
-                      ❌ {t('attendanceHistory.filters.absent')}
+                      ✗ {t('attendanceHistory.filters.absent')}
                     </option>
                     <option value="LEGAL_HOLIDAY">
                       🎉 {t('attendanceHistory.filters.legal_holiday')}
@@ -792,7 +803,10 @@ export default function UpdateAttendance() {
                             variant="ghost"
                             onClick={() => handleEditClick(record)}
                           >
-                            ✏️ {t('attendanceHistory.table.edit')}
+                            <HStack gap={1.5}>
+                              <LuPencil size={14} />
+                              <Text>{t('attendanceHistory.table.edit')}</Text>
+                            </HStack>
                           </Button>
                           <Button
                             size="sm"
@@ -802,7 +816,10 @@ export default function UpdateAttendance() {
                               handleDeleteClick(record.id, record.workDate)
                             }
                           >
-                            🗑️ {t('attendanceHistory.table.delete')}
+                            <HStack gap={1.5}>
+                              <LuTrash2 size={14} />
+                              <Text>{t('attendanceHistory.table.delete')}</Text>
+                            </HStack>
                           </Button>
                         </HStack>
                       </Box>
@@ -858,11 +875,11 @@ export default function UpdateAttendance() {
                       flexWrap="wrap"
                     >
                       <HStack gap={1}>
-                        <Text>📍</Text>
+                        <LuMapPin size={14} />
                         <Text>{record.workLocation || 'N/A'}</Text>
                       </HStack>
                       <HStack gap={1}>
-                        <Text>☕</Text>
+                        <LuCoffee size={14} />
                         <Text>{record.breakHours}h</Text>
                       </HStack>
                     </HStack>
@@ -888,7 +905,10 @@ export default function UpdateAttendance() {
                         flex={1}
                         onClick={() => handleEditClick(record)}
                       >
-                        ✏️ {t('attendanceHistory.table.delete')}
+                        <HStack gap={1.5}>
+                          <LuPencil size={14} />
+                          <Text>{t('attendanceHistory.table.edit')}</Text>
+                        </HStack>
                       </Button>
                       <Button
                         size="sm"
@@ -899,7 +919,10 @@ export default function UpdateAttendance() {
                           handleDeleteClick(record.id, record.workDate)
                         }
                       >
-                        🗑️ {t('attendanceHistory.table.delete')}
+                        <HStack gap={1.5}>
+                          <LuTrash2 size={14} />
+                          <Text>{t('attendanceHistory.table.delete')}</Text>
+                        </HStack>
                       </Button>
                     </HStack>
                   </VStack>
@@ -1077,9 +1100,12 @@ export default function UpdateAttendance() {
                 <VStack align="stretch" gap={4} pt={4}>
                   {/* Date */}
                   <Box>
-                    <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      📅 {t('attendanceHistory.edit_modal.date_label')}
-                    </Text>
+                    <HStack gap={1.5} mb={2}>
+                      <LuCalendar size={16} />
+                      <Text fontSize="sm" fontWeight="medium">
+                        {t('attendanceHistory.edit_modal.date_label')}
+                      </Text>
+                    </HStack>
                     <Input
                       type="date"
                       value={formData.workDate}
@@ -1096,9 +1122,12 @@ export default function UpdateAttendance() {
 
                   {/* Project */}
                   <Box>
-                    <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      📁 {t('attendanceHistory.edit_modal.project_label')}
-                    </Text>
+                    <HStack gap={1.5} mb={2}>
+                      <LuFolderOpen size={16} />
+                      <Text fontSize="sm" fontWeight="medium">
+                        {t('attendanceHistory.edit_modal.project_label')}
+                      </Text>
+                    </HStack>
                     <select
                       value={formData.projectAssignmentId}
                       onChange={(e) =>
@@ -1129,9 +1158,12 @@ export default function UpdateAttendance() {
 
                   {/* Attendance Type */}
                   <Box>
-                    <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      ✅ {t('attendanceHistory.edit_modal.type_label')}
-                    </Text>
+                    <HStack gap={1.5} mb={2}>
+                      <LuCheck size={16} />
+                      <Text fontSize="sm" fontWeight="medium">
+                        {t('attendanceHistory.edit_modal.type_label')}
+                      </Text>
+                    </HStack>
                     <select
                       value={formData.attendanceType}
                       onChange={(e) =>
@@ -1167,9 +1199,12 @@ export default function UpdateAttendance() {
                   {formData.attendanceType === 'PRESENT' && (
                     <>
                       <Box>
-                        <Text fontSize="sm" fontWeight="medium" mb={2}>
-                          📍 {t('attendanceHistory.edit_modal.location_label')}
-                        </Text>
+                        <HStack gap={1.5} mb={2}>
+                          <LuMapPin size={16} />
+                          <Text fontSize="sm" fontWeight="medium">
+                            {t('attendanceHistory.edit_modal.location_label')}
+                          </Text>
+                        </HStack>
                         <select
                           value={formData.workLocation}
                           onChange={(e) =>
@@ -1200,9 +1235,12 @@ export default function UpdateAttendance() {
 
                       <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                         <Box>
-                          <Text fontSize="sm" fontWeight="medium" mb={2}>
-                            🕐 {t('attendanceHistory.edit_modal.start_time')}
-                          </Text>
+                          <HStack gap={1.5} mb={2}>
+                            <LuClock size={16} />
+                            <Text fontSize="sm" fontWeight="medium">
+                              {t('attendanceHistory.edit_modal.start_time')}
+                            </Text>
+                          </HStack>
                           <Input
                             type="time"
                             value={formData.startTime}
@@ -1223,9 +1261,12 @@ export default function UpdateAttendance() {
                           />
                         </Box>
                         <Box>
-                          <Text fontSize="sm" fontWeight="medium" mb={2}>
-                            🕐 {t('attendanceHistory.edit_modal.end_time')}
-                          </Text>
+                          <HStack gap={1.5} mb={2}>
+                            <LuClock size={16} />
+                            <Text fontSize="sm" fontWeight="medium">
+                              {t('attendanceHistory.edit_modal.end_time')}
+                            </Text>
+                          </HStack>
                           <Input
                             type="time"
                             value={formData.endTime}
@@ -1251,9 +1292,12 @@ export default function UpdateAttendance() {
                       </Grid>
 
                       <Box>
-                        <Text fontSize="sm" fontWeight="medium" mb={2}>
-                          ☕ {t('attendanceHistory.edit_modal.break_hours')}
-                        </Text>
+                        <HStack gap={1.5} mb={2}>
+                          <LuCoffee size={16} />
+                          <Text fontSize="sm" fontWeight="medium">
+                            {t('attendanceHistory.edit_modal.break_hours')}
+                          </Text>
+                        </HStack>
                         <Input
                           type="number"
                           step="0.5"
@@ -1269,12 +1313,18 @@ export default function UpdateAttendance() {
                       </Box>
 
                       <Box bg="blue.50" p={3} borderRadius="md">
-                        <Text fontSize="sm" fontWeight="bold" color="blue.800">
-                          💼{' '}
-                          {t('attendanceHistory.edit_modal.calculated_hours')}:{' '}
-                          {calculateWorkHours().toFixed(1)}{' '}
-                          {t('attendanceHistory.edit_modal.hours_unit')}
-                        </Text>
+                        <HStack gap={2}>
+                          <LuBriefcase size={16} color="#2C5282" />
+                          <Text
+                            fontSize="sm"
+                            fontWeight="bold"
+                            color="blue.800"
+                          >
+                            {t('attendanceHistory.edit_modal.calculated_hours')}
+                            : {calculateWorkHours().toFixed(1)}{' '}
+                            {t('attendanceHistory.edit_modal.hours_unit')}
+                          </Text>
+                        </HStack>
                       </Box>
                     </>
                   )}

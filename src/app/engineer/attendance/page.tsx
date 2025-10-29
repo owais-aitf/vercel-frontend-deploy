@@ -10,7 +10,18 @@ import {
   Textarea,
   Grid,
   GridItem,
+  HStack,
 } from '@chakra-ui/react';
+import {
+  LuCalendar,
+  LuFolderOpen,
+  LuCheck,
+  LuMapPin,
+  LuClock,
+  LuCoffee,
+  LuBuilding2,
+  LuBuilding,
+} from 'react-icons/lu';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { engineerNavigation } from '@/shared/config/navigation';
 import { FeatureErrorBoundary } from '@/components/error-boundaries';
@@ -185,7 +196,7 @@ export default function EngineerAttendance() {
 
       if (response.success) {
         toaster.create({
-          title: `✅ ${t('attendance.success_message')}`,
+          title: t('attendance.success_message'),
           type: 'success',
           duration: 2500,
         });
@@ -245,36 +256,50 @@ export default function EngineerAttendance() {
           maxW="1200px"
           w="full"
         >
-          <VStack align="stretch" gap={{ base: 4, md: 6 }}>
-            <Box borderBottom="1px solid" borderColor="gray.200" pb={4}>
-              <Text
-                fontSize={{ base: 'xl', md: '2xl' }}
-                fontWeight="bold"
-                color="gray.800"
-              >
-                📅 {t('attendance.main_title')}
-              </Text>
+          <VStack align="stretch" gap={{ base: 3, sm: 4, md: 6 }}>
+            <Box
+              borderBottom="1px solid"
+              borderColor="gray.200"
+              pb={{ base: 3, md: 4 }}
+            >
+              <HStack gap={2}>
+                <LuCalendar size={24} color="#3182CE" />
+                <Text
+                  fontSize={{ base: 'xl', md: '2xl' }}
+                  fontWeight="bold"
+                  color="gray.800"
+                >
+                  {t('attendance.main_title')}
+                </Text>
+              </HStack>
               <Text color="gray.600" fontSize={{ base: 'xs', md: 'sm' }} mt={1}>
                 {t('attendance.main_description')}
               </Text>
             </Box>
 
             <form onSubmit={handleSubmit}>
-              <VStack align="stretch" gap={{ base: 4, md: 6 }}>
+              <VStack align="stretch" gap={{ base: 3, sm: 4, md: 6 }}>
                 {/* Date and Project Row */}
                 <Grid
-                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                  gap={{ base: 4, md: 6 }}
+                  templateColumns={{
+                    base: '1fr',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(2, 1fr)',
+                  }}
+                  gap={{ base: 3, sm: 4, md: 6 }}
                 >
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="semibold"
-                        color="gray.700"
-                      >
-                        📆 {t('attendance.date_label')}
-                      </Text>
+                      <HStack gap={1.5}>
+                        <LuCalendar size={16} />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          color="gray.700"
+                        >
+                          {t('attendance.date_label')}
+                        </Text>
+                      </HStack>
                       <Input
                         type="date"
                         value={workDate}
@@ -299,13 +324,16 @@ export default function EngineerAttendance() {
 
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="semibold"
-                        color="gray.700"
-                      >
-                        📁 {t('attendance.project_label')}
-                      </Text>
+                      <HStack gap={1.5}>
+                        <LuFolderOpen size={16} />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          color="gray.700"
+                        >
+                          {t('attendance.project_label')}
+                        </Text>
+                      </HStack>
                       <Box position="relative">
                         <select
                           value={projectAssignmentId}
@@ -342,7 +370,7 @@ export default function EngineerAttendance() {
                           }}
                         >
                           <option value="">
-                            📂 {t('attendance.project_placeholder')}
+                            {t('attendance.project_placeholder')}
                           </option>
                           {projects.map((project) => (
                             <option
@@ -379,18 +407,25 @@ export default function EngineerAttendance() {
 
                 {/* Attendance Type and Work Location Row */}
                 <Grid
-                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                  gap={{ base: 4, md: 6 }}
+                  templateColumns={{
+                    base: '1fr',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(2, 1fr)',
+                  }}
+                  gap={{ base: 3, sm: 4, md: 6 }}
                 >
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="semibold"
-                        color="gray.700"
-                      >
-                        ✅ {t('attendance.attendance_type_label')}
-                      </Text>
+                      <HStack gap={1.5}>
+                        <LuCheck size={16} />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          color="gray.700"
+                        >
+                          {t('attendance.attendance_type_label')}
+                        </Text>
+                      </HStack>
                       <Box position="relative">
                         <select
                           value={attendanceType}
@@ -427,16 +462,16 @@ export default function EngineerAttendance() {
                           }}
                         >
                           <option value="PRESENT">
-                            ✅ {t('attendance.attendance_types.present')}
+                            {t('attendance.attendance_types.present')}
                           </option>
                           <option value="PAID_LEAVE">
-                            🏖️ {t('attendance.attendance_types.paid_leave')}
+                            {t('attendance.attendance_types.paid_leave')}
                           </option>
                           <option value="ABSENT">
-                            ❌ {t('attendance.attendance_types.absent')}
+                            {t('attendance.attendance_types.absent')}
                           </option>
                           <option value="LEGAL_HOLIDAY">
-                            🎉 {t('attendance.attendance_types.legal_holiday')}
+                            {t('attendance.attendance_types.legal_holiday')}
                           </option>
                         </select>
                         <Box
@@ -464,13 +499,16 @@ export default function EngineerAttendance() {
 
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="semibold"
-                        color="gray.700"
-                      >
-                        📍 {t('attendance.work_location_label')}
-                      </Text>
+                      <HStack gap={1.5}>
+                        <LuMapPin size={16} />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          color="gray.700"
+                        >
+                          {t('attendance.work_location_label')}
+                        </Text>
+                      </HStack>
                       <Box position="relative">
                         <select
                           value={workLocation}
@@ -514,16 +552,16 @@ export default function EngineerAttendance() {
                           }}
                         >
                           <option value="">
-                            📍 {t('attendance.work_location_placeholder')}
+                            {t('attendance.work_location_placeholder')}
                           </option>
                           <option value="CLIENT_SITE">
-                            🏢 {t('attendance.work_locations.client_site')}
+                            {t('attendance.work_locations.client_site')}
                           </option>
                           <option value="HOME">
-                            🏠 {t('attendance.work_locations.home')}
+                            {t('attendance.work_locations.home')}
                           </option>
                           <option value="OFFICE">
-                            🏛️ {t('attendance.work_locations.office')}
+                            {t('attendance.work_locations.office')}
                           </option>
                         </select>
                         <Box
@@ -553,18 +591,25 @@ export default function EngineerAttendance() {
 
                 {/* Start Time and End Time Row */}
                 <Grid
-                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                  gap={{ base: 4, md: 6 }}
+                  templateColumns={{
+                    base: '1fr',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(2, 1fr)',
+                  }}
+                  gap={{ base: 3, sm: 4, md: 6 }}
                 >
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="semibold"
-                        color="gray.700"
-                      >
-                        🕐 {t('attendance.start_time_label')}
-                      </Text>
+                      <HStack gap={1.5}>
+                        <LuClock size={16} />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          color="gray.700"
+                        >
+                          {t('attendance.start_time_label')}
+                        </Text>
+                      </HStack>
                       <Input
                         type="time"
                         value={startTime}
@@ -591,13 +636,16 @@ export default function EngineerAttendance() {
 
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="semibold"
-                        color="gray.700"
-                      >
-                        🕐 {t('attendance.end_time_label')}
-                      </Text>
+                      <HStack gap={1.5}>
+                        <LuClock size={16} />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          color="gray.700"
+                        >
+                          {t('attendance.end_time_label')}
+                        </Text>
+                      </HStack>
                       <Input
                         type="time"
                         value={endTime}
@@ -625,18 +673,25 @@ export default function EngineerAttendance() {
 
                 {/* Break Hours and Work Hours Row */}
                 <Grid
-                  templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-                  gap={{ base: 4, md: 6 }}
+                  templateColumns={{
+                    base: '1fr',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(2, 1fr)',
+                  }}
+                  gap={{ base: 3, sm: 4, md: 6 }}
                 >
                   <GridItem>
                     <VStack align="stretch" gap={2}>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="semibold"
-                        color="gray.700"
-                      >
-                        ☕ {t('attendance.break_hours_label')}
-                      </Text>
+                      <HStack gap={1.5}>
+                        <LuCoffee size={16} />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          color="gray.700"
+                        >
+                          {t('attendance.break_hours_label')}
+                        </Text>
+                      </HStack>
                       <Input
                         type="number"
                         step="0.5"
@@ -740,8 +795,8 @@ export default function EngineerAttendance() {
                   disabled={submitting}
                 >
                   {submitting
-                    ? `⏳${t('attendance.submitting_button')}`
-                    : `✅ ${t('attendance.submit_button')}`}
+                    ? t('attendance.submitting_button')
+                    : t('attendance.submit_button')}
                 </Button>
               </VStack>
             </form>
