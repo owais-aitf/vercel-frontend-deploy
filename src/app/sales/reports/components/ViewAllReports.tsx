@@ -589,7 +589,7 @@ export function ViewAllReports() {
                               variant="ghost"
                               onClick={() => handleViewDetails(report)}
                             >
-                              View
+                              {t('reports.view_all.actions.view_details')}
                             </Button>
                             <Button
                               size="xs"
@@ -597,21 +597,21 @@ export function ViewAllReports() {
                               onClick={() => handleUpdateStatus(report)}
                               disabled={report.status === 'APPROVED'}
                             >
-                              Status
+                              {t('reports.view_all.actions.update_status')}
                             </Button>
                             <Button
                               size="xs"
                               variant="ghost"
                               onClick={() => handleDownload(report.id, 'excel')}
                             >
-                              Excel
+                              {t('reports.view_all.actions.download_excel')}
                             </Button>
                             <Button
                               size="xs"
                               variant="ghost"
                               onClick={() => handleDownload(report.id, 'pdf')}
                             >
-                              PDF
+                              {t('reports.view_all.actions.download_pdf')}
                             </Button>
                           </HStack>
                         </Table.Cell>
@@ -638,14 +638,14 @@ export function ViewAllReports() {
                             {report.reportYear}
                           </Text>
                           <Badge colorPalette={getStatusColor(report.status)}>
-                            {report.status}
+                            {getStatusLabel(report.status)}
                           </Badge>
                         </HStack>
 
                         <VStack align="start" gap={1} fontSize="sm">
                           <HStack>
                             <Text color="gray.600" minW="80px">
-                              Engineer:
+                              {t('reports.view_all.table.engineer')}:
                             </Text>
                             <Text fontWeight="medium">
                               {report.projectAssignment?.engineer.fullName}
@@ -653,7 +653,7 @@ export function ViewAllReports() {
                           </HStack>
                           <HStack>
                             <Text color="gray.600" minW="80px">
-                              Project:
+                              {t('reports.view_all.table.project')}:
                             </Text>
                             <Text>
                               {report.projectAssignment?.project.projectName}
@@ -661,7 +661,7 @@ export function ViewAllReports() {
                           </HStack>
                           <HStack>
                             <Text color="gray.600" minW="80px">
-                              Hours:
+                              {t('reports.view_all.table.total_hours')}:
                             </Text>
                             <Text>
                               {parseFloat(report.totalWorkHours).toFixed(1)}h
@@ -669,7 +669,7 @@ export function ViewAllReports() {
                           </HStack>
                           <HStack>
                             <Text color="gray.600" minW="80px">
-                              Amount:
+                              {t('reports.view_all.table.amount')}:
                             </Text>
                             <Text fontWeight="bold">
                               {formatCurrency(report.finalBillingAmount)}
@@ -684,7 +684,7 @@ export function ViewAllReports() {
                             onClick={() => handleViewDetails(report)}
                           >
                             <LuEye size={14} />
-                            View
+                            {t('reports.view_all.actions.view_details')}
                           </Button>
                           <Button
                             size="xs"
@@ -693,19 +693,23 @@ export function ViewAllReports() {
                             disabled={report.status === 'APPROVED'}
                           >
                             <LuFileText size={14} />
-                            Status
+                            {t('reports.view_all.actions.update_status')}
                           </Button>
                           <IconButton
                             size="xs"
                             onClick={() => handleDownload(report.id, 'excel')}
-                            aria-label="Download Excel"
+                            aria-label={t(
+                              'reports.view_all.actions.download_excel'
+                            )}
                           >
                             <LuFileSpreadsheet size={14} />
                           </IconButton>
                           <IconButton
                             size="xs"
                             onClick={() => handleDownload(report.id, 'pdf')}
-                            aria-label="Download PDF"
+                            aria-label={t(
+                              'reports.view_all.actions.download_pdf'
+                            )}
                           >
                             <LuDownload size={14} />
                           </IconButton>
@@ -757,7 +761,7 @@ export function ViewAllReports() {
                 borderColor="gray.200"
               >
                 <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="bold">
-                  Report Details
+                  {t('reports.detail_modal.title')}
                 </Text>
                 <Box
                   as="button"
@@ -782,14 +786,14 @@ export function ViewAllReports() {
                     colorPalette={getStatusColor(selectedReport.status)}
                     size="lg"
                   >
-                    {selectedReport.status}
+                    {getStatusLabel(selectedReport.status)}
                   </Badge>
                 </HStack>
 
                 <VStack align="stretch" gap={3} fontSize="sm">
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Engineer:
+                      {t('reports.detail_modal.engineer')}
                     </Text>
                     <Text fontWeight="medium">
                       {selectedReport.projectAssignment?.engineer.fullName}
@@ -797,7 +801,7 @@ export function ViewAllReports() {
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Project:
+                      {t('reports.detail_modal.project')}
                     </Text>
                     <Text>
                       {selectedReport.projectAssignment?.project.projectName}
@@ -805,7 +809,7 @@ export function ViewAllReports() {
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Client:
+                      {t('reports.detail_modal.client')}
                     </Text>
                     <Text>
                       {selectedReport.projectAssignment?.project.client.name}
@@ -813,7 +817,7 @@ export function ViewAllReports() {
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Total Work Days:
+                      {t('reports.detail_modal.work_days')}
                     </Text>
                     <Text fontWeight="medium">
                       {selectedReport.totalWorkDays}
@@ -821,7 +825,7 @@ export function ViewAllReports() {
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Total Work Hours:
+                      {t('reports.detail_modal.work_hours')}
                     </Text>
                     <Text fontWeight="medium">
                       {parseFloat(selectedReport.totalWorkHours).toFixed(2)}h
@@ -829,7 +833,7 @@ export function ViewAllReports() {
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Excess Hours:
+                      {t('reports.detail_modal.excess_hours')}
                     </Text>
                     <Text color="green.600">
                       {parseFloat(selectedReport.excessHours).toFixed(2)}h
@@ -837,7 +841,7 @@ export function ViewAllReports() {
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Shortage Hours:
+                      {t('reports.detail_modal.shortage_hours')}
                     </Text>
                     <Text color="red.600">
                       {parseFloat(selectedReport.shortageHours).toFixed(2)}h
@@ -845,13 +849,13 @@ export function ViewAllReports() {
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Total Amount:
+                      {t('reports.detail_modal.total_amount')}
                     </Text>
                     <Text>{formatCurrency(selectedReport.totalAmount)}</Text>
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Settlement Adjustment:
+                      {t('reports.detail_modal.settlement_adjustment')}
                     </Text>
                     <Text>
                       {formatCurrency(selectedReport.settlementAdjustment)}
@@ -859,7 +863,7 @@ export function ViewAllReports() {
                   </HStack>
                   <HStack>
                     <Text color="gray.600" minW="150px">
-                      Final Billing Amount:
+                      {t('reports.detail_modal.final_billing')}
                     </Text>
                     <VStack align="start" gap={0}>
                       <Text fontWeight="bold" fontSize="md">
@@ -868,7 +872,7 @@ export function ViewAllReports() {
                       {parseFloat(selectedReport.finalBillingAmount) === 0 &&
                         parseFloat(selectedReport.settlementAdjustment) < 0 && (
                           <Text fontSize="xs" color="orange.600">
-                            (Capped at ¥0 - shortage exceeded base amount)
+                            {t('reports.detail_modal.capped_note')}
                           </Text>
                         )}
                     </VStack>
@@ -887,19 +891,11 @@ export function ViewAllReports() {
                 borderRadius="md"
               >
                 <Text fontSize="sm" color="gray.700">
-                  {selectedReport.status === 'DRAFT' ? (
-                    <>
-                      <strong>Note:</strong> This report is in DRAFT status and
-                      can be deleted. Once submitted or approved, deletion will
-                      no longer be available.
-                    </>
-                  ) : (
-                    <>
-                      <strong>Info:</strong> This report has been{' '}
-                      {selectedReport.status.toLowerCase()} and cannot be
-                      deleted. Only DRAFT reports can be removed.
-                    </>
-                  )}
+                  {selectedReport.status === 'DRAFT'
+                    ? t('reports.detail_modal.draft_note')
+                    : t('reports.detail_modal.submitted_note', {
+                        status: selectedReport.status.toLowerCase(),
+                      })}
                 </Text>
               </Box>
 
@@ -913,7 +909,7 @@ export function ViewAllReports() {
                     loading={deletingReport}
                   >
                     <LuTrash2 />
-                    Delete Report
+                    {t('reports.detail_modal.delete_report')}
                   </Button>
                 )}
                 <Box flex={1} />
@@ -921,7 +917,7 @@ export function ViewAllReports() {
                   variant="outline"
                   onClick={() => setIsDetailModalOpen(false)}
                 >
-                  Close
+                  {t('reports.detail_modal.close')}
                 </Button>
               </HStack>
             </VStack>
@@ -966,7 +962,7 @@ export function ViewAllReports() {
                 borderColor="gray.200"
               >
                 <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="bold">
-                  Update Report Status
+                  {t('reports.status_modal.title')}
                 </Text>
                 <Box
                   as="button"
@@ -983,15 +979,15 @@ export function ViewAllReports() {
               {/* Content */}
               <VStack align="stretch" gap={4}>
                 <Text fontSize="sm" color="gray.600">
-                  Current Status:{' '}
+                  {t('reports.status_modal.current_status')}{' '}
                   <Badge colorPalette={getStatusColor(selectedReport.status)}>
-                    {selectedReport.status}
+                    {getStatusLabel(selectedReport.status)}
                   </Badge>
                 </Text>
 
                 <Box>
                   <Text fontSize="sm" mb={2} fontWeight="medium">
-                    New Status{' '}
+                    {t('reports.status_modal.new_status')}{' '}
                     <Text as="span" color="red.500">
                       *
                     </Text>
@@ -1011,18 +1007,25 @@ export function ViewAllReports() {
                       cursor: 'pointer',
                     }}
                   >
-                    <option value="">Select status</option>
-                    <option value="DRAFT">Draft</option>
-                    <option value="SUBMITTED">Submitted</option>
-                    <option value="APPROVED">Approved</option>
+                    <option value="">
+                      {t('reports.status_modal.select_status')}
+                    </option>
+                    <option value="DRAFT">
+                      {t('reports.view_all.status.draft')}
+                    </option>
+                    <option value="SUBMITTED">
+                      {t('reports.view_all.status.submitted')}
+                    </option>
+                    <option value="APPROVED">
+                      {t('reports.view_all.status.approved')}
+                    </option>
                   </select>
                 </Box>
 
                 <Card.Root bg="yellow.50" borderColor="yellow.200">
                   <Card.Body p={3}>
                     <Text fontSize="xs" color="yellow.900">
-                      ⚠️ Note: Status transitions must follow: DRAFT → SUBMITTED
-                      → APPROVED. Cannot revert once approved.
+                      ⚠️ {t('reports.status_modal.note')}
                     </Text>
                   </Card.Body>
                 </Card.Root>
@@ -1035,15 +1038,16 @@ export function ViewAllReports() {
                   onClick={() => setIsStatusModalOpen(false)}
                   disabled={updatingStatus}
                 >
-                  Cancel
+                  {t('reports.status_modal.cancel')}
                 </Button>
                 <Button
                   colorScheme="blue"
                   onClick={confirmStatusUpdate}
                   loading={updatingStatus}
+                  loadingText={t('reports.status_modal.updating')}
                   disabled={!newStatus || updatingStatus}
                 >
-                  Update Status
+                  {t('reports.status_modal.update')}
                 </Button>
               </HStack>
             </VStack>
