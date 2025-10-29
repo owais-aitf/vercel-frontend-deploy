@@ -47,20 +47,199 @@ It provides UIs for Engineers, Sales, and Admins to submit and edit daily attend
 Important files and folders:
 
 ```
-/src
-  /app                # Next.js app/layouts/providers
-  /components         # Reusable UI components
-  /context            # AuthContext, ThemeContext
-  /hooks              # custom hooks
-  /lib                # api wrapper, i18n init
-  /pages (or app)     # pages / routes
-/public
-  /locales            # translation files (en, ja)
-package.json
-next.config.js
-next-i18next.config.js
-README.md
-.env.local
+├── .env.production
+├── .eslintrc.json
+├── .github
+    └── workflows
+    │   └── mirror-to-vercel.yml
+├── .gitignore
+├── .husky
+    └── pre-commit
+├── .prettierignore
+├── .prettierrc.json
+├── .vscode
+    └── settings.json
+├── README.md
+├── eslint.config.mjs
+├── next-i18next.config.js
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── public
+    ├── file.svg
+    ├── globe.svg
+    ├── images
+    │   └── logo.png
+    ├── locales
+    │   ├── en
+    │   │   ├── admin.json
+    │   │   ├── auth.json
+    │   │   ├── common.json
+    │   │   ├── engineer.json
+    │   │   └── sales.json
+    │   └── ja
+    │   │   ├── admin.json
+    │   │   ├── auth.json
+    │   │   ├── common.json
+    │   │   ├── engineer.json
+    │   │   └── sales.json
+    ├── next.svg
+    ├── vercel.svg
+    └── window.svg
+├── src
+    ├── app
+    │   ├── admin
+    │   │   ├── dashboard
+    │   │   │   └── page.tsx
+    │   │   ├── layout.tsx
+    │   │   └── users
+    │   │   │   └── register
+    │   │   │       └── page.tsx
+    │   ├── engineer
+    │   │   ├── attendance
+    │   │   │   └── page.tsx
+    │   │   ├── dashboard
+    │   │   │   └── page.tsx
+    │   │   ├── layout.tsx
+    │   │   ├── projects
+    │   │   │   └── page.tsx
+    │   │   └── reports
+    │   │   │   ├── update
+    │   │   │       └── page.tsx
+    │   │   │   └── view
+    │   │   │       └── page.tsx
+    │   ├── favicon.ico
+    │   ├── first-login-reset
+    │   │   └── page.tsx
+    │   ├── forgot-password
+    │   │   └── page.tsx
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   ├── login
+    │   │   └── page.tsx
+    │   ├── page.module.css
+    │   ├── page.tsx
+    │   ├── providers.tsx
+    │   ├── reset-password
+    │   │   └── page.tsx
+    │   ├── sales
+    │   │   ├── assignments
+    │   │   │   ├── create
+    │   │   │   │   └── page.tsx
+    │   │   │   ├── manage
+    │   │   │   │   └── page.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── clients
+    │   │   │   ├── add
+    │   │   │   │   └── page.tsx
+    │   │   │   ├── page.tsx
+    │   │   │   ├── projects
+    │   │   │   │   └── page.tsx
+    │   │   │   └── update
+    │   │   │   │   └── page.tsx
+    │   │   ├── dashboard
+    │   │   │   └── page.tsx
+    │   │   ├── engineers
+    │   │   │   ├── attendance
+    │   │   │   │   ├── components
+    │   │   │   │   │   ├── CalendarHeader.tsx
+    │   │   │   │   │   ├── CalendarView.tsx
+    │   │   │   │   │   ├── EditSlideOver.tsx
+    │   │   │   │   │   ├── EngineerSidebar.tsx
+    │   │   │   │   │   └── ResizableSplitter.tsx
+    │   │   │   │   ├── page-old.tsx
+    │   │   │   │   └── page.tsx
+    │   │   │   ├── create
+    │   │   │   │   └── page.tsx
+    │   │   │   ├── page.tsx
+    │   │   │   └── update
+    │   │   │   │   └── page.tsx
+    │   │   ├── layout.tsx
+    │   │   ├── projects
+    │   │   │   ├── add
+    │   │   │   │   └── page.tsx
+    │   │   │   ├── page.tsx
+    │   │   │   └── update
+    │   │   │   │   └── page.tsx
+    │   │   └── reports
+    │   │   │   ├── components
+    │   │   │       ├── GenerateReport.tsx
+    │   │   │       └── ViewAllReports.tsx
+    │   │   │   └── page.tsx
+    │   └── verify-otp
+    │   │   └── page.tsx
+    ├── components
+    │   ├── LanguageSwitcher.tsx
+    │   ├── chatbot
+    │   │   ├── ChatbotModal.tsx
+    │   │   └── SalesAdminChatbotModal.tsx
+    │   ├── error-boundaries
+    │   │   ├── AuthErrorBoundary.tsx
+    │   │   ├── FeatureErrorBoundary.tsx
+    │   │   ├── GlobalErrorBoundary.tsx
+    │   │   └── index.ts
+    │   ├── layout
+    │   │   ├── DashboardLayout.tsx
+    │   │   ├── Navbar.tsx
+    │   │   └── Sidebar.tsx
+    │   ├── providers
+    │   │   └── NavigationProvider.tsx
+    │   ├── slack
+    │   │   ├── SlackConnectionCard.tsx
+    │   │   └── SlackConnectionModal.tsx
+    │   └── ui
+    │   │   ├── EnhancedButton.tsx
+    │   │   ├── KeyboardShortcutsModal.tsx
+    │   │   ├── LoadingSpinner.tsx
+    │   │   ├── TabNavigation.tsx
+    │   │   ├── alert.tsx
+    │   │   └── toaster.tsx
+    ├── context
+    │   └── AuthContext.tsx
+    ├── hooks
+    │   ├── useEnhancedToast.ts
+    │   ├── useHapticFeedback.ts
+    │   ├── useIsHydrated.ts
+    │   └── useKeyboardShortcuts.ts
+    ├── lib
+    │   └── i18n.ts
+    ├── shared
+    │   ├── config
+    │   │   ├── assignmentTabs.ts
+    │   │   ├── clientTabs.ts
+    │   │   ├── engineerTabs.ts
+    │   │   ├── navigation.ts
+    │   │   ├── projectTabs.ts
+    │   │   ├── reportTabs.ts
+    │   │   ├── routes.config.ts
+    │   │   └── theme.config.ts
+    │   ├── constants
+    │   │   ├── errorCodes.tsx
+    │   │   └── roles.tsx
+    │   ├── lib
+    │   │   ├── api-client.ts
+    │   │   ├── auth-guard.tsx
+    │   │   └── navigation.ts
+    │   ├── service
+    │   │   ├── adminService.ts
+    │   │   ├── assignmentService.ts
+    │   │   ├── attendanceService.ts
+    │   │   ├── authService.ts
+    │   │   ├── chatbotService.ts
+    │   │   ├── clientService.ts
+    │   │   ├── dashboardService.ts
+    │   │   ├── engineerService.ts
+    │   │   ├── projectService.ts
+    │   │   ├── salesService.ts
+    │   │   ├── slackService.ts
+    │   │   └── userService.ts
+    │   ├── types
+    │   │   └── report.types.ts
+    │   └── utils
+    │   │   └── cache.ts
+    └── utils
+    │   └── jwtDecode.ts
+└── tsconfig.json
 ```
 
 ---
