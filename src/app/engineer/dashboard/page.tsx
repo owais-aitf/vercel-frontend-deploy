@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useContext, useRef, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
 import {
@@ -23,7 +23,13 @@ import {
   RecentActivity,
 } from '@/shared/service/dashboardService';
 import { getUserCacheKey, CACHE_KEYS } from '@/shared/utils/cache';
-import { LuBot } from 'react-icons/lu';
+import {
+  LuBot,
+  LuCalendarCheck,
+  LuFileText,
+  LuFolderOpen,
+  LuClock,
+} from 'react-icons/lu';
 import { ChatbotModal } from '@/components/chatbot/ChatbotModal';
 import { SlackConnectionCard } from '@/components/slack/SlackConnectionCard';
 import { SlackConnectionModal } from '@/components/slack/SlackConnectionModal';
@@ -34,6 +40,7 @@ const CACHE_DURATION = 2 * 60 * 1000;
 function EngineerDashboardContent() {
   const { user } = useContext(AuthContext);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>(
     []
@@ -382,7 +389,7 @@ function EngineerDashboardContent() {
         <SlackConnectionCard />
       </Box>
 
-      {/* Recent Activities & Upcoming Tasks - Responsive Grid */}
+      {/* Recent Activities & Quick Actions - Responsive Grid */}
       <Grid
         templateColumns={{
           base: '1fr', // Mobile: Stacked
@@ -519,53 +526,110 @@ function EngineerDashboardContent() {
           </VStack>
         </Card.Root>
 
-        {/* Upcoming Tasks */}
-        <Card.Root p={{ base: 4, md: 6 }}>
-          <VStack align="start" gap={4}>
-            <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="bold">
-              {t('dashboard.upcoming_tasks')}
-            </Text>
-            <Text fontSize="sm" color="gray.500">
-              {t('dashboard.important_deadlines')}
-            </Text>
-
-            <VStack gap={3} w="full" mt={2}>
-              {[
-                {
-                  task: t('dashboard.tasks.submit_report'),
-                  due: 'Oct 11',
-                  color: 'red',
-                },
-                {
-                  task: t('dashboard.tasks.status_update'),
-                  due: 'Oct 12',
-                  color: 'blue',
-                },
-                {
-                  task: t('dashboard.tasks.review_code'),
-                  due: 'Oct 31',
-                  color: 'purple',
-                },
-              ].map((task, index) => (
-                <HStack key={index} gap={3} w="full">
-                  <Box
-                    w="12px"
-                    h="12px"
-                    borderRadius="full"
-                    bg={`${task.color}.500`}
-                    flexShrink={0}
-                  />
-                  <VStack align="start" gap={0} flex={1}>
-                    <Text fontSize="sm" fontWeight="medium">
-                      {task.task}
-                    </Text>
-                    <Text fontSize="xs" color="gray.500">
-                      {t('dashboard.tasks.due')}: {task.due}
-                    </Text>
-                  </VStack>
-                </HStack>
-              ))}
+        {/* Quick Actions */}
+        <Card.Root
+          p={{ base: 4, md: 6 }}
+          bg="gradient-to-r from-blue.50 to-purple.50"
+        >
+          <VStack align="stretch" gap={4}>
+            <VStack align="start" gap={0}>
+              <Text
+                fontSize={{ base: 'md', md: 'lg' }}
+                fontWeight="bold"
+                color="gray.800"
+              >
+                ⚡ Quick Actions
+              </Text>
+              <Text fontSize="xs" color="gray.600">
+                Frequently used features
+              </Text>
             </VStack>
+
+            <Grid templateColumns="repeat(2, 1fr)" gap={3}>
+              <Button
+                size="sm"
+                colorScheme="blue"
+                variant="outline"
+                onClick={() => router.push('/engineer/attendance')}
+                h="70px"
+                flexDirection="column"
+                gap={2}
+                _hover={{
+                  bg: 'blue.50',
+                  transform: 'translateY(-2px)',
+                  shadow: 'md',
+                }}
+                transition="all 0.2s"
+              >
+                <LuCalendarCheck size={20} />
+                <Text fontSize="xs" fontWeight="medium" textAlign="center">
+                  Mark Attendance
+                </Text>
+              </Button>
+
+              <Button
+                size="sm"
+                colorScheme="green"
+                variant="outline"
+                onClick={() => router.push('/engineer/reports/view')}
+                h="70px"
+                flexDirection="column"
+                gap={2}
+                _hover={{
+                  bg: 'green.50',
+                  transform: 'translateY(-2px)',
+                  shadow: 'md',
+                }}
+                transition="all 0.2s"
+              >
+                <LuFileText size={20} />
+                <Text fontSize="xs" fontWeight="medium" textAlign="center">
+                  View Records
+                </Text>
+              </Button>
+
+              <Button
+                size="sm"
+                colorScheme="purple"
+                variant="outline"
+                onClick={() => router.push('/engineer/reports/update')}
+                h="70px"
+                flexDirection="column"
+                gap={2}
+                _hover={{
+                  bg: 'purple.50',
+                  transform: 'translateY(-2px)',
+                  shadow: 'md',
+                }}
+                transition="all 0.2s"
+              >
+                <LuClock size={20} />
+                <Text fontSize="xs" fontWeight="medium" textAlign="center">
+                  Update Reports
+                </Text>
+              </Button>
+
+              <Button
+                size="sm"
+                colorScheme="orange"
+                variant="outline"
+                onClick={() => router.push('/engineer/projects')}
+                h="70px"
+                flexDirection="column"
+                gap={2}
+                _hover={{
+                  bg: 'orange.50',
+                  transform: 'translateY(-2px)',
+                  shadow: 'md',
+                }}
+                transition="all 0.2s"
+              >
+                <LuFolderOpen size={20} />
+                <Text fontSize="xs" fontWeight="medium" textAlign="center">
+                  My Projects
+                </Text>
+              </Button>
+            </Grid>
           </VStack>
         </Card.Root>
       </Grid>
