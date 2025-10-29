@@ -1,25 +1,13 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import {
-  DialogRoot,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-  DialogFooter,
-  DialogBackdrop,
-  Button,
-  Text,
-  VStack,
-  Box,
-} from '@chakra-ui/react';
+import { Box, Button, Text, VStack, HStack, Card } from '@chakra-ui/react';
 import {
   FaCheckCircle,
   FaExclamationTriangle,
   FaInfoCircle,
+  FaTimes,
 } from 'react-icons/fa';
 
 interface SlackConnectionModalProps {
@@ -45,17 +33,18 @@ export const SlackConnectionModal: React.FC<SlackConnectionModalProps> = ({
   useEffect(() => {
     if (isOpen && autoRedirect && status === 'success') {
       const timer = setTimeout(() => {
-        onClose(); // Close modal first
+        onClose();
         setTimeout(() => {
-          window.location.reload(); // Then reload to refresh Slack status
+          window.location.reload();
         }, 300);
-      }, 2000);
+      }, 3000); // 3 seconds
 
       return () => clearTimeout(timer);
     }
   }, [isOpen, autoRedirect, status, onClose]);
 
-  if (!status) return null;
+  // Don't render if not open or no status
+  if (!isOpen || !status) return null;
 
   const getIcon = () => {
     switch (status) {
@@ -71,18 +60,14 @@ export const SlackConnectionModal: React.FC<SlackConnectionModalProps> = ({
   const getTitle = () => {
     switch (status) {
       case 'success':
-        return (
-          '🎉 ' +
-          t('slack.connection_success_title', 'Slack Connected Successfully!')
+        return t(
+          'slack.connection_success_title',
+          'Slack Connected Successfully!'
         );
       case 'error':
-        return (
-          '❌ ' + t('slack.connection_error_title', 'Slack Connection Failed')
-        );
+        return t('slack.connection_error_title', 'Slack Connection Failed');
       case 'linking_required':
-        return (
-          'ℹ️ ' + t('slack.linking_required_title', 'Slack Integration Pending')
-        );
+        return t('slack.linking_required_title', 'Slack Integration Pending');
     }
   };
 
@@ -120,44 +105,150 @@ export const SlackConnectionModal: React.FC<SlackConnectionModalProps> = ({
     }
   };
 
+  const getEmoji = () => {
+    switch (status) {
+      case 'success':
+        return '🎉';
+      case 'error':
+        return '❌';
+      case 'linking_required':
+        return 'ℹ️';
+    }
+  };
+
+  const getBorderColor = () => {
+    switch (status) {
+      case 'success':
+        return 'green.500';
+      case 'error':
+        return 'red.500';
+      case 'linking_required':
+        return 'blue.500';
+    }
+  };
+
   return (
-    <DialogRoot
-      open={isOpen}
-      onOpenChange={(e) => {
-        if (!e.open) {
-          onClose();
-        }
-      }}
+    <Box
+      position="fixed"
+      top="50%"
+      left="50%"
+      transform="translate(-50%, -50%)"
+      zIndex={9999}
+      animation="slideIn 0.3s ease-out"
     >
-      <DialogBackdrop />
-      <DialogContent maxW="md">
-        <DialogHeader>
-          <DialogTitle textAlign="center">{getTitle()}</DialogTitle>
-        </DialogHeader>
-        <DialogBody>
-          <VStack gap={4} align="center" py={4}>
-            <Box>{getIcon()}</Box>
-            <Text textAlign="center" color="gray.700">
-              {getDescription()}
-            </Text>
-            {status === 'success' && autoRedirect && (
-              <Text fontSize="sm" color="gray.500">
-                {t('slack.auto_refresh', 'Refreshing in 2 seconds...')}
+      <Card.Root
+        maxW="450px"
+        w="90vw"
+        bg="white"
+        borderRadius="xl"
+        boxShadow="2xl"
+        border="3px solid"
+        borderColor={getBorderColor()}
+      >
+        <Card.Body p={6}>
+          <VStack gap={5} align="stretch">
+            {/* Close Button */}
+            <HStack justify="space-between" align="start">
+              <Box flex={1} />
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onClose}
+                p={1}
+                minW="auto"
+                h="auto"
+              >
+                <FaTimes size={16} />
+              </Button>
+            </HStack>
+
+            {/* Icon */}
+            <VStack gap={4}>
+              <Box
+                animation={
+                  status === 'success' ? 'bounce 1s ease-in-out' : 'none'
+                }
+              >
+                {getIcon()}
+              </Box>
+
+              {/* Title with Emoji */}
+              <Text
+                fontSize="2xl"
+                fontWeight="bold"
+                textAlign="center"
+                color="gray.800"
+              >
+                {getEmoji()} {getTitle()}
               </Text>
-            )}
+
+              {/* Description */}
+              <Text
+                textAlign="center"
+                color="gray.600"
+                fontSize="md"
+                lineHeight="1.6"
+              >
+                {getDescription()}
+              </Text>
+
+              {/* Auto-refresh indicator */}
+              {status === 'success' && autoRedirect && (
+                <Box
+                  px={4}
+                  py={2}
+                  bg="blue.50"
+                  borderRadius="md"
+                  border="1px solid"
+                  borderColor="blue.200"
+                  w="full"
+                >
+                  <Text fontSize="sm" color="blue.700" textAlign="center">
+                    ⏳ {t('slack.auto_refresh', 'Refreshing in a moment...')}
+                  </Text>
+                </Box>
+              )}
+
+              {/* Action Button */}
+              <Button
+                colorScheme={getColorScheme()}
+                onClick={onClose}
+                w="full"
+                size="lg"
+                borderRadius="lg"
+                fontWeight="semibold"
+                mt={2}
+              >
+                {t('common.ok', 'Got it!')}
+              </Button>
+            </VStack>
           </VStack>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            colorScheme={getColorScheme()}
-            onClick={onClose}
-            w="full"
-            size="lg"
-          >
-            {t('common.ok', 'OK')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </DialogRoot>
+        </Card.Body>
+      </Card.Root>
+
+      {/* CSS for animations */}
+      <style jsx>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -60%);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+          }
+        }
+
+        @keyframes bounce {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+      `}</style>
+    </Box>
   );
 };
