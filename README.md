@@ -255,6 +255,7 @@ Important files and folders:
 ### Installation
 
 1. **Clone frontend and install:**
+
    ```bash
    git clone <repo-url>
    cd <repo-root>/frontend
@@ -263,12 +264,14 @@ Important files and folders:
    ```
 
 2. **Add environment variables:**
+
    ```bash
    cp .env.local.example .env.local   # if example present
    # Edit .env.local with your configuration
    ```
 
 3. **Run development server:**
+
    ```bash
    npm run dev
    # open http://localhost:3000
@@ -345,6 +348,7 @@ npm run format           # Format code with Prettier
 Add a `LanguageSwitcher` component in the header to toggle languages. Persist selection in cookie/localStorage.
 
 **Example:**
+
 ```jsx
 import { useTranslation } from 'next-i18next';
 
@@ -408,21 +412,27 @@ export default api;
 Follow backend response envelope:
 
 **Success Response:**
+
 ```json
 {
   "success": true,
   "message": "Operation successful",
-  "data": { /* response data */ }
+  "data": {
+    /* response data */
+  }
 }
 ```
 
 **Error Response:**
+
 ```json
 {
   "success": false,
   "error": "Error message",
   "code": "ERROR_CODE",
-  "metadata": { /* additional context */ }
+  "metadata": {
+    /* additional context */
+  }
 }
 ```
 
@@ -430,7 +440,7 @@ Follow backend response envelope:
 
 ## Mermaid Diagrams (Shared Flows)
 
-Below are the mermaid diagrams taken from the backend README that are relevant to frontend behavior (authentication, attendance submission, report generation, Slack & chatbot flows). These are included *verbatim* so you can render them in Markdown viewers that support Mermaid.
+Below are the mermaid diagrams taken from the backend README that are relevant to frontend behavior (authentication, attendance submission, report generation, Slack & chatbot flows). These are included _verbatim_ so you can render them in Markdown viewers that support Mermaid.
 
 ### 1. User Authentication Flow
 
@@ -439,24 +449,24 @@ flowchart TD
     Start([User Opens App]) --> CheckAuth{Has Valid JWT?}
     CheckAuth -->|Yes| Dashboard[Dashboard]
     CheckAuth -->|No| Login[Login Page]
-    
+
     Login --> EnterCreds[Enter Email & Password]
     EnterCreds --> SubmitLogin[Submit Login]
     SubmitLogin --> ValidateCreds{Valid Credentials?}
-    
+
     ValidateCreds -->|No| LoginError[Show Error]
     LoginError --> Login
-    
+
     ValidateCreds -->|Yes| CheckActive{User Active?}
     CheckActive -->|No| InactiveError[Account Inactive]
     CheckActive -->|Yes| CheckFirstLogin{First Login?}
-    
+
     CheckFirstLogin -->|Yes| ForceReset[Force Password Reset]
     ForceReset --> ResetPass[Set New Password]
     ResetPass --> Dashboard
-    
+
     CheckFirstLogin -->|No| Dashboard
-    
+
     Login --> ForgotPass[Forgot Password?]
     ForgotPass --> EnterEmail[Enter Email]
     EnterEmail --> SendOTP[Send OTP to Email]
@@ -480,37 +490,37 @@ flowchart TD
     Start([Engineer Dashboard]) --> ViewProjects[View Active Projects]
     ViewProjects --> SelectProject[Select Project]
     SelectProject --> SubmitAttendance[Click Submit Attendance]
-    
+
     SubmitAttendance --> SelectDate[Select Work Date]
     SelectDate --> CheckDateValid{Date Valid?}
-    
+
     CheckDateValid -->|Future beyond month| DateError[Date Error]
     CheckDateValid -->|Past > 92 days| DateError
     DateError --> SelectDate
-    
+
     CheckDateValid -->|Valid| CheckDuplicate{Duplicate Entry?}
     CheckDuplicate -->|Yes| DupError[Duplicate Error]
     DupError --> SelectDate
-    
+
     CheckDuplicate -->|No| SelectType[Select Attendance Type]
     SelectType --> TypeCheck{Type?}
-    
+
     TypeCheck -->|PRESENT| EnterWorkDetails[Enter Start/End Time<br/>Break Hours<br/>Location<br/>Description]
     TypeCheck -->|PAID_LEAVE| CheckLeaveBalance{Has Leave Balance?}
     TypeCheck -->|ABSENT| SkipDetails[No Details Required]
     TypeCheck -->|LEGAL_HOLIDAY| SkipDetails
-    
+
     CheckLeaveBalance -->|No| LeaveError[Insufficient Leave]
     LeaveError --> SelectType
     CheckLeaveBalance -->|Yes| SkipDetails
-    
+
     EnterWorkDetails --> ValidateHours{Hours Valid?}
     ValidateHours -->|No| HoursError[Invalid Hours]
     HoursError --> EnterWorkDetails
-    
+
     ValidateHours -->|Yes| SubmitRecord[Submit Record]
     SkipDetails --> SubmitRecord
-    
+
     SubmitRecord --> SaveDB[(Save to Database)]
     SaveDB --> UpdateLeave{Paid Leave?}
     UpdateLeave -->|Yes| DeductLeave[Deduct from Allowance]
@@ -526,51 +536,51 @@ flowchart TD
     Start([Sales Dashboard]) --> SelectEngineer[Select Engineer]
     SelectEngineer --> SelectMonth[Select Year & Month]
     SelectMonth --> ClickGenerate[Click Generate Report]
-    
+
     ClickGenerate --> CheckAssignment{Assignment Exists?}
     CheckAssignment -->|No| NoAssignment[No Assignment Error]
     NoAssignment --> End([Return])
-    
+
     CheckAssignment -->|Yes| CheckExisting{Report Already Exists?}
     CheckExisting -->|Yes & Approved| ReportExists[Report Already Approved]
     ReportExists --> End
-    
+
     CheckExisting -->|Yes & Draft| OverwriteConfirm{Overwrite Draft?}
     OverwriteConfirm -->|No| End
     OverwriteConfirm -->|Yes| FetchData
-    
+
     CheckExisting -->|No| FetchData[Fetch Attendance Records]
     FetchData --> CheckRecords{Has Attendance?}
     CheckRecords -->|No| NoData[No Attendance Data]
     NoData --> End
-    
+
     CheckRecords -->|Yes| CalculateHours[Calculate Total Work Hours]
     CalculateHours --> GetProject[Get Project Details]
     GetProject --> CheckMethod{Settlement Method?}
-    
+
     CheckMethod -->|UP_DOWN| CalcUpDown[Calculate UP_DOWN Settlement<br/>- Check Range<br/>- Calculate Excess/Shortage<br/>- Apply Rates]
     CheckMethod -->|FIXED| CalcFixed[Fixed Amount<br/>No Adjustments]
-    
+
     CalcUpDown --> GeneratePDF[Generate PDF Report]
     CalcFixed --> GeneratePDF
-    
+
     GeneratePDF --> SaveReport[(Save Report to DB)]
     SaveReport --> ShowReport[Display Report Preview]
     ShowReport --> Actions{Action?}
-    
+
     Actions -->|Add Remarks| EditRemarks[Edit Remarks]
     EditRemarks --> UpdateReport[(Update Report)]
     UpdateReport --> ShowReport
-    
+
     Actions -->|Submit| ChangeStatus[Status: SUBMITTED]
     Actions -->|Approve| ChangeStatus2[Status: APPROVED]
     Actions -->|Export Excel| ExportExcel[Download Excel File]
     Actions -->|Export PDF| ExportPDF[Download PDF File]
-    
+
     ChangeStatus --> SaveStatus[(Update DB)]
     ChangeStatus2 --> SaveStatus
     SaveStatus --> Success([Report Saved])
-    
+
     ExportExcel --> Success
     ExportPDF --> Success
 ```
@@ -586,7 +596,7 @@ sequenceDiagram
     participant UserRepository
     participant Database
     participant JWT
-    
+
     User->>Frontend: Enter email & password
     Frontend->>AuthController: POST /api/auth/login
     AuthController->>AuthService: login(email, password)
@@ -594,7 +604,7 @@ sequenceDiagram
     UserRepository->>Database: SELECT * FROM users WHERE email=?
     Database-->>UserRepository: User data
     UserRepository-->>AuthService: User object
-    
+
     AuthService->>AuthService: bcrypt.compare(password, hashedPassword)
     alt Invalid credentials
         AuthService-->>AuthController: Throw InvalidCredentialsError
@@ -630,24 +640,24 @@ sequenceDiagram
     participant AssignmentRepo
     participant Database
     participant Logger
-    
+
     Engineer->>Frontend: Fill attendance form & submit
     Frontend->>AttendanceController: POST /api/attendance + JWT
     AttendanceController->>AuthMiddleware: Verify JWT
     AuthMiddleware->>AuthMiddleware: jwt.verify(token)
     AuthMiddleware-->>AttendanceController: User payload
-    
+
     AttendanceController->>AttendanceService: createAttendance(data, userId)
     AttendanceService->>AssignmentRepo: findById(assignmentId)
     AssignmentRepo->>Database: SELECT with project details
     Database-->>AssignmentRepo: Assignment + Project
     AssignmentRepo-->>AttendanceService: Assignment object
-    
+
     AttendanceService->>AttendanceService: Validate date range
     AttendanceService->>AttendanceRepo: findExisting(assignmentId, date)
     AttendanceRepo->>Database: Check duplicate
     Database-->>AttendanceRepo: null (no duplicate)
-    
+
     alt Attendance type is PAID_LEAVE
         AttendanceService->>UserRepo: findById(engineerId)
         UserRepo->>Database: Get user
@@ -658,20 +668,20 @@ sequenceDiagram
             AttendanceController-->>Frontend: 400 Bad Request
         end
     end
-    
+
     AttendanceService->>AttendanceService: Calculate work hours
     AttendanceService->>AttendanceRepo: create(attendanceData)
     AttendanceRepo->>Database: INSERT INTO attendance_records
     Database-->>AttendanceRepo: Created record
-    
+
     alt PAID_LEAVE
         AttendanceService->>UserRepo: incrementPaidLeaveUsed(userId)
         UserRepo->>Database: UPDATE users SET paidLeaveUsedThisYear++
     end
-    
+
     AttendanceService->>Logger: Log attendance submission
     Logger->>Logger: Write to logs/attendance-service-combined.log
-    
+
     AttendanceService-->>AttendanceController: Success + attendance object
     AttendanceController-->>Frontend: 201 Created
     Frontend-->>Engineer: Show success message
@@ -682,40 +692,40 @@ sequenceDiagram
 ```mermaid
 flowchart TD
     Start([Engineer in Slack]) --> Command{Slash Command?}
-    
+
     Command -->|/log-work| OpenModal[Open Work Log Modal]
     Command -->|/edit-attendance| EditModal[Open Edit Modal]
     Command -->|/my-attendance| ViewSummary[Show Attendance Summary]
-    
+
     OpenModal --> ShowProjects[Load Active Projects]
     ShowProjects --> FillForm[Fill Attendance Form<br/>- Select Project<br/>- Select Date<br/>- Enter Times]
     FillForm --> SubmitModal[Submit Modal]
-    
+
     SubmitModal --> VerifySignature{Valid Slack Signature?}
     VerifySignature -->|No| Unauthorized[Unauthorized Error]
     VerifySignature -->|Yes| FindUser[Find User by Slack ID]
-    
+
     FindUser --> UserExists{User Found?}
     UserExists -->|No| LinkAccount[Prompt to Link Account]
     UserExists -->|Yes| ValidateData{Data Valid?}
-    
+
     ValidateData -->|No| ValidationError[Show Validation Error]
     ValidateData -->|Yes| SaveAttendance[(Save to Database)]
-    
+
     SaveAttendance --> SendConfirm[Send Confirmation Message]
     SendConfirm --> End([Done])
-    
+
     EditModal --> SelectDate2[Select Date to Edit]
     SelectDate2 --> LoadExisting[Load Existing Record]
     LoadExisting --> ModifyData[Modify Fields]
     ModifyData --> UpdateRecord[(Update Database)]
     UpdateRecord --> SendConfirm
-    
+
     ViewSummary --> FetchRecords[Fetch User's Records]
     FetchRecords --> FormatMessage[Format Summary Message]
     FormatMessage --> SendMessage[Send to Slack]
     SendMessage --> End
-    
+
     LinkAccount --> ProvideEmail[User Enters Email]
     ProvideEmail --> VerifyEmail{Email Exists?}
     VerifyEmail -->|No| EmailError[Email Not Found]
@@ -731,32 +741,32 @@ flowchart TD
     ReceiveQuery --> AuthCheck{Authenticated?}
     AuthCheck -->|No| Unauthorized[Unauthorized Error]
     AuthCheck -->|Yes| ParseQuery[Send to Gemini AI]
-    
+
     ParseQuery --> ExtractIntent[Extract Intent & Parameters]
     ExtractIntent --> QuestionType{Question Type?}
-    
+
     QuestionType -->|Attendance Summary| GetAttendance[Query Attendance Records]
     QuestionType -->|Project Info| GetProjects[Query Projects]
     QuestionType -->|Hours Calculation| GetHours[Calculate Total Hours]
     QuestionType -->|Leave Balance| GetLeave[Query Leave Balance]
     QuestionType -->|Report Status| GetReports[Query Reports]
     QuestionType -->|Coaching| ProvideCoaching[Analyze Patterns<br/>Give Suggestions]
-    
+
     GetAttendance --> FormatResponse[Format AI Response]
     GetProjects --> FormatResponse
     GetHours --> FormatResponse
     GetLeave --> FormatResponse
     GetReports --> FormatResponse
     ProvideCoaching --> FormatResponse
-    
+
     FormatResponse --> CheckTimeout{Response Time?}
     CheckTimeout -->|> 25s| TimeoutError[Timeout - Retry]
     CheckTimeout -->|< 25s| SendResponse[Send Response to User]
-    
+
     TimeoutError --> RetryCheck{Retry Count?}
     RetryCheck -->|< 3| ParseQuery
     RetryCheck -->|>= 3| FinalError[Show Error Message]
-    
+
     SendResponse --> End([Done])
     FinalError --> End
 ```
@@ -770,6 +780,7 @@ flowchart TD
 **Problem:** API requests return CORS errors or connection refused
 
 **Solution:**
+
 1. Check `NEXT_PUBLIC_API_URL` is correct
 2. Verify backend `CORS_ORIGIN` includes your frontend URL
 3. Ensure backend is running and accessible
@@ -779,6 +790,7 @@ flowchart TD
 **Problem:** API calls return 401 Unauthorized
 
 **Solution:**
+
 1. Verify token is stored correctly (check localStorage/cookies)
 2. Ensure axios includes `Authorization` header
 3. Check token hasn't expired
@@ -789,6 +801,7 @@ flowchart TD
 **Problem:** Translation keys showing as `[missing translation]`
 
 **Solution:**
+
 1. Confirm `public/locales/{en,ja}` namespace files exist
 2. Check translation key matches in code
 3. Restart development server after adding new translations
@@ -798,6 +811,7 @@ flowchart TD
 **Problem:** Frontend shows duplicate attendance submission errors
 
 **Solution:**
+
 1. Frontend should handle backend `DUPLICATE_ATTENDANCE` error code
 2. Show user-friendly message with option to edit existing record
 3. Prevent form submission while request is pending
@@ -807,6 +821,7 @@ flowchart TD
 **Problem:** `npm run build` fails
 
 **Solution:**
+
 ```bash
 # Clear cache and reinstall
 rm -rf .next node_modules
@@ -819,6 +834,7 @@ npm run build
 **Problem:** `process.env.NEXT_PUBLIC_*` returns undefined
 
 **Solution:**
+
 1. Ensure variables are prefixed with `NEXT_PUBLIC_`
 2. Restart development server after changing `.env.local`
 3. Check `.env.local` is in project root (not `/src`)
@@ -855,8 +871,7 @@ npm run build
 
 ### License
 
-Add `LICENSE` file in repo root (e.g., MIT).
----
+## Add `LICENSE` file in repo root (e.g., MIT).
 
 ## Additional Resources
 
@@ -876,6 +891,7 @@ Add `LICENSE` file in repo root (e.g., MIT).
 ### Support
 
 For questions or issues:
+
 1. Check this README
 2. Review component documentation
 3. Check existing issues in repository

@@ -532,22 +532,52 @@ export default function EngineersPage() {
               <Table.Root size="sm" variant="line">
                 <Table.Header>
                   <Table.Row bg="white">
-                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                    <Table.ColumnHeader
+                      fontWeight="semibold"
+                      fontSize="xs"
+                      width="20%"
+                      py={3}
+                    >
                       {t('engineers.table.name')}
                     </Table.ColumnHeader>
-                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                    <Table.ColumnHeader
+                      fontWeight="semibold"
+                      fontSize="xs"
+                      width="15%"
+                      py={3}
+                    >
                       {t('engineers.table.slack_id')}
                     </Table.ColumnHeader>
-                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                    <Table.ColumnHeader
+                      fontWeight="semibold"
+                      fontSize="xs"
+                      width="15%"
+                      py={3}
+                    >
                       {t('engineers.table.leave')}
                     </Table.ColumnHeader>
-                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                    <Table.ColumnHeader
+                      fontWeight="semibold"
+                      fontSize="xs"
+                      width="15%"
+                      py={3}
+                    >
                       Last Login
                     </Table.ColumnHeader>
-                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                    <Table.ColumnHeader
+                      fontWeight="semibold"
+                      fontSize="xs"
+                      width="15%"
+                      py={3}
+                    >
                       {t('engineers.table.status')}
                     </Table.ColumnHeader>
-                    <Table.ColumnHeader fontWeight="semibold" fontSize="xs">
+                    <Table.ColumnHeader
+                      fontWeight="semibold"
+                      fontSize="xs"
+                      width="20%"
+                      py={3}
+                    >
                       {t('engineers.table.actions')}
                     </Table.ColumnHeader>
                   </Table.Row>
@@ -606,7 +636,7 @@ export default function EngineersPage() {
                         </Badge>
                       </Table.Cell>
                       <Table.Cell>
-                        <HStack gap={2}>
+                        <HStack gap={5}>
                           <Button
                             size="xs"
                             colorScheme="blue"
@@ -623,7 +653,7 @@ export default function EngineersPage() {
                           >
                             {t('engineers.buttons.edit')}
                           </Button>
-                          <Button
+                          {/* <Button
                             size="xs"
                             colorScheme="purple"
                             variant="ghost"
@@ -633,7 +663,7 @@ export default function EngineersPage() {
                             title={t('engineers.buttons.send_reminder')}
                           >
                             <LuBell size={16} />
-                          </Button>
+                          </Button> */}
                         </HStack>
                       </Table.Cell>
                     </Table.Row>
@@ -734,7 +764,7 @@ export default function EngineersPage() {
                       >
                         Edit
                       </Button>
-                      <Button
+                      {/* <Button
                         size="xs"
                         colorScheme="purple"
                         variant="ghost"
@@ -744,7 +774,7 @@ export default function EngineersPage() {
                         title="Send Reminder"
                       >
                         <LuBell size={16} />
-                      </Button>
+                      </Button> */}
                     </HStack>
                   </VStack>
                 </Card.Root>

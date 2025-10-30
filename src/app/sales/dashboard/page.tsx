@@ -368,7 +368,7 @@ export default function SalesDashboard() {
                     <VStack gap={2} w="full">
                       {/* Header */}
                       <Grid
-                        templateColumns="2fr 2fr 1.5fr 1fr 1fr"
+                        templateColumns="2fr 2fr 1.5fr 1fr"
                         gap={4}
                         w="full"
                         p={3}
@@ -382,14 +382,14 @@ export default function SalesDashboard() {
                         <Text>{t('dashboard.project')}</Text>
                         <Text>{t('dashboard.hours_month')}</Text>
                         <Text>{t('dashboard.status')}</Text>
-                        <Text>{t('dashboard.actions')}</Text>
+                        {/* <Text>{t('dashboard.actions')}</Text> */}
                       </Grid>
 
                       {/* Rows */}
                       {paginatedEngineers.map((engineer) => (
                         <Grid
                           key={engineer.id}
-                          templateColumns="2fr 2fr 1.5fr 1fr 1fr"
+                          templateColumns="2fr 2fr 1.5fr 1fr"
                           gap={4}
                           w="full"
                           p={3}
@@ -432,7 +432,7 @@ export default function SalesDashboard() {
                             {engineer.status}
                           </Box>
 
-                          <Button
+                          {/* <Button
                             size="xs"
                             variant="ghost"
                             onClick={() =>
@@ -446,7 +446,7 @@ export default function SalesDashboard() {
                             color="gray.600"
                           >
                             <LuBell size={16} />
-                          </Button>
+                          </Button> */}
                         </Grid>
                       ))}
                     </VStack>
@@ -510,7 +510,7 @@ export default function SalesDashboard() {
                             </HStack>
 
                             {/* Actions */}
-                            <Button
+                            {/* <Button
                               size="xs"
                               variant="outline"
                               colorScheme="blue"
@@ -527,7 +527,7 @@ export default function SalesDashboard() {
                               <Text ml={1} fontSize="2xs">
                                 {t('dashboard.send_reminder')}
                               </Text>
-                            </Button>
+                            </Button> */}
                           </VStack>
                         </Card.Body>
                       </Card.Root>
