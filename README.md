@@ -855,8 +855,7 @@ npm run build
 
 ### License
 
-Add `LICENSE` file in repo root (e.g., MIT) or copy from backend repo.
-
+Add `LICENSE` file in repo root (e.g., MIT).
 ---
 
 ## Additional Resources
@@ -883,10 +882,6 @@ For questions or issues:
 4. Create new issue with detailed description
 
 ---
-
-## Notes
-
-This frontend README intentionally keeps wording and diagrams consistent with the backend README where flows and business logic overlap (authentication, attendance rules, monthly report generation, Slack integration). See backend docs for the canonical API and server-side details.
 
 ---
 
