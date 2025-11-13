@@ -13,6 +13,9 @@ import {
   Button,
   Badge,
   Input,
+  Select,
+  Portal,
+  createListCollection,
 } from '@chakra-ui/react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { salesNavigation } from '@/shared/config/navigation';
@@ -136,6 +139,16 @@ export default function ClientsPage() {
   const activeCount = clients.filter((c) => c.isActive).length;
   const inactiveCount = clients.length - activeCount;
 
+  type StatusValue = 'all' | 'active' | 'inactive';
+  const statusOptions: Array<{ label: string; value: StatusValue }> = [
+    { label: t('clients.filters.all_clients'), value: 'all' },
+    { label: t('clients.filters.active_only'), value: 'active' },
+    { label: t('clients.filters.inactive_only'), value: 'inactive' },
+  ];
+  const statusCollection = createListCollection({
+    items: statusOptions,
+  });
+
   return (
     <FeatureErrorBoundary featureName="Clients">
       <DashboardLayout
@@ -242,40 +255,43 @@ export default function ClientsPage() {
                 <Text fontSize="sm" mb={2} fontWeight="medium" color="gray.700">
                   {t('clients.filters.status_label')}
                 </Text>
-                <Box position="relative">
-                  <select
-                    value={statusFilter}
-                    onChange={(e) =>
-                      setStatusFilter(
-                        e.target.value as 'all' | 'active' | 'inactive'
-                      )
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '11px 40px 11px 14px',
-                      borderRadius: '10px',
-                      border: '2px solid #E2E8F0',
-                      backgroundColor: 'white',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      appearance: 'none',
-                      outline: 'none',
-                      transition: 'all 0.3s ease',
-                      fontWeight: '500',
-                      color: '#2D3748',
-                    }}
-                  >
-                    <option value="all">
-                      {t('clients.filters.all_clients')}
-                    </option>
-                    <option value="active">
-                      {t('clients.filters.active_only')}
-                    </option>
-                    <option value="inactive">
-                      {t('clients.filters.inactive_only')}
-                    </option>
-                  </select>
-                </Box>
+
+                <Select.Root
+                  collection={statusCollection}
+                  value={[statusFilter]}
+                  onValueChange={(details) => {
+                    const selected = details.value[0] as StatusValue;
+                    setStatusFilter(selected);
+                  }}
+                  size="md"
+                  variant="outline"
+                  width="100%"
+                >
+                  <Select.HiddenSelect />
+                  <Select.Control>
+                    <Select.Trigger>
+                      <Select.ValueText
+                        placeholder={t('clients.filters.all_clients')}
+                      />
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                      <Select.Indicator />
+                    </Select.IndicatorGroup>
+                  </Select.Control>
+
+                  <Portal>
+                    <Select.Positioner>
+                      <Select.Content>
+                        {statusOptions.map(({ label, value }) => (
+                          <Select.Item key={value} item={value}>
+                            {label}
+                            <Select.ItemIndicator />
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Positioner>
+                  </Portal>
+                </Select.Root>
               </Box>
             </Grid>
 

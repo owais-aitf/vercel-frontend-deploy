@@ -55,6 +55,10 @@ export function ViewAllReports() {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [deletingReport, setDeletingReport] = useState(false);
 
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [downloadLang, setDownloadLang] = useState<'en' | 'ja'>('en');
+  const [downloadReportId, setDownloadReportId] = useState<string | null>(null);
+
   // Filters
   const [filterEngineer, setFilterEngineer] = useState('');
   const [filterProject, setFilterProject] = useState('');
@@ -204,6 +208,65 @@ export function ViewAllReports() {
         type: 'error',
       });
     }
+  };
+
+  const handleDownloadWithLang = async (
+    reportId: string,
+    format: 'excel' | 'pdf',
+    lang: 'en' | 'ja'
+  ) => {
+    try {
+      if (format === 'pdf') {
+        // salesService will now accept lang
+        const blob = await salesService.downloadReportPDF(reportId, lang);
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+
+        // use different filename format if needed; salesService/backend sets Content-Disposition,
+        // but some browsers need manual filename for blob downloads:
+        const filename = `report-${reportId}-${lang}.pdf`;
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        // excel not localized in this change — keep original behavior
+        const blob = await salesService.downloadReportExcel(reportId);
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `report-${reportId}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+
+      toaster.create({
+        title: t('reports.view_all.success_download'),
+        description: t('reports.view_all.success_download'),
+        type: 'success',
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error && 'response' in error
+          ? (error as { response?: { data?: { error?: string } } }).response
+              ?.data?.error
+          : undefined;
+      toaster.create({
+        title: t('reports.view_all.error'),
+        description: errorMessage || t('reports.view_all.error_download'),
+        type: 'error',
+      });
+    }
+  };
+
+  const openDownloadModal = (reportId: string) => {
+    setDownloadReportId(reportId);
+    setDownloadLang('en'); // default
+    setIsDownloadModalOpen(true);
   };
 
   const handleDeleteReport = async () => {
@@ -609,7 +672,7 @@ export function ViewAllReports() {
                             <Button
                               size="xs"
                               variant="ghost"
-                              onClick={() => handleDownload(report.id, 'pdf')}
+                              onClick={() => openDownloadModal(report.id)}
                             >
                               {t('reports.view_all.actions.download_pdf')}
                             </Button>
@@ -706,7 +769,7 @@ export function ViewAllReports() {
                           </IconButton>
                           <IconButton
                             size="xs"
-                            onClick={() => handleDownload(report.id, 'pdf')}
+                            onClick={() => openDownloadModal(report.id)}
                             aria-label={t(
                               'reports.view_all.actions.download_pdf'
                             )}
@@ -1048,6 +1111,102 @@ export function ViewAllReports() {
                   disabled={!newStatus || updatingStatus}
                 >
                   {t('reports.status_modal.update')}
+                </Button>
+              </HStack>
+            </VStack>
+          </Box>
+        </>
+      )}
+
+      {isDownloadModalOpen && downloadReportId && (
+        <>
+          {/* Backdrop */}
+          <Box
+            position="fixed"
+            inset={0}
+            bg="blackAlpha.600"
+            zIndex={999}
+            onClick={() => setIsDownloadModalOpen(false)}
+          />
+
+          <Box
+            position="fixed"
+            top={{ base: '20px', md: '50%' }}
+            left={{ base: '20px', md: '50%' }}
+            right={{ base: '20px', md: 'auto' }}
+            transform={{ base: 'none', md: 'translate(-50%, -50%)' }}
+            bg="white"
+            borderRadius="lg"
+            shadow="2xl"
+            zIndex={1000}
+            w={{ base: 'auto', md: '420px' }}
+            p={{ base: 5, md: 6 }}
+          >
+            <VStack align="stretch" gap={4}>
+              <HStack
+                justify="space-between"
+                pb={3}
+                borderBottom="1px solid"
+                borderColor="gray.200"
+              >
+                <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="bold">
+                  {t('reports.view_all.actions.download_pdf')}
+                </Text>
+                <Box
+                  as="button"
+                  onClick={() => setIsDownloadModalOpen(false)}
+                  cursor="pointer"
+                  fontSize="24px"
+                  color="gray.500"
+                  _hover={{ color: 'gray.700' }}
+                >
+                  ✕
+                </Box>
+              </HStack>
+
+              <Text fontSize="sm" color="gray.600">
+                {t('reports.download_modal.choose_language')}
+              </Text>
+
+              <HStack gap={3}>
+                <Button
+                  variant={downloadLang === 'en' ? 'solid' : 'ghost'}
+                  onClick={() => setDownloadLang('en')}
+                  flex={1}
+                >
+                  English
+                </Button>
+                <Button
+                  variant={downloadLang === 'ja' ? 'solid' : 'ghost'}
+                  onClick={() => setDownloadLang('ja')}
+                  flex={1}
+                >
+                  日本語
+                </Button>
+              </HStack>
+
+              <HStack justify="flex-end" gap={3} pt={3}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDownloadModalOpen(false)}
+                >
+                  {t('reports.download_modal.cancel')}
+                </Button>
+                <Button
+                  colorScheme="blue"
+                  onClick={async () => {
+                    setIsDownloadModalOpen(false);
+                    if (downloadReportId) {
+                      // call existing handler but with lang
+                      await handleDownloadWithLang(
+                        downloadReportId,
+                        'pdf',
+                        downloadLang
+                      );
+                    }
+                  }}
+                >
+                  {t('reports.download_modal.download')}
                 </Button>
               </HStack>
             </VStack>

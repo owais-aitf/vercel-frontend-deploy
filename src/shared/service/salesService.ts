@@ -460,9 +460,9 @@ export const salesService = {
   },
 
   // Download PDF report
-  downloadReportPDF: async (reportId: string) => {
+  downloadReportPDF: async (reportId: string, lang: 'en' | 'ja' = 'en') => {
     const response = await apiClient.get(
-      `/monthly-reports/${reportId}/download-pdf`,
+      `/monthly-reports/${reportId}/download-pdf${lang ? `?lang=${lang}` : ''}`,
       {
         responseType: 'blob',
       }

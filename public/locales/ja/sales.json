@@ -674,6 +674,7 @@
       "table": {
         "engineer": "エンジニア",
         "project": "プロジェクト",
+        "client": "クライアント",
         "period": "期間",
         "total_hours": "総時間",
         "amount": "金額",
@@ -747,6 +748,11 @@
       "cancel": "キャンセル",
       "update": "ステータスを更新",
       "updating": "更新中..."
+    },
+    "download_modal": {
+      "choose_language": "PDFの言語を選択",
+      "cancel": "キャンセル",
+      "download": "ダウンロード"
     },
     "generate": {
       "title": "月次レポートを生成",

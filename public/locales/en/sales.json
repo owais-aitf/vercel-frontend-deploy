@@ -678,6 +678,7 @@
       "table": {
         "engineer": "Engineer",
         "project": "Project",
+        "client": "Client",
         "period": "Period",
         "total_hours": "Total Hours",
         "amount": "Amount",
@@ -751,6 +752,11 @@
       "cancel": "Cancel",
       "update": "Update Status",
       "updating": "Updating..."
+    },
+    "download_modal": {
+      "choose_language": "Choose language for PDF",
+      "cancel": "Cancel",
+      "download": "Download"
     },
     "generate": {
       "title": "Generate Monthly Report",
