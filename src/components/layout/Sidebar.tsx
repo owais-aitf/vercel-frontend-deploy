@@ -168,22 +168,27 @@ export const Sidebar = ({
           const isActive =
             pathname === item.path || pathname?.startsWith(`${item.path}/`);
           return (
-            <Box
+            <Button
               key={item.path}
-              as="button"
               onClick={() => handleNavigation(item.path)}
-              p={3}
+              justifyContent="flex-start"
+              w="full"
+              py={3}
+              px={3}
               borderRadius="md"
+              variant="ghost"
               bg={isActive ? 'blue.500' : 'transparent'}
               color={isActive ? 'white' : 'gray.700'}
               _hover={{
                 bg: isActive ? 'blue.600' : 'gray.100',
               }}
+              _focusVisible={{
+                boxShadow: '0 0 0 2px',
+                borderColor: 'transparent',
+                outline: 'none',
+              }}
               transition="all 0.2s"
-              cursor="pointer"
               textAlign="left"
-              w="full"
-              border="none"
             >
               <HStack gap={3}>
                 <Box fontSize="20px">
@@ -201,7 +206,7 @@ export const Sidebar = ({
                   )}
                 </Text>
               </HStack>
-            </Box>
+            </Button>
           );
         })}
       </VStack>
