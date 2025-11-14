@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useState, useEffect, useContext } from 'react';
+import { useContext } from 'react';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
@@ -64,8 +64,7 @@ export const Sidebar = ({
   const router = useRouter();
   const pathname = usePathname();
   const { t } = useTranslation('common');
-  const { logout } = useContext(AuthContext);
-  const [userRole, setUserRole] = useState('User');
+  const { logout, user } = useContext(AuthContext);
 
   // Determine portal translation key based on portalName
   const getPortalKey = () => {
@@ -76,52 +75,24 @@ export const Sidebar = ({
     return 'navigation.sales_portal'; // fallback
   };
 
-  useEffect(() => {
-    // Only run in browser environment
-    if (typeof window === 'undefined') return;
-
-    // Get user role from localStorage
-    const userDataString = localStorage.getItem('user');
-    if (userDataString) {
-      try {
-        const userData = JSON.parse(userDataString);
-
-        // Check if userData exists and has role property
-        if (userData && userData.role) {
-          const role = userData.role as UserRole;
-
-          // Format role to display name
-          const roleMap: Record<UserRole, string> = {
-            ENGINEER: 'Engineer',
-            ADMIN: 'Admin',
-            SALES: 'Sales',
-            MANAGER: 'Manager',
-          };
-
-          const roleDisplayName = roleMap[role] || 'User';
-          setUserRole(roleDisplayName);
-        } else {
-          console.warn('User data exists but role is missing');
-          setUserRole('User');
-        }
-      } catch (error) {
-        console.error('Error parsing user role:', error);
-        setUserRole('User');
-      }
-    } else {
-      // No user data in localStorage
-      setUserRole('User');
-    }
-  }, []);
+  const roleMap: Record<UserRole, string> = {
+    ENGINEER: 'Engineer',
+    ADMIN: 'Admin',
+    SALES: 'Sales',
+    MANAGER: 'Manager',
+  };
+  const userRole = user?.role
+    ? roleMap[user.role as UserRole] || 'User'
+    : 'User';
 
   const handleNavigation = (path: string) => {
     router.push(path);
     onClose();
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Use AuthContext logout to properly clear state and storage
-    logout();
+    await logout();
     router.push('/login');
   };
 

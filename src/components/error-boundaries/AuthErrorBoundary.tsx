@@ -25,11 +25,6 @@ export class AuthErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Auth Error Boundary caught an error:', error, errorInfo);
-
-    // Clear potentially corrupted auth data
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('authToken');
-    }
   }
 
   handleRetry = () => {

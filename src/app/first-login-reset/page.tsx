@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
@@ -19,6 +19,7 @@ import authService from '@/shared/service/authService';
 import { toaster } from '@/components/ui/toaster';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
+import { AuthContext } from '@/context/AuthContext';
 
 // SVG Icons
 const LockIcon = () => (
@@ -48,6 +49,7 @@ const CheckIcon = ({ color = '#10B981' }: { color?: string }) => (
 export default function FirstLoginResetPage() {
   const router = useRouter();
   const { t } = useTranslation('auth');
+  const { user, refreshUser, isLoading: authLoading } = useContext(AuthContext);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -69,14 +71,13 @@ export default function FirstLoginResetPage() {
   const currentPasswordRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
+    if (authLoading) return;
 
-    if (!userData) {
+    if (!user?.id) {
       router.push('/login');
       return;
     }
 
-    const user = JSON.parse(userData);
     setUserId(user.id);
 
     // Trigger card entrance animation
@@ -93,7 +94,7 @@ export default function FirstLoginResetPage() {
       clearTimeout(timer);
       clearTimeout(focusTimer);
     };
-  }, [router]);
+  }, [router, user, authLoading]);
 
   const validatePassword = (password: string): string => {
     if (password.length < 8)
@@ -160,15 +161,9 @@ export default function FirstLoginResetPage() {
         duration: 3000,
       });
 
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        user.isFirstLogin = false;
-        localStorage.setItem('user', JSON.stringify(user));
-      }
-
-      const userData2 = localStorage.getItem('user');
-      const user = JSON.parse(userData2 || '{}');
+      const updatedUser = await refreshUser({
+        suppressLoading: true,
+      });
       const dashboards: Record<string, string> = {
         ADMIN: '/admin/dashboard',
         SALES: '/sales/dashboard',
@@ -176,7 +171,7 @@ export default function FirstLoginResetPage() {
       };
 
       setTimeout(() => {
-        router.push(dashboards[user.role] || '/');
+        router.push(dashboards[updatedUser?.role || user?.role || ''] || '/');
       }, 1000);
     } catch (error) {
       const errorMessage =

@@ -366,7 +366,7 @@ function MyComponent() {
 
 1. **Login:** Frontend POSTs credentials to backend `/api/auth/login`
 2. **Response:** Receives `{ user, token }`
-3. **Storage:** Store token (AuthContext/localStorage)
+3. **Storage:** Backend sets `authToken` HttpOnly cookie (managed via AuthContext profile fetch)
 4. **API Calls:** Include `Authorization: Bearer <token>` in all requests
 
 ### Axios Setup
@@ -381,15 +381,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-});
-
-// Request interceptor to attach token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+  withCredentials: true, // Send HttpOnly cookies with every request
 });
 
 // Response interceptor for error handling
@@ -620,7 +612,7 @@ sequenceDiagram
             JWT-->>AuthService: JWT token
             AuthService-->>AuthController: { user, token, isFirstLogin }
             AuthController-->>Frontend: 200 OK + token
-            Frontend->>Frontend: Store token in localStorage
+    Frontend->>Browser: Receive HttpOnly auth cookie
             Frontend-->>User: Redirect to dashboard
         end
     end
@@ -791,7 +783,7 @@ flowchart TD
 
 **Solution:**
 
-1. Verify token is stored correctly (check localStorage/cookies)
+1. Verify the `authToken` cookie is present (check browser devtools > Application > Cookies)
 2. Ensure axios includes `Authorization` header
 3. Check token hasn't expired
 4. Verify JWT_SECRET matches between frontend and backend

@@ -6,7 +6,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { toaster } from '@/components/ui/toaster';
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { token, user } = useContext(AuthContext);
+  const { user, isLoading } = useContext(AuthContext);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -17,7 +17,11 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
       return; // Don't redirect, allow access
     }
 
-    if (!token) {
+    if (isLoading) {
+      return;
+    }
+
+    if (!user) {
       router.replace('/login');
       return;
     }
@@ -27,7 +31,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
       // console.log(' NO TOKEN - Redirecting to login');
       router.replace('/first-login-reset');
     }
-  }, [token, router, user, pathname]);
+  }, [user, router, pathname, isLoading]);
 
   //Allow public routes to render without token check
   const publicRoutes = ['/first-login-reset'];
@@ -35,7 +39,8 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
     return <>{children}</>;
   }
 
-  if (!token) return null;
+  if (isLoading) return null;
+  if (!user) return null;
   return <>{children}</>;
 }
 
@@ -53,7 +58,7 @@ export function RoleGuard({
   children: ReactNode;
   allowed: Role[];
 }) {
-  const { user, token, isLoading } = useContext(AuthContext);
+  const { user, isLoading } = useContext(AuthContext);
   const router = useRouter();
   const pathname = usePathname();
   const hasShownToast = useRef(false);
@@ -69,7 +74,11 @@ export function RoleGuard({
       return;
     }
 
-    if (!token) {
+    if (isLoading) {
+      return;
+    }
+
+    if (!user) {
       // Check if this is an intentional logout (don't show toast)
       const justLoggedOut = sessionStorage.getItem('justLoggedOut');
 
@@ -97,7 +106,7 @@ export function RoleGuard({
     if (user && role && !allowed.includes(role)) {
       router.replace(redirectByRole(user.role));
     }
-  }, [token, user, allowed, router, pathname, isLoading]);
+  }, [user, allowed, router, pathname, isLoading]);
 
   //Allow first-login-reset page  to render
   if (pathname === '/first-login-reset') {
@@ -107,8 +116,9 @@ export function RoleGuard({
   // Show nothing while loading to prevent flash of content
   if (isLoading) return null;
 
-  if (!token) return null;
-  const role = (user?.role || '') as Role;
+  if (isLoading) return null;
+  if (!user) return null;
+  const role = (user.role || '') as Role;
   if (user && role && !allowed.includes(role)) return null;
   return <>{children}</>;
 }

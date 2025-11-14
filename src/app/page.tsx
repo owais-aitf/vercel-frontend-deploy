@@ -7,14 +7,18 @@ import { redirectByRole } from '@/shared/lib/auth-guard';
 import { Spinner, Center } from '@chakra-ui/react';
 
 export default function Home() {
-  const { token, user } = useContext(AuthContext);
+  const { user, isLoading } = useContext(AuthContext);
   const router = useRouter();
 
   useEffect(() => {
     // Add a small delay to ensure state is fully updated after logout
     const timeoutId = setTimeout(() => {
       // If token exists and user is authenticated, redirect to their dashboard
-      if (token && user?.role) {
+      if (isLoading) {
+        return;
+      }
+
+      if (user?.role) {
         const dashboardPath = redirectByRole(user.role);
         router.replace(dashboardPath);
       } else {
@@ -24,7 +28,7 @@ export default function Home() {
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [token, user, router]);
+  }, [user, isLoading, router]);
 
   // Show loading spinner while checking authentication
   return (

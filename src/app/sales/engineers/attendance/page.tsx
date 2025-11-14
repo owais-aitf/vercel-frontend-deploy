@@ -155,8 +155,8 @@ export default function ManageAttendancePage() {
         console.log('API URL:', apiUrl);
 
         const response = await fetch(apiUrl, {
+          credentials: 'include',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
             'Content-Type': 'application/json',
           },
         });

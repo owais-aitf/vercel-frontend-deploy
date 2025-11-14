@@ -1,10 +1,19 @@
 'use client';
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import api from '@/shared/lib/api-client';
-import jwtDecode from '@/utils/jwtDecode';
 import { useIsHydrated } from '@/hooks/useIsHydrated';
 import { clearAllCaches } from '@/shared/utils/cache';
+
+const LOGOUT_FLAG_KEY = 'justLoggedOut';
+const PROFILE_ENDPOINT = '/auth/me';
+const LOGOUT_ENDPOINT = '/auth/logout';
 
 type User = {
   id: string;
@@ -17,122 +26,105 @@ type User = {
 
 type AuthContextType = {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<User>;
-  logout: () => void;
-  setToken: (t: string | null) => void;
-  setUser: (u: User | null) => void;
+  logout: () => Promise<void>;
+  refreshUser: (options?: {
+    suppressLoading?: boolean;
+  }) => Promise<User | null>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
-  token: null,
   isLoading: true,
   login: async () => ({ id: '', email: '', role: '' }),
-  logout: () => {},
-  setToken: () => {},
-  setUser: () => {},
+  logout: async () => {},
+  refreshUser: async () => null,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setTokenState] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isHydrated = useIsHydrated();
 
-  useEffect(() => {
-    if (!isHydrated) return;
-
-    setIsLoading(true);
-    try {
-      const t = localStorage.getItem('authToken');
-      const userDataString = localStorage.getItem('user');
-
-      if (t && userDataString) {
-        setTokenState(t);
-        const userData = JSON.parse(userDataString);
-        setUser(userData);
-      } else if (t) {
-        // Fallback to JWT decode if user data is missing
-        setTokenState(t);
-        const decoded = jwtDecode(t);
-        if (decoded) {
-          setUser(decoded);
-        } else {
-          localStorage.removeItem('authToken');
-          setTokenState(null);
+  const refreshUser = useCallback(
+    async (options?: { suppressLoading?: boolean }) => {
+      if (!isHydrated) return null;
+      if (!options?.suppressLoading) {
+        setIsLoading(true);
+      }
+      try {
+        const response = await api.get(PROFILE_ENDPOINT);
+        const profile = response.data?.data || null;
+        setUser(profile);
+        return profile;
+      } catch (error) {
+        console.error('Failed to fetch current user profile:', error);
+        setUser(null);
+        return null;
+      } finally {
+        if (!options?.suppressLoading) {
+          setIsLoading(false);
         }
       }
-    } catch (error) {
-      console.error('Error loading auth token:', error);
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user'); // ✅ ADDED
-      setTokenState(null);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isHydrated]);
+    },
+    [isHydrated]
+  );
 
-  const setToken = (t: string | null) => {
+  useEffect(() => {
     if (!isHydrated) return;
-    if (t) {
-      localStorage.setItem('authToken', t);
-      setTokenState(t);
-    } else {
-      localStorage.removeItem('authToken');
-      setTokenState(null);
-    }
-  };
+    void refreshUser();
+  }, [isHydrated, refreshUser]);
 
-  const login = async (email: string, password: string): Promise<User> => {
-    const res = await api.post('/auth/login', { email, password });
-    const responseData = res.data?.data;
-    const tokenFromRes = res.data?.data?.token;
-    const userFromRes = res.data?.data?.user;
+  const login = useCallback(
+    async (email: string, password: string): Promise<User> => {
+      const res = await api.post('/auth/login', { email, password });
+      const responseData = res.data?.data;
+      const userFromRes = res.data?.data?.user;
 
-    const isFirstLogin = responseData?.isFirstLogin;
-    const mustResetPassword = responseData?.mustResetPassword;
+      const isFirstLogin = responseData?.isFirstLogin;
+      const mustResetPassword = responseData?.mustResetPassword;
 
-    if (!tokenFromRes) throw new Error('Token missing from response');
+      const userData: User = {
+        ...userFromRes,
+        isFirstLogin: isFirstLogin ?? false,
+        mustResetPassword: mustResetPassword ?? false,
+      };
 
-    const userData: User = {
-      ...(userFromRes || jwtDecode(tokenFromRes)),
-      isFirstLogin: isFirstLogin ?? false, // Use ?? to handle undefined
-      mustResetPassword: mustResetPassword ?? false,
-    };
+      // Clear logout flag on successful login
+      sessionStorage.removeItem(LOGOUT_FLAG_KEY);
 
-    // ✅ CRITICAL FIX - Save user data to localStorage
-    localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
 
-    // Clear logout flag on successful login
-    sessionStorage.removeItem('justLoggedOut');
+      return userData;
+    },
+    []
+  );
 
-    setToken(tokenFromRes);
-    setUser(userData);
-
-    return userData;
-  };
-
-  const logout = () => {
+  const logout = useCallback(async () => {
     clearAllCaches();
-    // Clear all auth-related items from localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    // Set flag to indicate intentional logout (prevents error toast)
-    sessionStorage.setItem('justLoggedOut', 'true');
-    // Update state to null
-    setTokenState(null);
-    setUser(null);
-  };
+    try {
+      await api.post(LOGOUT_ENDPOINT);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    } finally {
+      sessionStorage.setItem(LOGOUT_FLAG_KEY, 'true');
+      setUser(null);
+    }
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      user,
+      isLoading,
+      login,
+      logout,
+      refreshUser,
+    }),
+    [user, isLoading, login, logout, refreshUser]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{ user, token, isLoading, login, logout, setToken, setUser }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };

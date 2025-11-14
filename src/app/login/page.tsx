@@ -43,7 +43,7 @@ const CheckIcon = ({ color = '#10B981' }: { color?: string }) => (
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, token, user } = useContext(AuthContext);
+  const { login, user, isLoading: authLoading } = useContext(AuthContext);
   const { t } = useTranslation('auth');
 
   const [email, setEmail] = useState('');
@@ -91,14 +91,10 @@ export default function LoginPage() {
   // Check if user is already authenticated and redirect to dashboard
   // Only redirect if both token AND user exist (prevents redirect loop after logout)
   useEffect(() => {
+    if (authLoading) return;
     // Add a small delay to ensure state is fully updated after logout
     const timeoutId = setTimeout(() => {
-      if (
-        token &&
-        user?.role &&
-        !user?.isFirstLogin &&
-        !user?.mustResetPassword
-      ) {
+      if (user?.role && !user?.isFirstLogin && !user?.mustResetPassword) {
         const dashboardPath =
           user.role === UserRole.ADMIN
             ? '/admin/dashboard'
@@ -110,7 +106,7 @@ export default function LoginPage() {
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [token, user, router]);
+  }, [authLoading, user, router]);
 
   // Trigger card entrance animation and hydration
   useEffect(() => {
@@ -168,13 +164,6 @@ export default function LoginPage() {
 
     try {
       const userData = await login(email, password);
-
-      if (userData) {
-        const tokenFromStorage = localStorage.getItem('token');
-        if (!tokenFromStorage) {
-          localStorage.setItem('user', JSON.stringify(userData));
-        }
-      }
 
       if (userData?.isFirstLogin) {
         router.push('/first-login-reset');
